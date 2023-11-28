@@ -1,5 +1,5 @@
 # The Impact of Air-conditioning on Residential Electricity Demand across World Countries.
-Replication package for Enrica De Cian, Giacomo Falchetta, Filippo Pavanello, Yasmin Romitti, Ian Sue Wing, "The Impact of Air-conditioning on Residential Electricity Demand across World Countries" (mimeo) \[In Review\]
+Replication package for Enrica De Cian, Giacomo Falchetta, Filippo Pavanello, Yasmin Romitti, Ian Sue Wing, "**The Impact of Air-conditioning on Residential Electricity Demand across World Countries**" (mimeo) \[In Review\]
 
 [Working Paper](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4604871)
 
@@ -16,7 +16,7 @@ The data used in the paper are available for download in the following repositor
 
 ## Steps
 
-In the `rscript/` folder the analysis is conducted following *seven* steps:
+In the `rscript/` folder the analysis is conducted following **seven** steps:
 
 1. **Descriptives** - code to produce the descriptive analysis in the paper (Table 1, Table 2, Figure 1)
 2. **Main** - code to produce the main specification of the paper (Table 3, Figure 2, Table B1, Table B2, Table B3)
