@@ -8,8 +8,8 @@ This repository provides the codes required to reproduce the tables, figures, an
 
 ## Folders
 
- - `rscript/`: code to generate tables and figures in the paper
- - `output/`: all the resulting tables and figures from running the codes included in the `rscript/` folder
+ - `rscript/` - code to generate tables and figures in the paper
+ - `output/` - all the resulting tables and figures from running the codes included in the `rscript/` folder
 
 ## Data for replications
 The data used in the paper are available for download in the following repository: 
