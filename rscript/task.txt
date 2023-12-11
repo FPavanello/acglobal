@@ -1,0 +1,4 @@
+Giacomo:
+	- add projections script
+	- clean:
+		- 1_descriptives/Figure_1.r

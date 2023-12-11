@@ -22,7 +22,6 @@ library(sandwich)
 library(lmtest)
 library(ResourceSelection)
 library(multiwayvcov)
-library(msm) # https://stats.oarc.ucla.edu/r/faq/how-can-i-estimate-the-standard-error-of-transformed-regression-parameters-in-r-using-the-delta-method/
 library(margins)
 library(texreg)
 library(xtable)
@@ -33,19 +32,14 @@ library(fixest)
 library(marginaleffects)
 
 # Set users
-user <- 'fp'
-#user <- 'gf'
+user <- 'user'
 
-if (user=='fp') {
-  stub <- 'G:/.shortcut-targets-by-id/1JhN0qxmpnYQDoWQdBhnYKzbRCVGH_WXE/'
+if (user=='user') {
+  stub <- "add your repository"
 }
 
-if (user=='gf') {
-  stub <- 'F:/.shortcut-targets-by-id/1JhN0qxmpnYQDoWQdBhnYKzbRCVGH_WXE/'
-}
-
-house <- paste(stub,'6-Projections/data/household/', sep='')
-output <- paste(stub,'6-Projections/results/regressions/', sep='')
+house <- paste(stub,'data/household/', sep='')
+output <- paste(stub,'output/tables/', sep='')
 
 # Load global data
 global <- readRDS(paste(house,'global.rds', sep=''))
@@ -154,10 +148,11 @@ ac_formula <- ac ~ mean_CDD18_db + mean_CDD18_db2 +
 reg_ac <- svyglm(ac_formula, design = global_svy, 
                  family = binomial(logit), na.action=na.omit); summary(reg_ac)
 
-# Save AME results
+# Save AME results: margins do not work with fixest
 margins <- margins(reg_ac, design = global_svy)
 summary(margins)
-xtable(summary(margins), display=rep('g', 8), caption = "Logit Regression for Air-conditioning Ownership - Global")
+
+# Table B2
 print(xtable(summary(margins), display=rep('g', 8), caption = "Logit Regression for Air-conditioning Ownership - Global"), 
       file= paste(output,'airconditioning/main/Global_wgt_ame.tex', sep=''),append=F, table.placement = "htbp",
       caption.placement="top")
@@ -181,23 +176,11 @@ sec$selection = ifelse(sec$ac==1,
 global_svy <- svydesign(data = sec, ids = ~ adm1, weights = ~ weight)
 
 
-#################################################################
+###############################
 
-#     Intensive margin + the role of AC
+#  Intensive-extensive margin #
 
-#     1) We interact AC with a set of variables to understand
-#     how AC affects the adoption based on different charact.
-
-#     2) We compute coefficients not only at the averages, but
-#     also based on specific values of our variables.
-#     For instance, we compute the coefficients by decile, and
-#     not only for the average household
-
-#     Somehow point 1) is similar to a CDA, but without the
-#     other appliances. For simplicity, I am going to interact
-#     AC only with climate
-
-#################################################################
+###############################
 
 # Formula electricity expenditure without selection
 ely_formula  <- ln_ely_q ~ ac | 
@@ -243,26 +226,8 @@ model3 <- svyglm(ely_formula, design = global_svy, na.action=na.omit); summary(m
 reg_ely <- model3
 
 
-# Compare the models
-screenreg(list(model00, model0, model1, model2), digits = 3, 
-          caption = "The Effect of Air-conditioning on Residential Electricity Quantity",
-          stars = c(0.1, 0.05, 0.01), custom.model.names = c("OLS", "OLS", "DMF", "DMF"),
-          omit.coef = "(country)|(Intercept)|(selection)",
-          custom.coef.map = list("ac1"= "AC", "ac1:curr_CDD18_db" = "AC $\\times$ CDD", 
-                                 "ac1:I(curr_CDD18_db^2)" = "AC $\\times$ CDD$^2$", "curr_CDD18_db" = "CDD", 
-                                 "I(curr_CDD18_db^2)" = "CDD$^2$", "curr_HDD18_db" = "HDD", "I(curr_HDD18_db^2)" = "HDD$^2$",
-                                 "ln_total_exp_usd_2011" = "Log(Exp)",
-                                 "ln_ely_p" = "Log(P)",
-                                 "urban_sh" = "Urbanisation (\\%)", 
-                                 "ownership_d1" = "House Ownership (Yes = 1)", "n_members" = "Household Size", 
-                                 "edu_head_21" = "Primary Edu.", "edu_head_22" = "Secondary Edu.", "edu_head_23" = "Post Edu.", 
-                                 "age_head" = "Age (Head)", "sex_head1" = "Female (Yes = 1)"),
-          custom.gof.rows = list("Correction Term" = c("NO", "NO", "YES", "YES"), 
-                                 "Country FE" = c("YES", "YES", "YES", "YES"), 
-                                 "Countries" = c("25", "25", "25", "25")))
-
 ## Export
-# Full table
+# Table B1
 texreg(list(model00, model0, model1, model2), digits = 3, 
        caption = "The Effect of Air-conditioning on Residential Electricity Quantity",
        stars = c(0.1, 0.05, 0.01), custom.model.names = c("OLS", "OLS", "DMF", "DMF"),
@@ -284,7 +249,7 @@ texreg(list(model00, model0, model1, model2), digits = 3,
                               "Countries" = c("25", "25", "25", "25")), 
        caption.above = TRUE)
 
-# Only AC
+# Table 3 - Only AC
 texreg(list(model00, model0, model1, model2), digits = 3, 
        caption = "The Effect of Air-conditioning on Residential Electricity Quantity",
        stars = c(0.1, 0.05, 0.01), custom.model.names = c("OLS", "OLS", "DMF", "DMF"),
