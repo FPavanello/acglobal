@@ -1,6 +1,6 @@
 
 ## This R-script:
-##      1) plots AC elasticities and AC-nonAC electricity consumption by CDD level - coefficient plot (Figure 2)
+##      1) plots AC elasticities by CDD level - coefficient plot (Figure 2)
 
 # Free memory
 rm(list=ls(all=TRUE)) # Removes all previously created variables
@@ -19,7 +19,7 @@ library(sandwich)
 library(lmtest)
 library(ResourceSelection)
 library(multiwayvcov)
-library(msm) # https://stats.oarc.ucla.edu/r/faq/how-can-i-estimate-the-standard-error-of-transformed-regression-parameters-in-r-using-the-delta-method/
+library(msm)
 library(margins)
 library(texreg)
 library(xtable)
@@ -36,19 +36,14 @@ library(mob)
 library(fixest)
 
 # Set users
-user <- 'fp'
-#user <- 'gf'
+user <- 'user'
 
-if (user=='fp') {
-  stub <- 'G:/.shortcut-targets-by-id/1JhN0qxmpnYQDoWQdBhnYKzbRCVGH_WXE/'
+if (user=='user') {
+  stub <- "add your repository"
 }
 
-if (user=='gf') {
-  stub <- 'H:/.shortcut-targets-by-id/1JhN0qxmpnYQDoWQdBhnYKzbRCVGH_WXE/'
-}
-
-house <- paste(stub,'6-Projections/data/household/', sep='')
-graphs <- paste(stub,'6-Projections/results/graphs/Paper1/', sep='')
+house <- paste(stub,'data/household/', sep='')
+graphs <- paste(stub,'output/tables/', sep='')
 
 
 # Load global data
@@ -105,10 +100,10 @@ sec <- global[obs(fs),]
 # Predicted probabilities
 sec$phat0_obs <- as.numeric(predict(fs, type="response")) 
 
-# Find old HHs classified as owning an AC (NB: using ROC curve we have seen that we are GOOD at predicting those who have AC)
+# Find HHs classified as owning an AC
 sec$ac_obs <- ifelse(sec$phat0_obs>0.5 & !is.na(sec$phat0_obs), 1, 0)
 
-# Selection term
+# Selection term (Dubin and McFadden 1984)
 sec$xb_noac = 1-sec$phat0_obs               
 sec$selection = ifelse(sec$ac==1, 
                           (sec$xb_noac*log(sec$xb_noac)/sec$phat0_obs) + log(sec$phat0_obs), 
@@ -154,7 +149,7 @@ ac_cdd$cdd <- as.character(ac_cdd$cdd)
 ac_cdd$cdd <- substr(ac_cdd$cdd, 4, 5)
 ac_cdd$cdd <- as.numeric(ac_cdd$cdd)
 
-# Create histogram bars
+# Create histogram bars for CDD level
 for (i in seq(0,60,1)) {
   
   global$bin[global$curr_CDD18_db >= i & global$curr_CDD18_db < i+1] <- i
@@ -162,11 +157,11 @@ for (i in seq(0,60,1)) {
 }
 
 global$value <- 1 
-hist <- global %>% dplyr::group_by(bin) %>% dplyr::select(bin, weight, value) %>% summarise(Freq = sum(value*weight))
+hist <- global %>% dplyr::group_by(bin) %>% dplyr::select(bin, weight, value) %>% summarise(Freq = sum(value*weight)) # compute total obs in each bin
 hist <- hist %>% filter(bin <= 40)
-#hist <- global %>% dplyr::select(curr_CDD18_db) %>%
-#  do(data.frame(table(cut(.$curr_CDD18_db, breaks=seq(0, 31, 1), include.lowest=T))))
 ac_cdd <- cbind(ac_cdd, hist)
+
+# Re-scale
 ac_cdd <- ac_cdd %>% mutate(cdd = cdd*100,
                             AME = AME*100,
                             CI_lb = CI_lb*100,
