@@ -21,6 +21,9 @@ library(jtools)
 library(glm2)
 library(reshape2)
 library(cobalt)
+library(devtools)
+devtools::install_github("yutannihilation/ggsflabel")
+library(ggsflabel)
 
 ARG <- readRDS("G:/.shortcut-targets-by-id/1JhN0qxmpnYQDoWQdBhnYKzbRCVGH_WXE/6-Projections/data/household/Argentina/ENGH/argentina_engh.rds") %>% dplyr::select(ac, ely_q, contains("CDD"), total_exp_usd_2011, weight)
 
@@ -70,10 +73,15 @@ IDN <- read_rds("G:/.shortcut-targets-by-id/1JhN0qxmpnYQDoWQdBhnYKzbRCVGH_WXE/6-
 IND <- read_rds("G:/.shortcut-targets-by-id/1JhN0qxmpnYQDoWQdBhnYKzbRCVGH_WXE/6-Projections/data/household/Fourcountries/ind_nss.rds")
 MEX <- read_rds("G:/.shortcut-targets-by-id/1JhN0qxmpnYQDoWQdBhnYKzbRCVGH_WXE/6-Projections/data/household/Fourcountries/mex_enigh.rds")
 
-IND <- IND %>% filter(country=="India")  %>% dplyr::select(ac, ely_q, mean_CDD_1970_2011_db , total_exp_usd_2011, weight)
-IDN <-  IDN %>% filter(country=="Indonesia")  %>% dplyr::select(ac, ely_q, mean_CDD_1970_2016_db , total_exp_usd_2011, weight) 
-MEX <-  MEX %>% filter(country=="Mexico")  %>% dplyr::select(ac, ely_q, mean_CDD_1970_2016_db , total_exp_usd_2011, weight) 
-BRA <-  BRA %>% filter(country=="Brazil")  %>% dplyr::select(ac, ely_q, mean_CDD_1970_2016 , total_exp_usd_2011, weight) 
+IND <- IND %>% filter(country=="India")  %>% dplyr::select(ac, ely_q, mean_CDD18_db , ln_total_exp_usd_2011, weight)
+IDN <-  IDN %>% filter(country=="Indonesia")  %>% dplyr::select(ac, ely_q, mean_CDD18_db , ln_total_exp_usd_2011, weight) 
+MEX <-  MEX %>% filter(country=="Mexico")  %>% dplyr::select(ac, ely_q, mean_CDD18_db , ln_total_exp_usd_2011, weight) 
+BRA <-  BRA %>% filter(country=="Brazil")  %>% dplyr::select(ac, ely_q, mean_CDD18_db , ln_total_exp_usd_2011, weight) 
+
+BRA$total_exp_usd_2011 <- exp(BRA$ln_total_exp_usd_2011)
+IDN$total_exp_usd_2011 <- exp(IDN$ln_total_exp_usd_2011)
+IND$total_exp_usd_2011 <- exp(IND$ln_total_exp_usd_2011)
+MEX$total_exp_usd_2011 <- exp(MEX$ln_total_exp_usd_2011)
 
 DTA <- read_dta("G:/.shortcut-targets-by-id/1JhN0qxmpnYQDoWQdBhnYKzbRCVGH_WXE/6-Projections/data/household/OECD/EPIC/Household_OECD_mod.dta") %>% dplyr::select(ac, ely_q, CDD_mean_1986_2011,income, country) %>% rename(total_exp_usd_2011=income)
 
@@ -128,6 +136,22 @@ all_merge_s <- dplyr::group_by(all_merge, ARG) %>%  dplyr::summarise(ac=weighted
 
 #
 
+tapply(all_merge_s$mean_CDD_db, all_merge_s$ARG, summary)
+
+all_merge_s$mean_CDD_db[all_merge_s$ARG=="ARG"] <- all_merge_s$mean_CDD_db[all_merge_s$ARG=="ARG"]*1000
+all_merge_s$mean_CDD_db[all_merge_s$ARG=="BRA"] <- all_merge_s$mean_CDD_db[all_merge_s$ARG=="BRA"]*100
+all_merge_s$mean_CDD_db[all_merge_s$ARG=="CHN"] <- all_merge_s$mean_CDD_db[all_merge_s$ARG=="CHN"]*1000
+all_merge_s$mean_CDD_db[all_merge_s$ARG=="DEU"] <- all_merge_s$mean_CDD_db[all_merge_s$ARG=="DEU"]*1000
+all_merge_s$mean_CDD_db[all_merge_s$ARG=="IDN"] <- all_merge_s$mean_CDD_db[all_merge_s$ARG=="IDN"]*100
+all_merge_s$mean_CDD_db[all_merge_s$ARG=="IND"] <- all_merge_s$mean_CDD_db[all_merge_s$ARG=="IND"]*100
+all_merge_s$mean_CDD_db[all_merge_s$ARG=="ITA"] <- all_merge_s$mean_CDD_db[all_merge_s$ARG=="ITA"]*1000
+all_merge_s$mean_CDD_db[all_merge_s$ARG=="MEX"] <- all_merge_s$mean_CDD_db[all_merge_s$ARG=="MEX"]*100
+all_merge_s$mean_CDD_db[all_merge_s$ARG=="PAK"] <- all_merge_s$mean_CDD_db[all_merge_s$ARG=="PAK"]*100
+all_merge_s$mean_CDD_db[all_merge_s$ARG=="TZA"] <- all_merge_s$mean_CDD_db[all_merge_s$ARG=="TZA"]*10
+all_merge_s$mean_CDD_db[all_merge_s$ARG=="KEN"] <- all_merge_s$mean_CDD_db[all_merge_s$ARG=="KEN"]*10
+all_merge_s$mean_CDD_db[all_merge_s$ARG=="USA"] <- all_merge_s$mean_CDD_db[all_merge_s$ARG=="USA"]*100
+
+#
 
 all_merge_s_m <- reshape2::melt(all_merge_s, 1)
 
@@ -150,7 +174,6 @@ sf$iso_a3 <- ifelse(is.na(sf$ac), NA, sf$iso_a3)
 #
 
 sf <- st_transform(sf, "ESRI:54009")
-
 
 a <- ggplot()+
   geom_sf(data=sf, aes(fill=ac))+
