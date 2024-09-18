@@ -29,7 +29,6 @@ output <- paste(stub,'output/tables/', sep='')
 
 #############################################################################
 
-# Load global data
 global <- readRDS(paste(house,'global.rds', sep=''))
 
 # Check
@@ -37,7 +36,6 @@ global <- global[complete.cases(global$ln_ely_q), ]
 global <- global[complete.cases(global$ac), ]
 global <- global[complete.cases(global$ln_total_exp_usd_2011), ]
 global <- global[complete.cases(global$mean_CDD18_db), ]
-global <- global[complete.cases(global$urban), ]
 global <- global[complete.cases(global$ownership_d), ]
 global <- global[complete.cases(global$n_members), ]
 global <- global[complete.cases(global$age_head), ]
@@ -49,24 +47,29 @@ global <- global[complete.cases(global$ln_ely_p), ]
 global <- global[complete.cases(global$curr_CDD18_db), ]
 global <- global[complete.cases(global$curr_HDD18_db), ]
 global <- global[complete.cases(global$adm1), ]
-global <- global %>% filter(ln_ely_q > 0)
-global <- global %>% filter(weight > 0)
+global <- global[complete.cases(global$urban_sh), ]
+global <- global[complete.cases(global$n_members), ]
+global <- global[complete.cases(global$age_head), ]
+global <- global[complete.cases(global$edu_head_2), ]
+
+global <- dplyr::filter(global, ln_ely_q > 0)
+global <- dplyr::filter(global, weight > 0)
 
 
 # Table 1: Number of households per country
 summary(global$country) 
 
-# Transform log data
-global <- dplyr::mutate(global, ely = exp(ln_ely_q), total_exp = exp(ln_total_exp_usd_2011))
 
-# Survey
-global_svy <- svydesign(data = global, ids = ~1, weights = ~ weight)
+# Education
+global <- dplyr::mutate(global, 
+                        noedu = ifelse(edu_head_2 == 0, 1, 0),
+                        prim = ifelse(edu_head_2 == 1, 1, 0),
+                        sec = ifelse(edu_head_2 == 2, 1, 0),
+                        post = ifelse(edu_head_2 == 3, 1, 0))
 
-
-## Summary global data set
 # Vector of variables
-variables <- c("ely", "ac", "mean_CDD18_db", "curr_CDD18_db", "curr_HDD18_db", "total_exp", "ely_p_usd_2011", 
-               "urban_sh", "ownership_d", "n_members", "edu_head_2", "age_head", "sex_head")
+variables <- c("ely_q", "ac", "mean_CDD18_db", "curr_CDD18_db", "curr_HDD18_db", "total_exp_usd_2011", "ely_p_usd_2011", 
+               "urban_sh", "ownership_d", "n_members", "noedu", "prim", "sec", "post", "age_head", "sex_head", "ref", "tv", "pc", "wshm")
 
 # Load function
 devtools::source_gist("c4d1089a501d3567be9fb784b1c5a6ab") # Github repo containing the function to compute weighted descriptives in Latex format
@@ -97,6 +100,6 @@ createDescriptiveTable(datasets,
                        variable_names = variables,
                        variable_labels = labels,
                        arraystretch = 1.3,
-                       title = "Weighted Descriptive statistics",
-                       label = "tab:desc_all",
-                       file = paste(output,'desc_global.tex', sep=''))
+                       title = "Weighted descriptive statistics",
+                       label = "table2",
+                       file = paste(output,'Table2.tex', sep=''))
