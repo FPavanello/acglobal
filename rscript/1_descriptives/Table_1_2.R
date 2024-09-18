@@ -1,12 +1,15 @@
 
-## This R-script:
-##      1) descriptive statistics whole data set (Table 1-2)
+#############################################
+
+#             Table 1 + Table 2
+
+#############################################
 
 
 rm(list=ls(all=TRUE)) # Removes all previously created variables
 gc()                  # frees up memory resources
 
-## 1) Load libraries and data ##
+# Packages
 library(data.table)
 library(xtable)
 library(reldist)
@@ -19,16 +22,11 @@ if (user=='user') {
   stub <- "add your repository"
 }
 
+# Set directory
 house <- paste(stub,'data/household/', sep='') 
 output <- paste(stub,'output/tables/', sep='') 
 
-
-#############################################################################
-
-# TABLE 1-2: Number of households for each country + Descriptive Statistics #
-
-#############################################################################
-
+# Load
 global <- readRDS(paste(house,'global.rds', sep=''))
 
 # Check
@@ -93,7 +91,7 @@ myDescriptives = function(x) {
   return(c(m, sd, df, tf, md, sf, nf))
 }
 
-# Table 2: Descriptive Statistics
+# Table 2: Weighted descriptive statistics
 createDescriptiveTable(datasets,
                        summary_function = myDescriptives,
                        column_names = colnames,
