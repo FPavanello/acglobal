@@ -19,12 +19,13 @@ library(Hmisc)
 user <- 'user'
 
 if (user=='user') {
-  stub <- "add your repository"
+  stub <- "G:/.shortcut-targets-by-id/1JhN0qxmpnYQDoWQdBhnYKzbRCVGH_WXE/6-Projections/"
 }
 
 # Set directory
 house <- paste(stub,'data/household/', sep='') 
 output <- paste(stub,'output/tables/', sep='') 
+output <- 'C:/Users/Standard/Documents/Github/acglobal/output/tables/'
 
 # Load
 global <- readRDS(paste(house,'global.rds', sep=''))
@@ -55,7 +56,7 @@ global <- dplyr::filter(global, weight > 0)
 
 
 # Table 1: Number of households per country
-summary(global$country) 
+summary(as.factor(global$country)) 
 
 
 # Education

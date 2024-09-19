@@ -14,32 +14,31 @@ library(plyr)
 library(dplyr)
 library(FSA)
 library(haven)
-library(readstata13)
 library(stringr)
 library(tidyverse)
 library(sandwich)
 library(lmtest)
 library(ResourceSelection)
 library(multiwayvcov)
-library(msm) # https://stats.oarc.ucla.edu/r/faq/how-can-i-estimate-the-standard-error-of-transformed-regression-parameters-in-r-using-the-delta-method/
-library(margins)
 library(texreg)
 library(xtable)
 library(stargazer)
 library(effects)
-library(survey)
 library(fixest)
 library(marginaleffects)
 
 # Set users
-user <- 'fp'
+user <- 'user'
 
-if (user=='fp') {
+if (user=='user') {
   stub <- 'G:/.shortcut-targets-by-id/1JhN0qxmpnYQDoWQdBhnYKzbRCVGH_WXE/'
 }
 
 house <- paste(stub,'6-Projections/data/household/', sep='')
+intermediate <- "add here"
 output <- paste(stub,'6-Projections/results/regressions/', sep='')
+output <- 'C:/Users/Standard/Documents/Github/acglobal/output/tables/'
+
 
 # Load global data
 global <- readRDS(paste(house,'global.rds', sep=''))
@@ -126,11 +125,15 @@ sec$selection = ifelse(sec$ac==1,
 mean_ac <- weighted.mean(sec$ac, sec$weight)
 mean_ac
 
+# Number of countries
+ncoun <- length(unique.default(sec$country))
+ncoun
+
 # Table B2
 texreg(list(reg_ac00, reg_ac0, fs), digits = 3, caption = "Logit Regression for Air-conditioning Ownership --- Global",
        stars = c(0.1, 0.05, 0.01), custom.model.names = c("LPM", "LPM", "Logit"),
        custom.note = "\\textbf{Notes}: Dependent variable is air-conditioning (0,1). Clustered std. errors at the ADM-1 level in parentheses. Column (4) shows the average marginal effects (AMEs) from the logit regression. $^{***}p<0.01$; $^{**}p<0.05$; $^{*}p<0.1$. Regressions are conducted using survey weights.", 
-       file = paste(output,'airconditioning/main/Global_wgt_coeff.tex', sep=''), append=F,  
+       file = paste(output,'TableA2_1to3.tex', sep=''), append=F,  
        float.pos = "H", label = "main: ac_global",
        omit.coef = "(country)|(Intercept)", 
        custom.coef.map = list("mean_CDD18_db" = "$\\overline{CDD}$", "mean_CDD18_db2" = "$\\overline{CDD}^2$", 
@@ -153,7 +156,7 @@ texreg(list(reg_ac00, reg_ac0, fs), digits = 3, caption = "Logit Regression for 
                               "sex_head" = "Female (Yes = 1)"),
        custom.gof.rows = list("ADM-1 FE" = c("YES", "YES", "YES"), 
                               "Mean Outcome" = c(mean_ac, mean_ac, mean_ac), 
-                              "Countries" = c("25", "25", "25")), caption.above = TRUE)
+                              "Countries" = c(ncoun, ncoun, ncoun)), caption.above = TRUE)
 
 # Average marginal effects (AMEs)
 margins <- avg_slopes(fs, wts = global$weight)
@@ -163,7 +166,7 @@ gc()
 # Table B2
 xtable(summary(margins), display=rep('g', 9), caption = "Logit Regression for Air-conditioning Ownership - Global", digits = 3)
 print(xtable(summary(margins), display=rep('g', 9), caption = "Logit Regression for Air-conditioning Ownership - Global"), 
-      file= paste(output,'airconditioning/main/Global_wgt_ame.tex', sep=''),append=F, table.placement = "htbp",
+      file= paste(output,'TableA2_4.tex', sep=''),append=F, table.placement = "htbp",
       caption.placement="top")
 
 # Clean
@@ -216,6 +219,12 @@ model2 <- feols(ely_formula, data = sec, weights = ~weight, cluster = c("adm1"))
 mean <- weighted.mean(exp(sec$ln_ely_q), sec$weight)
 mean
 
+# Number of countries
+ncoun <- length(unique.default(sec$country))
+ncoun
+
+
+## Export
 # Compare the models
 screenreg(list(model00, model0, model1, model2), digits = 3, 
           caption = "The Effect of Air-conditioning on Residential Electricity Quantity",
@@ -236,13 +245,12 @@ screenreg(list(model00, model0, model1, model2), digits = 3,
                                  "Mean Outcome (kWh)" = c(mean, mean, mean, mean), 
                                  "Countries" = c("25", "25", "25", "25")))
 
-## Export
 # Table A1
 texreg(list(model00, model0, model1, model2), digits = 3, 
        caption = "The Effect of Air-conditioning on Residential Electricity Quantity",
        stars = c(0.1, 0.05, 0.01), custom.model.names = c("OLS", "OLS", "DMF", "DMF"),
        custom.note = "Clustered standard errors at the ADM1 level in parentheses. Regressions are conducted using survey weights. $^{***}p<0.01$; $^{**}p<0.05$; $^{*}p<0.1$", 
-       file = paste(output,'electricity/main/Global_wgt_ft.tex', sep=''), append=F,  
+       file = paste(output,'TableA1.tex', sep=''), append=F,  
        float.pos = "htbp", label = "main: ely_global",
        omit.coef = "(country)|(Intercept)",
        custom.coef.map = list("ac"= "AC", "ac:curr_CDD18_db" = "AC $\\times$ CDD", 
@@ -265,7 +273,7 @@ texreg(list(model00, model0, model1, model2), digits = 3,
        caption = "The Effect of Air-conditioning on Residential Electricity Quantity",
        stars = c(0.1, 0.05, 0.01), custom.model.names = c("OLS", "OLS", "DMF", "DMF"),
        custom.note = "Clustered standard errors at the ADM1 level in parentheses. Regressions are conducted using survey weights. $^{***}p<0.01$; $^{**}p<0.05$; $^{*}p<0.1$", 
-       file = paste(output,'electricity/main/Global_wgt.tex', sep=''), append=F,  
+       file = paste(output,'Table3.tex', sep=''), append=F,  
        float.pos = "htbp", label = "main: ely_global",
        omit.coef = "(country)|(Intercept)|(selection)",
        custom.coef.map = list("ac"= "AC", "ac:curr_CDD18_db" = "AC $\\times$ CDD", 
@@ -282,5 +290,5 @@ texreg(list(model00, model0, model1, model2), digits = 3,
 reg_ac <- fs
 reg_ely <- model2
 save(list = c("reg_ac", "reg_ely", "sec", "global"), 
-     file = paste(output,'/for_projections/global_wgt_dmcf.RData', sep=''))
+     file = paste(intermediate,'global_wgt_dmcf.RData', sep=''))
 

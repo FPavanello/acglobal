@@ -1,0 +1,32 @@
+
+\begin{table}[htbp]
+\caption{The Effect of Air-conditioning on Residential Electricity Quantity}
+\begin{center}
+\begin{tabular}{l c c c c}
+\hline
+ & OLS & OLS & DMF & DMF \\
+\hline
+AC                      & $0.597^{***}$ & $0.377^{***}$ & $0.361^{***}$ & $0.029$       \\
+                        & $(0.032)$     & $(0.029)$     & $(0.031)$     & $(0.062)$     \\
+AC $\times$ CDD         &               &               &               & $0.038^{***}$ \\
+                        &               &               &               & $(0.010)$     \\
+AC $\times$ CDD$^2$     &               &               &               & $-0.001^{**}$ \\
+                        &               &               &               & $(0.000)$     \\
+\hline
+Controls                & NO            & YES           & YES           & YES           \\
+Correction Term         & NO            & NO            & YES           & YES           \\
+ADM-1 FE                & YES           & YES           & YES           & YES           \\
+Mean Outcome (kWh)      & $2495.943$    & $2495.943$    & $2495.943$    & $2495.943$    \\
+Countries               & 25            & 25            & 25            & 25            \\
+Num. obs.               & $682727$      & $682727$      & $682727$      & $682727$      \\
+Num. groups: adm1       & $393$         & $393$         & $393$         & $393$         \\
+R$^2$ (full model)      & $0.670$       & $0.729$       & $0.729$       & $0.731$       \\
+R$^2$ (proj model)      & $0.076$       & $0.241$       & $0.241$       & $0.246$       \\
+Adj. R$^2$ (full model) & $0.670$       & $0.729$       & $0.729$       & $0.731$       \\
+Adj. R$^2$ (proj model) & $0.076$       & $0.241$       & $0.241$       & $0.246$       \\
+\hline
+\multicolumn{5}{l}{\scriptsize{Clustered standard errors at the ADM1 level in parentheses. Regressions are conducted using survey weights. $^{***}p<0.01$; $^{**}p<0.05$; $^{*}p<0.1$}}
+\end{tabular}
+\label{main: ely_global}
+\end{center}
+\end{table}
