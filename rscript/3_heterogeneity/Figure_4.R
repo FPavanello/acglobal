@@ -34,79 +34,79 @@ output <- 'C:/Users/Standard/Documents/Github/acglobal/output/figures/'
 
 ## Load
 # Africa
-load(paste(results, 'afr_dmcf.RData', sep=''))
+load(paste(interm, 'afr_dmcf.RData', sep=''))
 rm(HH_Africa, model3, reg_ac)
 afr <- dydx_ac %>% mutate(country = "Africa")
 rm(dydx_ac)
 
 # Argentina
-load(paste(results, 'arg_dmcf.RData', sep=''))
+load(paste(interm, 'arg_dmcf.RData', sep=''))
 rm(HH_Argentina, model3, reg_ac)
 arg <- dydx_ac %>% mutate(country = "Argentina")
 rm(dydx_ac)
 
 # Brazil
-load(paste(results, 'bra_dmcf.RData', sep=''))
+load(paste(interm, 'bra_dmcf.RData', sep=''))
 rm(HH_Brazil, model3, reg_ac)
 bra <- dydx_ac %>% mutate(country = "Brazil")
 rm(dydx_ac)
 
 # China
-load(paste(results, 'chn_dmcf.RData', sep=''))
+load(paste(interm, 'chn_dmcf.RData', sep=''))
 rm(HH_China, model3, reg_ac)
 chn <- dydx_ac %>% mutate(country = "China")
 rm(dydx_ac)
 
 # Germany
-load(paste(results, 'deu_dmcf.RData', sep=''))
+load(paste(interm, 'deu_dmcf.RData', sep=''))
 rm(HH_Germany, model3, reg_ac)
 deu <- dydx_ac %>% mutate(country = "Germany")
 rm(dydx_ac)
 
 # Indonesia
-load(paste(results, 'idn_dmcf.RData', sep=''))
+load(paste(interm, 'idn_dmcf.RData', sep=''))
 rm(HH_Indonesia, model3, reg_ac)
 idn <- dydx_ac %>% mutate(country = "Indonesia")
 rm(dydx_ac)
 
 # India
-load(paste(results, 'ind_dmcf.RData', sep=''))
+load(paste(interm, 'ind_dmcf.RData', sep=''))
 rm(HH_India, model3, reg_ac)
 ind <- dydx_ac %>% mutate(country = "India")
 rm(dydx_ac)
 
 # Italy
-load(paste(results, 'ita_dmcf.RData', sep=''))
+load(paste(interm, 'ita_dmcf.RData', sep=''))
 rm(HH_Italy, model3, reg_ac)
 ita <- dydx_ac %>% mutate(country = "Italy")
 rm(dydx_ac)
 
 # Mexico
-load(paste(results, 'mex_dmcf.RData', sep=''))
+load(paste(interm, 'mex_dmcf.RData', sep=''))
 rm(HH_Mexico, model3, reg_ac)
 mex <- dydx_ac %>% mutate(country = "Mexico")
 rm(dydx_ac)
 
 # OECD-EU
-load(paste(results, 'oecdeu_dmcf.RData', sep=''))
+load(paste(interm, 'oecdeu_dmcf.RData', sep=''))
 rm(HH_Europe, model3, reg_ac_eu)
 oeu <- dydx_ac %>% mutate(country = "OECD-EU")
 rm(dydx_ac)
 
 # OECD-NonEU
-load(paste(results, 'oecdnoneu_dmcf.RData', sep=''))
+load(paste(interm, 'oecdnoneu_dmcf.RData', sep=''))
 rm(HH_NonEurope, model7, reg_ac_noneu)
 neu <- dydx_ac %>% mutate(country = "OECD-NonEU")
 rm(dydx_ac)
 
 # Pakistan
-load(paste(results, 'pak_dmcf.RData', sep=''))
+load(paste(interm, 'pak_dmcf.RData', sep=''))
 rm(HH_Pakistan, model3, reg_ac)
 pak <- dydx_ac %>% mutate(country = "Pakistan")
 rm(dydx_ac)
 
 # USA
-load(paste(results, 'usa_dmcf.RData', sep=''))
+load(paste(interm, 'usa_dmcf.RData', sep=''))
 rm(HH_USA, model3, reg_ac)
 usa <- dydx_ac %>% mutate(country = "USA")
 rm(dydx_ac)
@@ -159,13 +159,13 @@ global <- global %>% filter(ln_ely_q > 0)
 global <- global %>% filter(weight > 0)
 
 # Create order by household expenditure per capita
-global <- global %>% 
+exp <- global %>% 
   dplyr::group_by(country2) %>% 
   dplyr::summarise(mean = weighted.mean(total_exp_usd_2011/n_members, weight, na.rm = TRUE)) %>% # expenditure per capita
   dplyr::arrange(mean)
 
-colnames(global)[1] <- "country"
-order <- global$country
+colnames(exp)[1] <- "country"
+order <- exp$country
 
 # Weight Germany inside OECD-EU
 germany_pop <- 83000000
@@ -182,7 +182,7 @@ weight2_sh <- (weight2) / (weight1+weight2)
 all[all$country=="OECD-EU",c(3:7)] <- all[all$country=="OECD-EU",c(3:7)]*weight2_sh + all[all$country=="Germany",c(3:7)]*weight1_sh
 all <- filter(all, country!="Germany")
 all[all$country=="OECD-EU",6] <- pnorm((all[all$country=="OECD-EU",3] / all[all$country=="OECD-EU",4]), lower.tail=FALSE)
-all[all$country=="OECD-EU",7] <- ifelse(all[all$country=="OECD-EU",5] <0.05, 1, 0)
+all[all$country=="OECD-EU",10] <- ifelse(all[all$country=="OECD-EU",5] <0.05, 1, 0)
 
 # Factor order
 all <- all %>% filter(country != "Global")
