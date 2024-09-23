@@ -1,0 +1,32 @@
+
+\begin{table}[htbp]
+\caption{Impact of Air-conditioning on Electricity Quantity by Income Quintile - Global}
+\begin{center}
+\begin{tabular}{l c c c c c}
+\hline
+ & 1st Quintile & 2nd Quintile & 3rd Quintile & 4th Quintile & 5th Quintile \\
+\hline
+AC                      & $-0.043$       & $0.103$        & $0.247^{***}$ & $-0.045$      & $0.128^{*}$   \\
+                        & $(0.091)$      & $(0.082)$      & $(0.079)$     & $(0.121)$     & $(0.071)$     \\
+AC $\times$ CDD         & $0.076^{***}$  & $0.042^{***}$  & $0.005$       & $0.050^{***}$ & $0.028^{***}$ \\
+                        & $(0.015)$      & $(0.013)$      & $(0.012)$     & $(0.017)$     & $(0.010)$     \\
+AC $\times$ CDD$^2$     & $-0.002^{***}$ & $-0.001^{***}$ & $0.000$       & $-0.001^{**}$ & $-0.001^{*}$  \\
+                        & $(0.000)$      & $(0.000)$      & $(0.000)$     & $(0.000)$     & $(0.000)$     \\
+\hline
+Controls                & YES            & YES            & YES           & YES           & YES           \\
+Correction Term         & YES            & YES            & YES           & YES           & YES           \\
+ADM-1 FE                & YES            & YES            & YES           & YES           & YES           \\
+Mean Outcome            & $1711.097$     & $2076.010$     & $2533.789$    & $2925.536$    & $3755.844$    \\
+Countries               & $22$           & $25$           & $24$          & $25$          & $25$          \\
+Num. obs.               & $123449$       & $131311$       & $131715$      & $132250$      & $134060$      \\
+Num. groups: adm1       & $257$          & $271$          & $274$         & $291$         & $312$         \\
+R$^2$ (full model)      & $0.664$        & $0.627$        & $0.696$       & $0.656$       & $0.674$       \\
+R$^2$ (proj model)      & $0.164$        & $0.096$        & $0.078$       & $0.099$       & $0.156$       \\
+Adj. R$^2$ (full model) & $0.664$        & $0.626$        & $0.695$       & $0.655$       & $0.673$       \\
+Adj. R$^2$ (proj model) & $0.164$        & $0.096$        & $0.078$       & $0.099$       & $0.156$       \\
+\hline
+\multicolumn{6}{l}{\scriptsize{Dependent variable: logarithm of electricity consumption (kWh). 'Controls' include natural logarithm of electricity price, and weather and socio-economic and demographic variables. Clustered standard errors at the ADM1 level in parentheses. Regressions are conducted using survey weights. $^{***}p<0.01$; $^{**}p<0.05$; $^{*}p<0.1$.}}
+\end{tabular}
+\label{main: tableA3}
+\end{center}
+\end{table}

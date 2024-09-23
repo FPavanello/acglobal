@@ -35,7 +35,8 @@ if (user=='user') {
 }
 
 house <- paste(stub,'6-Projections/data/household/', sep='')
-intermediate <- "add here"
+interm <- paste(stub,'results/regressions/for_projections/', sep='')
+interm <- "C:/Users/Standard/Documents/Github/acglobal/interm/"
 output <- paste(stub,'6-Projections/results/regressions/', sep='')
 output <- 'C:/Users/Standard/Documents/Github/acglobal/output/tables/'
 
@@ -290,5 +291,5 @@ texreg(list(model00, model0, model1, model2), digits = 3,
 reg_ac <- fs
 reg_ely <- model2
 save(list = c("reg_ac", "reg_ely", "sec", "global"), 
-     file = paste(intermediate,'global_wgt_dmcf.RData', sep=''))
+     file = paste(interm,'global_wgt_dmcf.RData', sep=''))
 
