@@ -1,7 +1,7 @@
 
 ##########################################
 
-#                 Table A3
+#                 Table A5
 
 ##########################################
 
@@ -77,7 +77,7 @@ global <- global[complete.cases(global$adm1), ]
 global <- global %>% filter(ln_ely_q > 0)
 global <- global %>% filter(weight > 0)
 
-# Decile of total expenditure
+# Quintiles of total expenditure
 setDT(global)[,qnt_inc := cut(total_exp_usd_2011, breaks = quantile(total_exp_usd_2011, probs = seq(0, 1, 0.2)),
                               labels = c(1,2,3,4,5), include.lowest = TRUE), by = country]
 
@@ -91,6 +91,14 @@ ac_formula <- as.numeric(as.character(ac)) ~ mean_CDD18_db + mean_CDD18_db2 +
 
 # Split income sample
 global_inc <- split(global, global$qnt_inc)
+
+# Checks: 25 for each split
+length(unique.default(global_inc[[1]]$country))
+length(unique.default(global_inc[[2]]$country))
+length(unique.default(global_inc[[3]]$country))
+length(unique.default(global_inc[[4]]$country))
+length(unique.default(global_inc[[5]]$country))
+
 
 # Logit - extensive margin on subsamples
 results_ext <- lapply(global_inc, function(data){
@@ -302,7 +310,7 @@ texreg(list(model1, model2, model3, model4, model5), digits = 3,
        stars = c(0.1, 0.05, 0.01), custom.model.names = c("1st Quintile", "2nd Quintile", "3rd Quintile",
                                                           "4th Quintile", "5th Quintile"),
        custom.note = "Dependent variable: logarithm of electricity consumption (kWh). 'Controls' include natural logarithm of electricity price, and weather and socio-economic and demographic variables. Clustered standard errors at the ADM1 level in parentheses. Regressions are conducted using survey weights. $^{***}p<0.01$; $^{**}p<0.05$; $^{*}p<0.1$.", 
-       file = paste(output,'TableA3.tex', sep=''), append=F,  float.pos = "htbp", label = "main: tableA3",
+       file = paste(output,'TableA5.tex', sep=''), append=F,  float.pos = "htbp", label = "main: TableA5",
        custom.coef.map = list("ac"= "AC", "ac:curr_CDD18_db" = "AC $\\times$ CDD",
                               "ac:I(curr_CDD18_db^2)" = "AC $\\times$ CDD$^2$"),
        custom.gof.rows = list("Controls" = c("YES", "YES", "YES", "YES", "YES"),
