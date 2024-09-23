@@ -1,8 +1,12 @@
 
-## This R-script:
-##      1) plots AC elasticities by country - coefficient plot (Figure 3)
+##########################################
+
+#                 Figure 4
+
+##########################################
 
 # Free memory
+.rs.restartR()
 rm(list=ls(all=TRUE)) # Removes all previously created variables
 gc()                  # frees up memory resources
 
@@ -15,110 +19,95 @@ library(ggpmisc)
 library(ggtext)
 
 # Set users
-user <- 'fp'
-#user <- 'gf'
+user <- 'user'
 
-if (user=='fp') {
-  stub <- 'G:/.shortcut-targets-by-id/1JhN0qxmpnYQDoWQdBhnYKzbRCVGH_WXE/'
+if (user=='user') {
+  stub <- "G:/.shortcut-targets-by-id/1JhN0qxmpnYQDoWQdBhnYKzbRCVGH_WXE/6-Projections/"
 }
 
-if (user=='gf') {
-  stub <- 'F:/.shortcut-targets-by-id/1JhN0qxmpnYQDoWQdBhnYKzbRCVGH_WXE/'
-}
-
-house <- paste(stub,'6-Projections/data/household/', sep='')
-results <- paste(stub,'6-Projections/results/regressions/', sep='')
-graphs <- paste(stub,'6-Projections/results/graphs/Paper1/', sep='')
+house <- paste(stub,'data/household/', sep='')
+interm <- paste(stub,'results/regressions/for_graphs/subsamples/', sep='')
+interm <- 'C:/Users/Standard/Documents/Github/acglobal/interm/'
+output <- paste(stub,'output/figures/', sep='')
+output <- 'C:/Users/Standard/Documents/Github/acglobal/output/figures/'
 
 
-#################################
-
-#    PLOT OF MFXs BY COUNTRY    #
-
-#################################
-
-## Load regression environments where marginal effects are saved
-# Global
-#load(paste(results, 'for_projections/global_dmcf.RData', sep=''))
-#rm(global, model1, model2, reg_ac)
-#glo <- dydx_ac %>% mutate(country = "Global")
-#rm(dydx_ac)
-
+## Load
 # Africa
-load(paste(results, 'for_projections/afr_dmcf.RData', sep=''))
-rm(HH_Africa, model1, model2, model3, reg_ac)
+load(paste(results, 'afr_dmcf.RData', sep=''))
+rm(HH_Africa, model3, reg_ac)
 afr <- dydx_ac %>% mutate(country = "Africa")
 rm(dydx_ac)
 
 # Argentina
-load(paste(results, 'for_projections/arg_dmcf.RData', sep=''))
-rm(HH_Argentina, model1, model2, model3, reg_ac)
+load(paste(results, 'arg_dmcf.RData', sep=''))
+rm(HH_Argentina, model3, reg_ac)
 arg <- dydx_ac %>% mutate(country = "Argentina")
 rm(dydx_ac)
 
 # Brazil
-load(paste(results, 'for_projections/bra_dmcf.RData', sep=''))
-rm(HH_Brazil, model1, model2, model3, reg_ac)
+load(paste(results, 'bra_dmcf.RData', sep=''))
+rm(HH_Brazil, model3, reg_ac)
 bra <- dydx_ac %>% mutate(country = "Brazil")
 rm(dydx_ac)
 
 # China
-load(paste(results, 'for_projections/chn_dmcf.RData', sep=''))
-rm(HH_China, model1, model2, model3, reg_ac)
+load(paste(results, 'chn_dmcf.RData', sep=''))
+rm(HH_China, model3, reg_ac)
 chn <- dydx_ac %>% mutate(country = "China")
 rm(dydx_ac)
 
 # Germany
-load(paste(results, 'for_projections/deu_dmcf.RData', sep=''))
-rm(HH_Germany, model1, model2, model3, reg_ac)
+load(paste(results, 'deu_dmcf.RData', sep=''))
+rm(HH_Germany, model3, reg_ac)
 deu <- dydx_ac %>% mutate(country = "Germany")
 rm(dydx_ac)
 
 # Indonesia
-load(paste(results, 'for_projections/idn_dmcf.RData', sep=''))
-rm(HH_Indonesia, model1, model2, model3, reg_ac)
+load(paste(results, 'idn_dmcf.RData', sep=''))
+rm(HH_Indonesia, model3, reg_ac)
 idn <- dydx_ac %>% mutate(country = "Indonesia")
 rm(dydx_ac)
 
 # India
-load(paste(results, 'for_projections/ind_dmcf.RData', sep=''))
-rm(HH_India, model1, model2, model3, reg_ac)
+load(paste(results, 'ind_dmcf.RData', sep=''))
+rm(HH_India, model3, reg_ac)
 ind <- dydx_ac %>% mutate(country = "India")
 rm(dydx_ac)
 
 # Italy
-load(paste(results, 'for_projections/ita_dmcf.RData', sep=''))
-rm(HH_Italy, model1, model2, reg_ac)
+load(paste(results, 'ita_dmcf.RData', sep=''))
+rm(HH_Italy, model3, reg_ac)
 ita <- dydx_ac %>% mutate(country = "Italy")
 rm(dydx_ac)
 
 # Mexico
-load(paste(results, 'for_projections/mex_dmcf.RData', sep=''))
-rm(HH_Mexico, model1, model2, model3, reg_ac)
+load(paste(results, 'mex_dmcf.RData', sep=''))
+rm(HH_Mexico, model3, reg_ac)
 mex <- dydx_ac %>% mutate(country = "Mexico")
 rm(dydx_ac)
 
 # OECD-EU
-load(paste(results, 'for_projections/oecdeu_dmcf.RData', sep=''))
-rm(HH_Europe, model1, model2, model3, reg_ac_eu)
+load(paste(results, 'oecdeu_dmcf.RData', sep=''))
+rm(HH_Europe, model3, reg_ac_eu)
 oeu <- dydx_ac %>% mutate(country = "OECD-EU")
 rm(dydx_ac)
 
 # OECD-NonEU
-load(paste(results, 'for_projections/oecdnoneu_dmcf.RData', sep=''))
-rm(HH_NonEurope, model5, model6, model7, reg_ac_noneu)
+load(paste(results, 'oecdnoneu_dmcf.RData', sep=''))
+rm(HH_NonEurope, model7, reg_ac_noneu)
 neu <- dydx_ac %>% mutate(country = "OECD-NonEU")
 rm(dydx_ac)
 
 # Pakistan
-load(paste(results, 'for_projections/pak_dmcf.RData', sep=''))
-rm(HH_Pakistan, model1, model2, model3, reg_ac)
+load(paste(results, 'pak_dmcf.RData', sep=''))
+rm(HH_Pakistan, model3, reg_ac)
 pak <- dydx_ac %>% mutate(country = "Pakistan")
 rm(dydx_ac)
 
 # USA
-load(paste(results, 'for_projections/usa_dmcf.RData', sep=''))
-rm(HH_USA, model1, model2, model3, reg_ac)
+load(paste(results, 'usa_dmcf.RData', sep=''))
+rm(HH_USA, model3, reg_ac)
 usa <- dydx_ac %>% mutate(country = "USA")
 rm(dydx_ac)
 
@@ -126,7 +115,7 @@ rm(dydx_ac)
 all <- rbind(afr, arg, bra, chn, deu, idn, ind, ita, mex, neu, oeu, pak, usa)
 
 # Significance
-all$sign <- ifelse(all$`Pr(>|t|)` <0.05, 1, 0)
+all$sign <- ifelse(all$p.value <0.05, 1, 0)
 
 # Order country based on expenditure
 global <- readRDS(paste(house,'global.rds', sep=''))
@@ -149,10 +138,27 @@ global$country2[global$country == "Sweden"] <- "OECD-EU"
 global$country2[global$country == "Japan"] <- "OECD-NonEU"
 global$country2[global$country == "Australia"] <- "OECD-NonEU"
 global$country2[global$country == "Canada"] <- "OECD-NonEU"
-global <- global[complete.cases(global$weight), ]
-global <- global[complete.cases(global$ln_total_exp_usd_2011), ]
-global <- global %>% mutate(total_exp_usd_2011 = exp(ln_total_exp_usd_2011))
 
+# Check
+global <- global[complete.cases(global$ln_ely_q), ]
+global <- global[complete.cases(global$ac), ]
+global <- global[complete.cases(global$ln_total_exp_usd_2011), ]
+global <- global[complete.cases(global$mean_CDD18_db), ]
+global <- global[complete.cases(global$ownership_d), ]
+global <- global[complete.cases(global$n_members), ]
+global <- global[complete.cases(global$age_head), ]
+global <- global[complete.cases(global$country), ]
+global <- global[complete.cases(global$weight), ]
+global <- global[complete.cases(global$sex_head), ]
+global <- global[complete.cases(global$urban_sh), ]
+global <- global[complete.cases(global$ln_ely_p), ]
+global <- global[complete.cases(global$curr_CDD18_db), ]
+global <- global[complete.cases(global$curr_HDD18_db), ]
+global <- global[complete.cases(global$adm1), ]
+global <- global %>% filter(ln_ely_q > 0)
+global <- global %>% filter(weight > 0)
+
+# Create order by household expenditure per capita
 global <- global %>% 
   dplyr::group_by(country2) %>% 
   dplyr::summarise(mean = weighted.mean(total_exp_usd_2011/n_members, weight, na.rm = TRUE)) %>% # expenditure per capita
@@ -173,48 +179,45 @@ weight2 <- (epic_eu_pop*epic_eu_ac)
 weight1_sh <- (weight1) / (weight1+weight2)
 weight2_sh <- (weight2) / (weight1+weight2)
 
-all[all$country=="OECD-EU",c(2:5)] <- all[all$country=="OECD-EU",c(2:5)]*weight2_sh + all[all$country=="Germany",c(2:5)]*weight1_sh
+all[all$country=="OECD-EU",c(3:7)] <- all[all$country=="OECD-EU",c(3:7)]*weight2_sh + all[all$country=="Germany",c(3:7)]*weight1_sh
 all <- filter(all, country!="Germany")
-all[all$country=="OECD-EU",5] <- pnorm((all[all$country=="OECD-EU",2] / all[all$country=="OECD-EU",3]), lower.tail=FALSE)
+all[all$country=="OECD-EU",6] <- pnorm((all[all$country=="OECD-EU",3] / all[all$country=="OECD-EU",4]), lower.tail=FALSE)
 all[all$country=="OECD-EU",7] <- ifelse(all[all$country=="OECD-EU",5] <0.05, 1, 0)
-
-# Adjust confidence intervals
-all <- all %>% mutate(CI_lb = Estimate - 1.96*`Std. Error`,
-                      CI_ub = Estimate + 1.96*`Std. Error`)
 
 # Factor order
 all <- all %>% filter(country != "Global")
 all$country <- factor(all$country, levels = c(order))
 
 # Test LM
-all <- all %>% dplyr::filter(Variable == "ac_tot")
-reg <- lm(Estimate*100 ~ as.numeric(country), data = all); summary(reg) # p-value 0.01318
+reg <- lm(estimate*100 ~ as.numeric(country), data = all); summary(reg) # p-value 0.00335
+reg <- summary(reg)
+pval <- round(reg$coefficients[2,4], 3)
 
 ## Coefficient plot
-ac_country <- all %>% filter(Variable == "ac_tot") %>%
-              ggplot(aes(x= country, y=Estimate*100)) + 
-              geom_point(position = position_dodge(0.4)) + 
-              geom_smooth(aes(as.numeric(country), Estimate*100), method='lm', se=T) + 
-              geom_errorbar(aes(ymin=CI_lb*100, ymax=CI_ub*100), # colour=as.factor(sign)
-                            alpha=0.6, size=0.6, width=0.4, position = "dodge") +
-              geom_hline(aes(yintercept=0), linetype="dashed", color = "black") + 
-#              scale_colour_manual(name="95% significance", 
-#                                  values = c("#bf0000", "#4DBBD5B2"), labels=c("No", "Yes")) +
-              ylab("Additional Electricity Demand due to AC (Marginal Effect, %)") +
-              xlab("Country") +
-              theme_classic() +
-              theme(panel.background=element_blank(),
-                    panel.border=element_blank(),
-                    panel.grid.major=element_line(color="lightgray"),
-                    panel.grid.minor=element_blank(),
-                    plot.title = element_text(size = 12, family = "Tahoma", hjust = 0.5),
-                    axis.text.x = element_text(size = 8, family = "Tahoma"), 
-                    axis.text.y = element_text(size = 12, family = "Tahoma"),
-#                    axis.title.x = element_blank(),
-                    axis.ticks=element_blank()) +
-              annotate("text", x = "OECD-NonEU", family = "mono", y=90, label = "P-value = 0.013", fontface = "bold")
+ac_country <- all %>% 
+  ggplot(aes(x= country, y=estimate*100)) + 
+  geom_point(position = position_dodge(0.4)) + 
+  geom_smooth(aes(as.numeric(country), estimate*100), method='lm', se=T) + 
+  geom_errorbar(aes(ymin=conf.low*100, ymax=conf.high*100), # colour=as.factor(sign)
+                alpha=0.6, size=0.6, width=0.4, position = "dodge") +
+  geom_hline(aes(yintercept=0), linetype="dashed", color = "black") + 
+  #              scale_colour_manual(name="95% significance", 
+  #                                  values = c("#bf0000", "#4DBBD5B2"), labels=c("No", "Yes")) +
+  ylab("Additional Electricity Demand due to AC (Marginal Effect, %)") +
+  xlab("Country") +
+  theme_classic() +
+  theme(panel.background=element_blank(),
+        panel.border=element_blank(),
+        panel.grid.major=element_line(color="lightgray"),
+        panel.grid.minor=element_blank(),
+        plot.title = element_text(size = 12, family = "Tahoma", hjust = 0.5),
+        axis.text.x = element_text(size = 8, family = "Tahoma"), 
+        axis.text.y = element_text(size = 12, family = "Tahoma"),
+        #                    axis.title.x = element_blank(),
+        axis.ticks=element_blank()) +
+  annotate("text", x = "OECD-NonEU", family = "mono", y=90, label = paste0("P-value = ", pval, sep = ""), fontface = "bold")
 
 ac_country
 
 # Save
-ggsave(paste(graphs, 'Figure4.png', sep = ''), last_plot(), scale=2.5, width = 3.5, height = 2)
+ggsave(paste(output, 'Figure4.png', sep = ''), last_plot(), scale=2.5, width = 3.5, height = 2)

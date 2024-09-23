@@ -1,26 +1,24 @@
 
-## This R-script:
-##      1) run all country-specific scripts
-##      2) exploits CDD-dry bulb 24 deg and HDD-dry bulb 15 deg
-##      3) conducts logit regressions for Africa
-##      4) run intensive margin regressions: electricity expenditure on climate + covariates
-##         using Dubin and McFadden (1984) approach
+# Run country-specific models
 
 .rs.restartR()
 rm(list=ls(all=TRUE)) # Removes all previously created variables
 gc()                  # frees up memory resources
 
-# Set directory
-user <- 'fp'
-#user <- 'gf'
+# Set users
+user <- 'user'
 
-if (user=='fp') {
-  stub <- 'G:/.shortcut-targets-by-id/1JhN0qxmpnYQDoWQdBhnYKzbRCVGH_WXE/'
+if (user=='user') {
+  stub <- "G:/.shortcut-targets-by-id/1JhN0qxmpnYQDoWQdBhnYKzbRCVGH_WXE/6-Projections/"
 }
 
-house <- paste(stub,'6-Projections/data/household/', sep='')
-output <- paste(stub,'6-Projections/results/regressions/', sep='')
-script <- paste(stub,'6-Projections/rscripts/dmcf/regressions/country/with_continuous_urbanisation/', sep='')
+house <- paste(stub,'data/household/', sep='')
+interm <- paste(stub,'results/regressions/for_graphs/subsamples/', sep='')
+interm <- 'C:/Users/Standard/Documents/Github/acglobal/interm/'
+output <- paste(stub,'output/figures/', sep='')
+output <- 'C:/Users/Standard/Documents/Github/acglobal/output/figures/'
+script <- 'C:/Users/Standard/Documents/Github/acglobal/rscript/3_heterogeneity/input/country/country-specific/'
+
 
 # Run
 source(paste(script,'dmcf_africa_db_conturb.R', sep='')) # Done
