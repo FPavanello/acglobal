@@ -42,11 +42,12 @@ library(fixest)
 user <- 'user'
 
 if (user=='user') {
-  stub <- "add your repository"
+  stub <- "G:/.shortcut-targets-by-id/1JhN0qxmpnYQDoWQdBhnYKzbRCVGH_WXE/6-Projections/"
 }
 
 house <- paste(stub,'data/household/', sep='')
 output <- paste(stub,'output/figures/', sep='')
+output <- 'C:/Users/Standard/Documents/Github/acglobal/output/figures/'
 
 
 # Load global data
