@@ -26,7 +26,7 @@ library(marginaleffects)
 user <- 'user'
 
 if (user=='user') {
-  stub <- 'G:/.shortcut-targets-by-id/1JhN0qxmpnYQDoWQdBhnYKzbRCVGH_WXE/'
+  stub <- 'G:/.shortcut-targets-by-id/1JhN0qxmpnYQDoWQdBhnYKzbRCVGH_WXE/6-Projections/'
 }
 
 house <- paste(stub,'data/household/', sep='')
