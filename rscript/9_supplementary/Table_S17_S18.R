@@ -153,7 +153,7 @@ kp1 <- stat1$`ivwald1::ln_ely_p`$stat
 gc()
 
 # Mean electricity quantity
-meaniv1 <- weighted.mean(exp(sec[obs(meaniv1),]$ln_ely_q), sec[obs(meaniv1),]$weight)
+meaniv1 <- weighted.mean(exp(sec[obs(model_iv1),]$ln_ely_q), sec[obs(model_iv1),]$weight)
 meaniv1
 
 
@@ -227,7 +227,7 @@ texreg(list(model1, model_iv1, model2, model_iv2), digits = 3,
        caption = "The Effect of Air-conditioning on Residential Electricity Quantity - Instrumenting Electricity Prices",
        stars = c(0.1, 0.05, 0.01), custom.model.names = c("DMF","DMF","DMF","DMF"),
        custom.note = "Clustered standard errors at the ADM1 level in parentheses. Regressions are conducted using survey weights. $^{***}p<0.01$; $^{**}p<0.05$; $^{*}p<0.1$", 
-       file = paste(output,'Table S17.tex', sep=''), append=F,  
+       file = paste(output,'Table_S17.tex', sep=''), append=F,  
        float.pos = "htbp", label = "si: tableS17",
        omit.coef = "(country)|(Intercept)|(selection)",
        custom.coef.map = list("ac"= "AC", "ac:curr_CDD18_db" = "AC $\\times$ CDD", 
@@ -290,25 +290,15 @@ gc()
 mean <- weighted.mean(exp(global$ln_ely_q), global$weight)
 mean
 
-## Export
-# Compare the models
-screenreg(list(modelac0, modelac1, modelac2), digits = 3, 
-          caption = "Air-conditioning ownership - Instrumenting Electricity Prices",
-          stars = c(0.1, 0.05, 0.01), custom.model.names = c("OLS","2SLS", "2SLS"),
-          omit.coef = "(country)|(Intercept)|(selection)",
-          custom.coef.map = list("ln_ely_p" = "Log(P)",
-                                 "fit_ln_ely_p" = "Log(P)"),
-          custom.gof.rows = list("Controls" = c("YES", "YES", "YES"),
-                                 "Mean Outcome" = c(mean, mean, mean),
-                                 "Kleibergen-Paap Wald test" = c("", round(kpac1, digits = 3), round(kpac2, digits = 3)),
-                                 "Countries" = c("25", "25", "25")))
+
+# Export
 # Only AC
 texreg(list(modelac0, modelac1, modelac2), digits = 3, 
        caption = "Air-conditioning ownership - Instrumenting Electricity Prices",
-       stars = c(0.1, 0.05, 0.01), custom.model.names = c("DMF","2SLS", "2SLS"),
+       stars = c(0.1, 0.05, 0.01), custom.model.names = c("LPM","2SLS", "2SLS"),
        custom.note = "Clustered standard errors at the ADM1 level in parentheses. Regressions are conducted using survey weights. $^{***}p<0.01$; $^{**}p<0.05$; $^{*}p<0.1$", 
-       file = paste(output,'electricity/additional/Global_wgt_ac_ivelyp.tex', sep=''), append=F,  
-       float.pos = "htbp", label = "app: ac_global_ivelyp",
+       file = paste(output,'Table_S18.tex', sep=''), append=F,  
+       float.pos = "htbp", label = "si: tableS18",
        omit.coef = "(country)|(Intercept)|(selection)",
        custom.coef.map = list(
          "ln_ely_p" = "Log(P)",

@@ -1,0 +1,30 @@
+
+\begin{table}[htbp]
+\caption{The Effect of Air-conditioning on Residential Electricity Quantity - Instrumenting Electricity Prices}
+\begin{center}
+\begin{tabular}{l c c c c}
+\hline
+ & DMF & DMF & DMF & DMF \\
+\hline
+AC                        & $0.341^{***}$  & $0.356^{***}$  & $0.358^{***}$  & $0.369^{***}$ \\
+                          & $(0.043)$      & $(0.044)$      & $(0.032)$      & $(0.032)$     \\
+Log(P)                    & $-0.524^{***}$ & $-0.718^{***}$ & $-0.393^{***}$ & $-1.449^{**}$ \\
+                          & $(0.069)$      & $(0.104)$      & $(0.039)$      & $(0.653)$     \\
+\hline
+Correction Term           & YES            & YES            & YES            & YES           \\
+ADM-1 FE                  & NO             & NO             & YES            & YES           \\
+Mean Outcome              & $2455.311$     & $2455.311$     & $2514.137$     & $2514.137$    \\
+Kleibergen-Paap Wald test &                & 85.543         &                & 1.671         \\
+Countries                 & $25$           & $25$           & $25$           & $25$          \\
+Num. obs.                 & $692718$       & $673212$       & $682727$       & $663221$      \\
+R$^2$ (full model)        & $0.627$        & $0.634$        & $0.729$        & $0.711$       \\
+R$^2$ (proj model)        & $$             & $$             & $0.240$        & $0.170$       \\
+Adj. R$^2$ (full model)   & $0.627$        & $0.634$        & $0.729$        & $0.711$       \\
+Adj. R$^2$ (proj model)   & $$             & $$             & $0.240$        & $0.170$       \\
+Num. groups: adm1         & $$             & $$             & $393$          & $389$         \\
+\hline
+\multicolumn{5}{l}{\scriptsize{Clustered standard errors at the ADM1 level in parentheses. Regressions are conducted using survey weights. $^{***}p<0.01$; $^{**}p<0.05$; $^{*}p<0.1$}}
+\end{tabular}
+\label{si: tableS17}
+\end{center}
+\end{table}
