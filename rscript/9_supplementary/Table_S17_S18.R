@@ -1,16 +1,12 @@
 
-#################################################################
+##########################################
 
-# Additional analysis:
+#           Table S17, Table S18
 
-#   - Instrumenting for electricity prices:
-#   1) ADM-1 and country FE
-#   2) share of electricity capacity by fuel
+##########################################
 
-# Share of fuel j x lag1(price of j)
-
-#################################################################
-
+# Free memory
+.rs.restartR()
 rm(list=ls(all=TRUE)) # Removes all previously created variables
 gc()                  # frees up memory resources
 
@@ -20,37 +16,32 @@ library(plyr)
 library(dplyr)
 library(FSA)
 library(haven)
-library(readstata13)
 library(stringr)
 library(tidyverse)
 library(sandwich)
 library(lmtest)
 library(ResourceSelection)
 library(multiwayvcov)
-library(msm) # https://stats.oarc.ucla.edu/r/faq/how-can-i-estimate-the-standard-error-of-transformed-regression-parameters-in-r-using-the-delta-method/
-library(margins)
 library(texreg)
 library(xtable)
 library(stargazer)
 library(effects)
-library(survey)
 library(fixest)
 library(marginaleffects)
 
 # Set users
-user <- 'fp'
-#user <- 'gf'
+user <- 'user'
 
-if (user=='fp') {
-  stub <- 'G:/.shortcut-targets-by-id/1JhN0qxmpnYQDoWQdBhnYKzbRCVGH_WXE/'
+if (user=='user') {
+  stub <- "G:/.shortcut-targets-by-id/1JhN0qxmpnYQDoWQdBhnYKzbRCVGH_WXE/6-Projections/"
 }
 
-if (user=='gf') {
-  stub <- 'F:/.shortcut-targets-by-id/1JhN0qxmpnYQDoWQdBhnYKzbRCVGH_WXE/'
-}
+house <- paste(stub,'data/household/', sep='')
+interm <- paste(stub,'results/regressions/for_graphs/subsamples/', sep='')
+interm <- 'C:/Users/Standard/Documents/Github/acglobal/interm/'
+output <- paste(stub,'output/supplementary/', sep='')
+output <- 'C:/Users/Standard/Documents/Github/acglobal/output/supplementary/'
 
-house <- paste(stub,'6-Projections/data/household/', sep='')
-output <- paste(stub,'6-Projections/results/regressions/', sep='')
 
 # Load global data
 global <- readRDS(paste(house,'global.rds', sep=''))
@@ -86,9 +77,9 @@ global <- global %>% filter(weight > 0)
 
 # Shares
 ivshare <- global %>% dplyr::group_by(country, subnat) %>% dplyr::summarise(cap_solar = mean(cap_solar, na.rm = TRUE), cap_wind = mean(cap_wind, na.rm = TRUE), 
-                                                      cap_hydro = mean(cap_hydro, na.rm = TRUE), cap_nuclear  = mean(cap_nuclear, na.rm = TRUE), 
-                                                      cap_otherres = mean(cap_otherres, na.rm = TRUE), cap_coal = mean(cap_coal, na.rm = TRUE),
-                                                      cap_gas = mean(cap_gas, na.rm = TRUE), cap_oil = mean(cap_oil, na.rm = TRUE), cap_other = mean(cap_other, na.rm = TRUE))
+                                                                            cap_hydro = mean(cap_hydro, na.rm = TRUE), cap_nuclear  = mean(cap_nuclear, na.rm = TRUE), 
+                                                                            cap_otherres = mean(cap_otherres, na.rm = TRUE), cap_coal = mean(cap_coal, na.rm = TRUE),
+                                                                            cap_gas = mean(cap_gas, na.rm = TRUE), cap_oil = mean(cap_oil, na.rm = TRUE), cap_other = mean(cap_other, na.rm = TRUE))
 ivshare <- ivshare %>% mutate(cap_tot = cap_solar + cap_wind + cap_hydro + cap_nuclear + cap_otherres + cap_coal + cap_gas + cap_oil + cap_other)
 ivshare <- ivshare %>% mutate(sh_solar = ifelse(cap_solar == 0, 0, cap_solar/cap_tot),
                               sh_wind = ifelse(cap_wind == 0, 0, cap_wind/cap_tot),
@@ -107,124 +98,7 @@ gc()
 global <- merge(global, ivshare, by = c("country", "subnat"))
 
 
-###########################
-
-# 1) ADM-1 as instruments #
-
-###########################
-
-# Formula first-stage
-ac_formula <- ac ~ mean_CDD18_db + mean_CDD18_db2 + 
-  mean_CDD18_db_exp + mean_CDD18_db2_exp + ln_total_exp_usd_2011 + curr_CDD18_db + curr_CDD18_db2 + 
-  ln_ely_p + ln_ely_p_cdd + ln_ely_p_cdd2 + ln_ely_p_nme + ln_ely_p_own + 
-  urban_sh + ownership_d + 
-  n_members + edu_head_2 + age_head + sex_head
-
-# Logistic regression
-fs <- feglm(ac_formula, family = binomial(link = "logit"), data = global, weights = ~weight, cluster = c("adm1")); summary(fs)
-
-# Save data set for which there are obs both in first and second stage
-sec <- global[obs(fs),]
-
-# Predicted probabilities
-sec$phat0_obs <- as.numeric(predict(fs, type="response"))
-
-# Find old HHs classified as owning an AC (NB: using ROC curve we have seen that we are GOOD at predicting those who have AC)
-sec$ac_obs <- ifelse(sec$phat0_obs>0.5 & !is.na(sec$phat0_obs), 1 , 0)
-
-# Selection term
-sec$xb_noac = 1-sec$phat0_obs               
-sec$selection = ifelse(sec$ac==1, 
-                       (sec$xb_noac*log(sec$xb_noac)/sec$phat0_obs) + log(sec$phat0_obs), 
-                       (sec$phat0_obs*log(sec$phat0_obs)/sec$xb_noac) + log(sec$xb_noac))
-
-# Formula electricity q without selection
-ely_formula  <- ln_ely_q ~ ac +
-  curr_CDD18_db + I(curr_CDD18_db^2) + curr_HDD18_db + I(curr_HDD18_db^2) + ln_total_exp_usd_2011 +
-  urban_sh + ownership_d + n_members + edu_head_2 + age_head + sex_head + ln_ely_p + selection
-
-# Without selection
-model0 <- feols(ely_formula, data = sec, weights = ~weight, cluster = c("adm1")); summary(model0)
-
-
-# Formula electricity q without selection
-ely_formula  <- ln_ely_q ~ ac +
-  curr_CDD18_db + I(curr_CDD18_db^2) + curr_HDD18_db + I(curr_HDD18_db^2) + ln_total_exp_usd_2011 +
-  urban_sh + ownership_d + n_members + edu_head_2 + age_head + sex_head + selection | ln_ely_p ~ as.factor(country)
-
-# Without selection
-model_iv00 <- feols(ely_formula, data = sec, weights = ~weight, cluster = c("adm1")); summary(model_iv00)
-
-# First-stage
-fitstat(model_iv00, ~ ivwald + ivwaldall + wh + sargan, cluster = "adm1")
-stat00 <- fitstat(model_iv00, ~ ivwald + ivwaldall + wh + sargan, cluster = "adm1")
-kp00 <- stat00$`ivwald1::ln_ely_p`$stat
-gc()
-
-
-# Formula electricity q without selection
-ely_formula  <- ln_ely_q ~ ac +
-  curr_CDD18_db + I(curr_CDD18_db^2) + curr_HDD18_db + I(curr_HDD18_db^2) + ln_total_exp_usd_2011 +
-  urban_sh + ownership_d + n_members + edu_head_2 + age_head + sex_head + selection | ln_ely_p ~ as.factor(adm1)
-
-# Without selection
-model_iv0 <- feols(ely_formula, data = sec, weights = ~weight, cluster = c("adm1")); summary(model_iv0)
-
-# First-stage
-fitstat(model_iv0, ~ ivwald + ivwaldall + wh + sargan, cluster = "adm1")
-stat0 <- fitstat(model_iv0, ~ ivwald + ivwaldall + wh + sargan, cluster = "adm1")
-kp0 <- stat0$`ivwald1::ln_ely_p`$stat
-gc()
-
-# Mean electricity quantity
-mean <- weighted.mean(exp(sec$ln_ely_q), sec$weight)
-mean
-
-## Export
-# Compare the models
-screenreg(list(model0, model_iv00, model_iv0), digits = 3, 
-          caption = "The Effect of Air-conditioning on Residential Electricity Quantity - Instrumenting Electricity Prices",
-          stars = c(0.1, 0.05, 0.01), custom.model.names = c("DMF","2SLS", "2SLS"),
-          omit.coef = "(country)|(Intercept)|(selection)",
-          custom.coef.map = list("ac"= "AC", "ac:curr_CDD18_db" = "AC $\\times$ CDD", 
-                                 "ac:I(curr_CDD18_db^2)" = "AC $\\times$ CDD$^2$",
-                                 "ln_ely_p" = "Log(P)",
-                                 "fit_ln_ely_p" = "Log(P)"),
-          custom.gof.rows = list("Controls" = c("YES", "YES", "YES"),
-                                 "Correction Term" = c("YES", "YES", "YES"),
-                                 "Mean Outcome" = c(mean, mean, mean),
-                                 "Kleibergen-Paap Wald test" = c("", round(kp0, digits = 3), round(kp00, digits = 3)),
-                                 "Countries" = c("25", "25", "25")))
-# Only AC
-texreg(list(model0, model_iv00, model_iv0), digits = 3, 
-       caption = "The Effect of Air-conditioning on Residential Electricity Quantity - Instrumenting Electricity Prices",
-       stars = c(0.1, 0.05, 0.01), custom.model.names = c("DMF","2SLS", "2SLS"),
-       custom.note = "Clustered standard errors at the ADM1 level in parentheses. Regressions are conducted using survey weights. $^{***}p<0.01$; $^{**}p<0.05$; $^{*}p<0.1$", 
-       file = paste(output,'electricity/additional/Global_wgt_ivelyp.tex', sep=''), append=F,  
-       float.pos = "htbp", label = "app: ely_global_ivelyp",
-       omit.coef = "(country)|(Intercept)|(selection)",
-       custom.coef.map = list("ac"= "AC", "ac:curr_CDD18_db" = "AC $\\times$ CDD", 
-                              "ac:I(curr_CDD18_db^2)" = "AC $\\times$ CDD$^2$",
-                              "ln_ely_p" = "Log(P)",
-                              "fit_ln_ely_p" = "Log(P)"),
-       custom.gof.rows = list("Controls" = c("YES", "YES", "YES"),
-                              "Correction Term" = c("YES", "YES", "YES"),
-                              "Mean Outcome" = c(mean, mean, mean),
-                              "Kleibergen-Paap Wald test" = c("", round(kp0, digits = 3), round(kp00, digits = 3)),
-                              "Countries" = c("25", "25", "25")), 
-       caption.above = TRUE)
-
-# Clean
-rm(model_iv0, model_iv00, model0, stat0, stat00, sec, fs)
-gc()
-
-
-####################################
-
-# 2) Electricity capacity by fuel  #
-
-####################################
-
+## 1) Electricity capacity by fuel
 # Formula first-stage
 ac_formula <- ac ~ mean_CDD18_db + mean_CDD18_db2 + 
   mean_CDD18_db_exp + mean_CDD18_db2_exp + ln_total_exp_usd_2011 + curr_CDD18_db + curr_CDD18_db2 + 
@@ -339,31 +213,22 @@ gc()
 # Mean electricity quantity
 meaniv2 <- weighted.mean(exp(sec[obs(model_iv2),]$ln_ely_q), sec[obs(model_iv2),]$weight)
 meaniv2
+
+# Country
+cntry <- length(unique.default(sec$country))
+cntry
+
+# Clean
 gc()
 
 
-## Export
-# Compare the models
-screenreg(list(model1, model_iv1, model2, model_iv2), digits = 3, 
-          caption = "The Effect of Air-conditioning on Residential Electricity Quantity - Instrumenting Electricity Prices",
-          stars = c(0.1, 0.05, 0.01), custom.model.names = c("DMF","DMF","DMF","DMF"),
-          omit.coef = "(country)|(Intercept)|(selection)",
-          custom.coef.map = list("ac"= "AC", "ac:curr_CDD18_db" = "AC $\\times$ CDD", 
-                                 "ac:I(curr_CDD18_db^2)" = "AC $\\times$ CDD$^2$",
-                                 "ln_ely_p" = "Log(P)",
-                                 "fit_ln_ely_p" = "Log(P)"),
-          custom.gof.rows = list("Correction Term" = c("YES", "YES", "YES", "YES"),
-                                 "ADM-1 FE" = c("NO", "NO", "YES", "YES"),
-                                 "Mean Outcome" = c(meaniv1, meaniv1, meaniv2, meaniv2),
-                                 "Kleibergen-Paap Wald test" = c("", round(kp1, digits = 3), "", round(kp2, digits = 3)),
-                                 "Countries" = c("25", "25", "25", "25")))
-# Only AC
+# Export
 texreg(list(model1, model_iv1, model2, model_iv2), digits = 3, 
        caption = "The Effect of Air-conditioning on Residential Electricity Quantity - Instrumenting Electricity Prices",
        stars = c(0.1, 0.05, 0.01), custom.model.names = c("DMF","DMF","DMF","DMF"),
        custom.note = "Clustered standard errors at the ADM1 level in parentheses. Regressions are conducted using survey weights. $^{***}p<0.01$; $^{**}p<0.05$; $^{*}p<0.1$", 
-       file = paste(output,'electricity/additional/Global_wgt_ivelyp_shares.tex', sep=''), append=F,  
-       float.pos = "htbp", label = "app: ely_global_ivelyp",
+       file = paste(output,'Table S17.tex', sep=''), append=F,  
+       float.pos = "htbp", label = "si: tableS17",
        omit.coef = "(country)|(Intercept)|(selection)",
        custom.coef.map = list("ac"= "AC", "ac:curr_CDD18_db" = "AC $\\times$ CDD", 
                               "ac:I(curr_CDD18_db^2)" = "AC $\\times$ CDD$^2$",
@@ -373,7 +238,7 @@ texreg(list(model1, model_iv1, model2, model_iv2), digits = 3,
                               "ADM-1 FE" = c("NO", "NO", "YES", "YES"),
                               "Mean Outcome" = c(meaniv1, meaniv1, meaniv2, meaniv2),
                               "Kleibergen-Paap Wald test" = c("", round(kp1, digits = 3), "", round(kp2, digits = 3)),
-                              "Countries" = c("25", "25", "25", "25")), 
+                              "Countries" = c(cntry, cntry, cntry, cntry)), 
        caption.above = TRUE)
 
 # Clean
@@ -381,12 +246,7 @@ rm(model_iv1, model_iv2, model_ivfs, model1, model2, stat1, stat2, kp1, kp2, sec
 gc()
 
 
-################################################
-
-# 3) ADM-1 as instruments for air-conditioning #
-
-################################################
-
+## 2) ADM-1/Country as instruments for air-conditioning
 # Formula
 ac_formula <- ac ~ mean_CDD18_db + mean_CDD18_db2 + 
   mean_CDD18_db_exp + mean_CDD18_db2_exp + ln_total_exp_usd_2011 + curr_CDD18_db + curr_CDD18_db2 + 
@@ -451,8 +311,8 @@ texreg(list(modelac0, modelac1, modelac2), digits = 3,
        float.pos = "htbp", label = "app: ac_global_ivelyp",
        omit.coef = "(country)|(Intercept)|(selection)",
        custom.coef.map = list(
-                              "ln_ely_p" = "Log(P)",
-                              "fit_ln_ely_p" = "Log(P)"),
+         "ln_ely_p" = "Log(P)",
+         "fit_ln_ely_p" = "Log(P)"),
        custom.gof.rows = list("Controls" = c("YES", "YES", "YES"),
                               "Mean Outcome" = c(mean, mean, mean),
                               "Kleibergen-Paap Wald test" = c("", round(kpac1, digits = 3), round(kpac2, digits = 3)),

@@ -1,0 +1,35 @@
+
+\begin{table}[htbp]
+\caption{The Effect of Air-conditioning on Residential Electricity Quantity - PV Potential Output and PV Capacity (dummy)}
+\begin{center}
+\begin{tabular}{l c c c}
+\hline
+ & DMF & DMF & DMF \\
+\hline
+AC                                                        & $0.361^{***}$  & $0.457^{***}$  & $0.361^{***}$  \\
+                                                          & $(0.031)$      & $(0.053)$      & $(0.031)$      \\
+$\mathds{1}$(PV Gen. $\times$ PVOUT > Median)             & $0.004$        & $0.014$        & $-0.080$       \\
+                                                          & $(0.022)$      & $(0.023)$      & $(0.093)$      \\
+AC $\times$ $\mathds{1}$(PV Gen. $\times$ PVOUT > Median) &                & $-0.112^{*}$   &                \\
+                                                          &                & $(0.059)$      &                \\
+Log(P)                                                    & $-0.392^{***}$ & $-0.396^{***}$ & $-0.376^{***}$ \\
+                                                          & $(0.040)$      & $(0.039)$      & $(0.035)$      \\
+Log(P) $\times$ $\mathds{1}$(PV Gen > Median)             &                &                & $-0.045$       \\
+                                                          &                &                & $(0.043)$      \\
+\hline
+Correction Term                                           & YES            & YES            & YES            \\
+ADM-1 FE                                                  & YES            & YES            & YES            \\
+Mean Outcome                                              & $2495.943$     & $2495.943$     & $2495.943$     \\
+Countries                                                 & $25$           & $25$           & $25$           \\
+Num. obs.                                                 & $682727$       & $682727$       & $682727$       \\
+Num. groups: adm1                                         & $393$          & $393$          & $393$          \\
+R$^2$ (full model)                                        & $0.729$        & $0.730$        & $0.730$        \\
+R$^2$ (proj model)                                        & $0.241$        & $0.242$        & $0.241$        \\
+Adj. R$^2$ (full model)                                   & $0.729$        & $0.729$        & $0.729$        \\
+Adj. R$^2$ (proj model)                                   & $0.241$        & $0.241$        & $0.241$        \\
+\hline
+\multicolumn{4}{l}{\scriptsize{Clustered standard errors at the ADM1 level in parentheses. Regressions are conducted using survey weights. $^{***}p<0.01$; $^{**}p<0.05$; $^{*}p<0.1$}}
+\end{tabular}
+\label{main: table4}
+\end{center}
+\end{table}
