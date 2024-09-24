@@ -1,0 +1,38 @@
+
+\begin{table}[htbp]
+\caption{The Effect of Air-conditioning on Residential Electricity Quantity - Refrigerators}
+\begin{center}
+\begin{tabular}{l c c c c c c}
+\hline
+ & DMF & DMF & DMF & DMF & DMF & DMF \\
+\hline
+AC                             & $0.369^{***}$ & $0.339^{***}$ & $0.044$       & $0.339^{***}$ & $0.337^{***}$ & $0.049$       \\
+                               & $(0.033)$     & $(0.027)$     & $(0.069)$     & $(0.027)$     & $(0.026)$     & $(0.068)$     \\
+AC $\times$ CDD                &               &               & $0.032^{***}$ &               &               & $0.030^{***}$ \\
+                               &               &               & $(0.010)$     &               &               & $(0.010)$     \\
+AC $\times$ CDD$^2$            &               &               & $-0.001^{**}$ &               &               & $-0.000^{*}$  \\
+                               &               &               & $(0.000)$     &               &               & $(0.000)$     \\
+Refrigerator                   &               & $0.370^{***}$ & $0.370^{***}$ & $0.385^{***}$ & $0.320^{***}$ & $0.366^{***}$ \\
+                               &               & $(0.030)$     & $(0.029)$     & $(0.060)$     & $(0.081)$     & $(0.079)$     \\
+Refrigerator $\times$ CDD      &               &               &               & $-0.001$      & $0.010$       & $0.006$       \\
+                               &               &               &               & $(0.002)$     & $(0.009)$     & $(0.009)$     \\
+Refrigerator $\times$ CDD$^2$  &               &               &               &               & $-0.000$      & $-0.000$      \\
+                               &               &               &               &               & $(0.000)$     & $(0.000)$     \\
+\hline
+Correction Term (AC)           & YES           & YES           & YES           & YES           & YES           & YES           \\
+Correction Term (Refrigerator) & NO            & YES           & YES           & YES           & YES           & YEST          \\
+ADM-1 FE                       & YES           & YES           & YES           & YES           & YES           & YES           \\
+Mean Outcome                   & $2378.582$    & $2378.582$    & $2378.582$    & $2378.582$    & $2378.582$    & $2378.582$    \\
+Countries                      & $24$          & $24$          & $24$          & $24$          & $24$          & $24$          \\
+Num. obs.                      & $669551$      & $669551$      & $669551$      & $669551$      & $669551$      & $669551$      \\
+Num. groups: adm1              & $302$         & $302$         & $302$         & $302$         & $302$         & $302$         \\
+R$^2$ (full model)             & $0.726$       & $0.737$       & $0.738$       & $0.737$       & $0.737$       & $0.738$       \\
+R$^2$ (proj model)             & $0.247$       & $0.278$       & $0.282$       & $0.278$       & $0.279$       & $0.282$       \\
+Adj. R$^2$ (full model)        & $0.726$       & $0.737$       & $0.738$       & $0.737$       & $0.737$       & $0.738$       \\
+Adj. R$^2$ (proj model)        & $0.247$       & $0.278$       & $0.282$       & $0.278$       & $0.279$       & $0.282$       \\
+\hline
+\multicolumn{7}{l}{\scriptsize{Clustered standard errors at the ADM1 level in parentheses. Regressions are conducted using survey weights. $^{***}p<0.01$; $^{**}p<0.05$; $^{*}p<0.1$}}
+\end{tabular}
+\label{main: tableA10}
+\end{center}
+\end{table}

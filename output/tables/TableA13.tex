@@ -1,0 +1,38 @@
+
+\begin{table}[htbp]
+\caption{The Effect of Air-conditioning on Residential Electricity Quantity - Washing Machine}
+\begin{center}
+\begin{tabular}{l c c c c c c}
+\hline
+ & DMF & DMF & DMF & DMF & DMF & DMF \\
+\hline
+AC                                & $0.356^{***}$ & $0.315^{***}$ & $0.037$       & $0.315^{***}$ & $0.313^{***}$ & $0.049$       \\
+                                  & $(0.033)$     & $(0.029)$     & $(0.063)$     & $(0.029)$     & $(0.029)$     & $(0.062)$     \\
+AC $\times$ CDD                   &               &               & $0.035^{***}$ &               &               & $0.032^{***}$ \\
+                                  &               &               & $(0.010)$     &               &               & $(0.010)$     \\
+AC $\times$ CDD$^2$               &               &               & $-0.001^{**}$ &               &               & $-0.001^{**}$ \\
+                                  &               &               & $(0.000)$     &               &               & $(0.000)$     \\
+Washing Machine                   &               & $0.283^{***}$ & $0.275^{***}$ & $0.277^{***}$ & $0.223^{***}$ & $0.255^{***}$ \\
+                                  &               & $(0.025)$     & $(0.025)$     & $(0.038)$     & $(0.042)$     & $(0.040)$     \\
+Washing Machine $\times$ CDD      &               &               &               & $0.000$       & $0.011^{*}$   & $0.007$       \\
+                                  &               &               &               & $(0.002)$     & $(0.006)$     & $(0.005)$     \\
+Washing Machine $\times$ CDD$^2$  &               &               &               &               & $-0.000^{*}$  & $-0.000$      \\
+                                  &               &               &               &               & $(0.000)$     & $(0.000)$     \\
+\hline
+Correction Term (AC)              & YES           & YES           & YES           & YES           & YES           & YES           \\
+Correction Term (Washing Machine) & NO            & YES           & YES           & YES           & YES           & YES           \\
+ADM-1 FE                          & YES           & YES           & YES           & YES           & YES           & YES           \\
+Mean Outcome                      & $2651.020$    & $2651.020$    & $2651.020$    & $2651.020$    & $2651.020$    & $2651.020$    \\
+Countries                         & $21$          & $21$          & $21$          & $21$          & $21$          & $21$          \\
+Num. obs.                         & $443388$      & $443388$      & $443388$      & $443388$      & $443388$      & $443388$      \\
+Num. groups: adm1                 & $298$         & $298$         & $298$         & $298$         & $298$         & $298$         \\
+R$^2$ (full model)                & $0.694$       & $0.702$       & $0.703$       & $0.702$       & $0.702$       & $0.703$       \\
+R$^2$ (proj model)                & $0.235$       & $0.255$       & $0.258$       & $0.255$       & $0.255$       & $0.258$       \\
+Adj. R$^2$ (full model)           & $0.694$       & $0.702$       & $0.703$       & $0.702$       & $0.702$       & $0.703$       \\
+Adj. R$^2$ (proj model)           & $0.235$       & $0.255$       & $0.258$       & $0.255$       & $0.255$       & $0.258$       \\
+\hline
+\multicolumn{7}{l}{\scriptsize{Clustered standard errors at the ADM1 level in parentheses. Regressions are conducted using survey weights. $^{***}p<0.01$; $^{**}p<0.05$; $^{*}p<0.1$}}
+\end{tabular}
+\label{main: tableA13}
+\end{center}
+\end{table}
