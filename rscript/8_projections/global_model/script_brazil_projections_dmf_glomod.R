@@ -534,7 +534,7 @@ data_c <- bind_cols(data_c, housing_index_lab_s1_hhs, housing_index_lab_s2_hhs)
 library(fuzzyjoin); library(dplyr);data_c$NAME_1.y<-NULL;
 
 data_c_map <- data_c
-data_c_map$NAME_1 <- data_c$state3
+data_c_map$NAME_1 <- data_c$adm1
 data_c_map <- data_c_map[!duplicated(data_c_map[ , c("NAME_1")]), ] 
 
 data_c_sp <- stringdist_join(data_c_map, gadm, 
@@ -549,7 +549,7 @@ data_c_sp <- stringdist_join(data_c_map, gadm,
 
 data_c_sp <- dplyr::select(data_c_sp, NAME_1.x, NAME_1.y, geometry)
 
-data_c_sp <- merge(data_c, data_c_sp, by.x="state3", by.y="NAME_1.x")
+data_c_sp <- merge(data_c, data_c_sp, by.x="adm1", by.y="NAME_1.x")
 
 custom_shape$NAME_1 <- gadm$NAME_1
 
@@ -1039,13 +1039,13 @@ national_summary_ac <- future_ac_adoption %>%
   pivot_longer(cols = 1:8, names_to = c('ssp', 'year'), names_sep = ".") %>%
   mutate(ssp=rep(c("SSP245","SSP585"), each=4), year=rep(seq(2020, 2050, 10), 2))
 
-future_ac_adoption$state <- data_c_sp$state3
+future_ac_adoption$state <- data_c_sp$adm1
 
 regional_summary_ac <- future_ac_adoption %>%
   group_by(state) %>%
   dplyr::summarise_all(mean, na.rm=T) %>%
   pivot_longer(cols = 2:9, names_to = c('ssp', 'year'), names_sep = ".") %>%
-  mutate(ssp=rep(rep(c("SSP245", "SSP585"), each=4), length(unique(data_c_sp$state))), year=rep(rep(seq(2020, 2050, 10), 2), length(unique(data_c_sp$state))))
+  mutate(ssp=rep(rep(c("SSP245", "SSP585"), each=4), length(unique(data_c_sp$adm1))), year=rep(rep(seq(2020, 2050, 10), 2), length(unique(data_c_sp$adm1))))
 
 # plot projections
 
@@ -1090,7 +1090,7 @@ ggsave(paste0(stub, "results/graphs/map_ac_", countryiso3, ".png"), map_ac, scal
 
 data_c_bk <- data_c
 
-ely_formula <- "ln_ely_q ~ ac + curr_CDD18_db + ln_total_exp_usd_2011 + curr_HDD18_db + urban_sh + n_members + sh_under16 + as.factor(ownership_d) + edu_head_2 + housing_index_lab + age_head + sex_head"
+ely_formula <- "ln_ely_q ~ as.factor(ac) + curr_CDD18_db + ln_total_exp_usd_2011 + curr_HDD18_db + urban_sh + n_members + as.factor(ownership_d) + edu_head_2 + housing_index_lab + age_head + sex_head"
 
 lm1 <- lm(ely_formula, data = data_c, na.action=na.omit)
 
@@ -1134,7 +1134,7 @@ baseline_hist <- as.numeric(predict(lm1, type="response"))
 
 orig_data <- orig_data_bk
 
-orig_data$ac = as.factor(ifelse(data_c_sp[,paste0(ssp, ".", (year))]>0.5, 1, 0))
+orig_data$ac = as.factor(as.character(ifelse(data_c_sp[,paste0(ssp, ".", (year))]>0.5, 1, 0)))
 
 orig_data$ln_total_exp_usd_2011 = data_c_sp[,paste0("exp_cap_usd_", ssp, "_", (year))]
 
@@ -1161,7 +1161,7 @@ total <- as.numeric(predict(lm1, orig_data, type="response"))
 
 orig_data <- orig_data_bk
 
-orig_data$ac = as.factor(ifelse(data_c_sp[,paste0(ssp, ".", (year))]>0.5, 1, 0))
+orig_data$ac = as.factor(as.character(ifelse(data_c_sp[,paste0(ssp, ".", (year))]>0.5, 1, 0)))
 
 decomp_ac <- as.numeric(predict(lm1, orig_data, type="response"))
 
@@ -1311,7 +1311,7 @@ for (ssp in c("SSP2", "SSP5")){
     
     print(year)
     
-    orig_data$ac = as.factor(0)
+    orig_data$ac = as.factor(as.character(0))
     
     orig_data$ln_total_exp_usd_2011 = data_c_sp[,paste0("exp_cap_usd_", ssp, "_", (year))]
     
@@ -1332,7 +1332,7 @@ for (ssp in c("SSP2", "SSP5")){
 	orig_data$urban_sh = data_c_sp[,paste0("weighted_mean.URB_", ssp, "_", (year))]
     
     #
-    projected <- predict(model3, orig_data)
+    projected <- predict(reg_ely, newdata=orig_data)
     
     output2[[as.character(year)]] <- projected
     
@@ -1373,7 +1373,7 @@ for (ssp in c("SSP2", "SSP5")){
     
     print(year)
     
-    orig_data$ac = as.factor(ifelse(data_c_sp[,paste0(ssp, ".", (year))]>0.5, 1, 0))
+    orig_data$ac = as.factor(as.character(ifelse(data_c_sp[,paste0(ssp, ".", (year))]>0.5, 1, 0)))
     
     orig_data$ln_total_exp_usd_2011 = data_c_sp[,paste0("exp_cap_usd_", ssp, "_", (year))]
     
@@ -1393,7 +1393,7 @@ for (ssp in c("SSP2", "SSP5")){
     
 	orig_data$urban_sh = data_c_sp[,paste0("weighted_mean.URB_", ssp, "_", (year))]    
     #
-    projected <- predict(model3, orig_data)
+    projected <- predict(reg_ely, newdata=orig_data)
     
     output2[[as.character(year)]] <- projected
     
@@ -1417,7 +1417,7 @@ output_impact_ac <- exp(output_ac) - exp(output_noac)
 
 output_impact_ac[output_impact_ac<=0] <- NA
 
-save(output_ac, output_impact_ac, file = paste0(stub, "results/energy_poverty/", countryiso3, ".Rdata"))
+save(data_c_sp, output_ac, output_impact_ac, file = paste0(stub, "results/energy_poverty/", countryiso3, ".Rdata"))
 
 ##
 
@@ -1478,7 +1478,7 @@ pop_long$ssp <- substr(pop_long$name, 1, 4)
 pop_long$year <- substr(pop_long$name, 6, 9)
 pop_long <- filter(pop_long, year>2010 & year<=2050)
 
-hhsize <- 3
+hhsize <- 3.45
 
 
 pop_long$value <- pop_long$value / weighted.mean(data_c$n_members, data_c$weight) # https://globaldatalab.org/areadata/hhsize

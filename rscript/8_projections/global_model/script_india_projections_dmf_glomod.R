@@ -53,10 +53,8 @@ countryiso3 <- "IND"
 
 load(paste0(stub, "results/regressions/for_projections/ind_dmcf.RData"))
 
-data_c <- HH_India
+data_c <- HH_India 
 #rm(HHIndia)
-
-
 
 # shapefile
 
@@ -700,7 +698,7 @@ hdd_585_cmip6 <-  readRDS(paste0(stub, "data/projections/climate/processed/", HD
 cmip6_merged <- Reduce(function(dtf1, dtf2) merge(dtf1, dtf2, by = c("country", "district2", "state2"), all.x = TRUE),
                        list(cdd_hist_cmip6, cdd_245_cmip6, cdd_585_cmip6, hdd_hist_cmip6, hdd_245_cmip6, hdd_585_cmip6))
 
-data_c_sp<- merge(data_c_sp, cmip6_merged, by.x=c("ST_NM", "DISTRICT.y"), by.y=c("state2", "district2"))
+data_c_sp<- merge(data_c_sp, cmip6_merged, by.x=c("adm2"), by.y=c("district2"))
 
 ####################
 # calibrate CDDs to historical / survey year CDDs to ensure consistency (for 2nd stage prediction only)
@@ -970,7 +968,7 @@ for (ssp in c("SSP2", "SSP5")){
     
     orig_data$sex_head <- as.factor(orig_data$sex_head)
     
-    orig_data$country = data_c$country; orig_data$ownership_d = as.factor(orig_data$ownership_d)
+    orig_data$country = data_c_sp$country; orig_data$ownership_d = as.factor(orig_data$ownership_d)
     
     #orig_data$fan = as.factor(data_c_sp[,paste0("fan_", ssp, "_", (year))])
     
@@ -1105,7 +1103,7 @@ ggsave(paste0(stub, "results/graphs/map_ac_", countryiso3, ".png"), map_ac, scal
 
 data_c_bk <- data_c
 
-ely_formula <- ln_ely_q ~ ac + curr_CDD18_db + curr_HDD18_db + ln_total_exp_usd_2011 + n_members + 
+ely_formula <- ln_ely_q ~ as.factor(ac) + curr_CDD18_db + curr_HDD18_db + ln_total_exp_usd_2011 + n_members + 
   as.factor(ownership_d) + edu_head_2 + 
   age_head + sex_head + urban_sh
 
@@ -1151,7 +1149,7 @@ baseline_hist <- as.numeric(predict(lm1, type="response"))
 
 orig_data <- orig_data_bk
 
-orig_data$ac = ifelse(data_c_sp[,paste0(ssp, ".", (year))]>0.5, 1, 0)
+orig_data$ac = as.factor(as.character(ifelse(data_c_sp[,paste0(ssp, ".", (year))]>0.5, 1, 0)))
 
 orig_data$ln_total_exp_usd_2011 = data_c_sp[,paste0("exp_cap_usd_", ssp, "_", (year))]
 
@@ -1163,7 +1161,7 @@ orig_data$edu_head_2 <- as.factor(data_c_sp[,paste0("edu_", year, "_", ssp)])
 
 orig_data$age_head <- round(orig_data$age_head * (1 + data_c_sp[,paste0("age_", ssp, "_", year)]), 0)
 
-orig_data$country = data_c$country; orig_data$ownership_d = as.factor(orig_data$ownership_d)
+orig_data$country = data_c_sp$country; orig_data$ownership_d = as.factor(orig_data$ownership_d)
 
 #orig_data$fan = as.factor(data_c_sp[,paste0("fan_", ssp, "_", (year))])
 
@@ -1179,7 +1177,7 @@ total <- as.numeric(predict(lm1, orig_data, type="response"))
 
 orig_data <- orig_data_bk
 
-orig_data$ac = ifelse(data_c_sp[,paste0(ssp, ".", (year))]>0.5, 1, 0)
+orig_data$ac = as.factor(as.character(ifelse(data_c_sp[,paste0(ssp, ".", (year))]>0.5, 1, 0)))
 
 decomp_ac <- as.numeric(predict(lm1, orig_data, type="response"))
 
@@ -1329,7 +1327,7 @@ for (ssp in c("SSP2", "SSP5")){
     
     print(year)
     
-    orig_data$ac = as.factor(0)
+    orig_data$ac = as.factor(as.character(0))
     
     orig_data$ln_total_exp_usd_2011 = data_c_sp[,paste0("exp_cap_usd_", ssp, "_", (year))]
     
@@ -1341,7 +1339,7 @@ for (ssp in c("SSP2", "SSP5")){
     
     orig_data$age_head <- round(orig_data$age_head * (1 + data_c_sp[,paste0("age_", ssp, "_", year)]), 0)
     
-    orig_data$country = data_c$country; orig_data$ownership_d = as.factor(orig_data$ownership_d)
+    orig_data$country = data_c_sp$country; orig_data$ownership_d = as.factor(orig_data$ownership_d)
     
     orig_data$sex_head <- as.factor(orig_data$sex_head)
     
@@ -1352,7 +1350,7 @@ for (ssp in c("SSP2", "SSP5")){
 	orig_data$urban_sh = data_c_sp[,paste0("weighted_mean.URB_", ssp, "_", (year))]
     
     #
-    projected <- predict(model3, orig_data)
+    projected <- predict(reg_ely, orig_data)
     
     output2[[as.character(year)]] <- projected
     
@@ -1393,7 +1391,7 @@ for (ssp in c("SSP2", "SSP5")){
     
     print(year)
     
-    orig_data$ac = as.factor(ifelse(data_c_sp[,paste0(ssp, ".", (year))]>0.5, 1, 0))
+    orig_data$ac = as.factor(as.character(ifelse(data_c_sp[,paste0(ssp, ".", (year))]>0.5, 1, 0)))
     
     orig_data$ln_total_exp_usd_2011 = data_c_sp[,paste0("exp_cap_usd_", ssp, "_", (year))]
     
@@ -1407,7 +1405,7 @@ for (ssp in c("SSP2", "SSP5")){
 
     orig_data$sex_head <- as.factor(orig_data$sex_head)
 
-    orig_data$country = data_c$country; orig_data$ownership_d = as.factor(orig_data$ownership_d)
+    orig_data$country = data_c_sp$country; orig_data$ownership_d = as.factor(orig_data$ownership_d)
     
     #orig_data$fan = as.factor(data_c_sp[,paste0("fan_", ssp, "_", (year))])
     
@@ -1416,7 +1414,7 @@ for (ssp in c("SSP2", "SSP5")){
 	orig_data$urban_sh = data_c_sp[,paste0("weighted_mean.URB_", ssp, "_", (year))]
     
     #
-    projected <- predict(model3, orig_data)
+    projected <- predict(reg_ely, orig_data)
     
     output2[[as.character(year)]] <- projected
     
@@ -1440,7 +1438,7 @@ output_impact_ac <- exp(output_ac) - exp(output_noac)
 
 output_impact_ac[output_impact_ac<=0] <- NA
 
-save(output_ac, output_impact_ac, file = paste0(stub, "results/energy_poverty/", countryiso3, ".Rdata"))
+save(data_c_sp, output_ac, output_impact_ac, file = paste0(stub, "results/energy_poverty/", countryiso3, ".Rdata"))
 
 
 ##
@@ -1502,7 +1500,7 @@ pop_long$ssp <- substr(pop_long$name, 1, 4)
 pop_long$year <- substr(pop_long$name, 6, 9)
 pop_long <- filter(pop_long, year>2010 & year<=2050)
 
-hhsize <- 3
+hhsize <- 3.45
 
 
 pop_long$value <- pop_long$value / weighted.mean(data_c$n_members, data_c$weight) # https://globaldatalab.org/areadata/hhsize
@@ -1525,7 +1523,7 @@ ggsave(paste0(stub, "results/graphs/line_country_ely_q_tot_", countryiso3, ".png
 
 #
 
-output_impact_ac$ely_p = data_c$ely_p_usd_2011
+output_impact_ac$ely_p = data_c_sp$ely_p_usd_2011
 
 output_impact_ac2 <- output_impact_ac %>%
   pivot_longer(cols = 1:8, names_to = c('ssp', 'year'), names_sep = ".") %>%
