@@ -320,7 +320,7 @@ for (ssp in c("SSP2", "SSP5")){
     
     orig_data$urban_sh = data_c_sp[,paste0("weighted_mean.URB_", ssp, "_", (year))]    
     #
-    projected <- as.numeric(predict(model3, orig_data))
+    projected <- as.numeric(predict(reg_ely, orig_data))
     
     output2[[as.character(year)]] <- projected
     
@@ -386,7 +386,7 @@ for (ssp in c("SSP2", "SSP5")){
     
     orig_data$urban_sh = data_c_sp[,paste0("weighted_mean.URB_", ssp, "_", (year))]    
     #
-    projected <- as.numeric(predict(model3, orig_data))
+    projected <- as.numeric(predict(reg_ely, orig_data))
     
     output2[[as.character(year)]] <- projected
     
@@ -473,12 +473,16 @@ pop_long$value[pop_long$country==country] <- pop_long$value[pop_long$country==co
 
 pop_long <- filter(pop_long, grepl("SSP2", name) | grepl("SSP5", name))
 
+names(national_summary_ac_g) <-  unique(custom_shape$country)
+
 national_summary_ac <- bind_rows(national_summary_ac_g, .id = "country")
 
 pop_long$value_orig <- pop_long$value
 
 # multiply by AC ownership
 pop_long$value =  pop_long$value * national_summary_ac$value
+
+names(national_summary_ac_g) <-  unique(custom_shape$country)
 
 national_summary_cons <- bind_rows(national_summary_cons_g, .id = "country")
 
@@ -596,7 +600,7 @@ national_summary_ac <- bind_rows(national_summary_ac_g, .id = "country")
 pop_long$value_orig <- pop_long$value
 
 # multiply by AC ownership
-pop_long$value =  pop_long$value * 1
+pop_long$value =  pop_long$value * national_summary_ac$value
 
 national_summary_cons <- bind_rows(national_summary_cons_g, .id = "country")
 
