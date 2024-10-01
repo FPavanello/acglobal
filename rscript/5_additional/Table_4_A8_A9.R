@@ -56,10 +56,10 @@ global <- global %>% mutate(ln_ely_p_cdd = ln_ely_p*mean_CDD18_db,
                             edu_head_2 = as.factor(edu_head_2))
 
 # Median 
-global  <- global %>% mutate(pvcap_kw = pvcap*1000, # kW
-                             pvint = pvcap*pvout,
-                             pvint_kWh = pvcap_kw*pvout, # kW/(kWh/kW) -> kWh
-                             dpvint = ifelse(pvint > median(pvint, na.rm = TRUE), 1, 0))
+global  <- global %>% mutate(pvcap_kw = pvcap*1000, # from MW to kW
+                             pvgen = pvcap*pvout, # pvgen in MW
+                             pvgen_kWh = pvcap_kw*pvout, # kW/(kWh/kW) -> kWh
+                             dpvint = ifelse(pvgen > median(pvgen, na.rm = TRUE), 1, 0))
 
 # Check
 global <- global[complete.cases(global$ln_ely_q), ]
@@ -81,13 +81,13 @@ global <- global %>% filter(ln_ely_q > 0)
 global <- global %>% filter(weight > 0)
 
 
-## 1) Continuous variable: PVOUT X PVCAP 
+## 1) Continuous variable: PVGEN
 # Formula first-stage
 ac_formula <- ac ~ mean_CDD18_db + mean_CDD18_db2 + 
   mean_CDD18_db_exp + mean_CDD18_db2_exp + ln_total_exp_usd_2011 + curr_CDD18_db + curr_CDD18_db2 + 
   ln_ely_p + ln_ely_p_cdd + ln_ely_p_cdd2 + ln_ely_p_nme + ln_ely_p_own + 
   urban_sh + ownership_d + 
-  n_members + edu_head_2 + age_head + sex_head + pvcap*pvout | adm1
+  n_members + edu_head_2 + age_head + sex_head + pvgen | adm1
 
 # Logistic regression
 fs <- feglm(ac_formula, family = binomial(link = "logit"), data = global, weights = ~weight, cluster = c("adm1")); summary(fs)
@@ -113,7 +113,7 @@ mean_ac
 
 
 # Formula electricity expenditure without interaction
-ely_formula <- ln_ely_q ~ ac + pvcap*pvout +
+ely_formula <- ln_ely_q ~ ac + pvgen +
   curr_CDD18_db + I(curr_CDD18_db^2) + curr_HDD18_db + I(curr_HDD18_db^2) + ln_total_exp_usd_2011 + ln_ely_p +
   urban_sh + ownership_d + n_members + edu_head_2 + age_head + sex_head + selection | adm1
 
@@ -122,7 +122,7 @@ model1 <- feols(ely_formula, data = sec, weights = ~weight, cluster = c("adm1"))
 
 
 # Formula electricity expenditure for electricity expenditure
-ely_formula  <- ln_ely_q ~ ac + ac*pvcap*pvout + pvcap*pvout +
+ely_formula  <- ln_ely_q ~ ac + ac*pvgen +
   curr_CDD18_db + I(curr_CDD18_db^2) + curr_HDD18_db + I(curr_HDD18_db^2) + ln_total_exp_usd_2011 + ln_ely_p +
   urban_sh + ownership_d + n_members + edu_head_2 + age_head + sex_head + selection | adm1
 
@@ -131,7 +131,7 @@ model2 <- feols(ely_formula, data = sec, weights = ~weight, cluster = c("adm1"))
 
 
 # Formula electricity expenditure for electricity expenditure
-ely_formula  <- ln_ely_q ~ ac + ln_ely_p*pvcap*pvout + pvcap*pvout +
+ely_formula  <- ln_ely_q ~ ac + ln_ely_p*pvgen +
   curr_CDD18_db + I(curr_CDD18_db^2) + curr_HDD18_db + I(curr_HDD18_db^2) + ln_total_exp_usd_2011 + ln_ely_p +
   urban_sh + ownership_d + n_members + edu_head_2 + age_head + sex_head + selection | adm1
 
@@ -150,7 +150,7 @@ cntry
 ## Export
 # Full sample
 texreg(list(model1, model2, model3), digits = 3, 
-       caption = "The Effect of Air-conditioning on Residential Electricity Quantity - PV Potential Output and PV Capacity (continuous)",
+       caption = "The Effect of Air-conditioning on Residential Electricity Quantity - PV Generation",
        stars = c(0.1, 0.05, 0.01), custom.model.names = c("DMF", "DMF", "DMF"),
        omit.coef = "(country)|(Intercept)|(selection)",
        custom.note = "Clustered standard errors at the ADM1 level in parentheses. Regressions are conducted using survey weights. $^{***}p<0.01$; $^{**}p<0.05$; $^{*}p<0.1$", 
@@ -158,16 +158,10 @@ texreg(list(model1, model2, model3), digits = 3,
        float.pos = "htbp", label = "main: tableA8",
        custom.coef.map = list("ac"= "AC", "ac:curr_CDD18_db" = "AC $\\times$ CDD", 
                               "ac:I(curr_CDD18_db^2)" = "AC $\\times$ CDD$^2$",
-                              "pvout" = "PVOUT",
-                              "pvcap" = "PV Capacity",
-                              "pvcap:pvout" = "PV Capacity $\\times$ PVOUT",
-                              "ac:pvout" = "AC $\\times$ PVOUT",
-                              "ac:pvcap" = "AC $\\times$ PV Capacity",
-                              "ac:pvcap:pvout" = "AC $\\times$ PV Capacity $\\times$ PVOUT",
+                              "pvgen" = "PVGEN",
+                              "ac:pvgen" = "AC $\\times$ PV Capacity $\\times$ PVGEN",
                               "ln_ely_p" = "Log(P)",
-                              "ln_ely_p:pvout" = "Log(P) $\\times$ PVOUT",
-                              "ln_ely_p:pvcap" = "Log(P) $\\times$ PV Capacity",
-                              "ln_ely_p:pvcap:pvout" = "Log(P) $\\times$ PV Capacity $\\times$ PVOUT"),
+                              "ln_ely_p:pvgen" = "Log(P) $\\times$ PVGEN"),
        custom.gof.rows = list("Correction Term" = c("YES", "YES", "YES"), 
                               "ADM-1 FE" = c("YES", "YES", "YES"), 
                               "Mean Outcome" = c(mean, mean, mean), 
