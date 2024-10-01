@@ -22,14 +22,14 @@ library(lmtest)
 library(ResourceSelection)
 library(multiwayvcov)
 library(msm) # https://stats.oarc.ucla.edu/r/faq/how-can-i-estimate-the-standard-error-of-transformed-regression-parameters-in-r-using-the-delta-method/
-library(margins)
+library(margins) 
 library(texreg)
 library(xtable)
-library(stargazer)
-library(lm.beta)
-library(reghelper)
 library(survey)
 library(tibble)
+library(fixest)
+library(marginaleffects)
+
 
 # Set users
 user <- 'fp'
@@ -40,88 +40,74 @@ if (user=='fp') {
 }
 
 if (user=='gf') {
-  stub <- 'H:/.shortcut-targets-by-id/1JhN0qxmpnYQDoWQdBhnYKzbRCVGH_WXE/'
+  stub <- "F:/.shortcut-targets-by-id/1JhN0qxmpnYQDoWQdBhnYKzbRCVGH_WXE/"
 }
 
 
-house <- paste(stub,'6-Projections/data/household/Fourcountries', sep='')
+house <- paste(stub,'6-Projections/data/household/', sep='')
 output <- paste(stub,'6-Projections/results/regressions/', sep='')
-script <- paste(stub,'6-Projections/rscripts/dmcf/regressions/standardised/with_continuous_urbanisation/', sep='')
+script <- paste(stub,'6-Projections/rscripts/dmcf/regressions/country/with_continuous_urbanisation/', sep='')
 
-# Load Household data
-HH_Brazil <- readRDS(paste(house,'/bra_pof.rds', sep=''))
-
-# Add urbanisation share
-source(paste0(stub, "6-Projections/rscripts/process_raw_data/add_urban/add_urban_bra.R"))
-HH_Brazil$geometry <- NULL
-HH_Brazil$adm1 <- as.character(HH_Brazil$state)
+# Load global data
+global <- readRDS(paste(house,'global.rds', sep=''))
 
 # Interaction prices
-HH_Brazil$mean_CDD18_db <- HH_Brazil$meanpy_CDD18_db
-HH_Brazil$mean_hDD18_db <- HH_Brazil$meanpy_hDD18_db
-HH_Brazil <- HH_Brazil %>% mutate(ln_ely_p = log(ely_p_usd_2011),
-                                  ln_ely_p_cdd = ln_ely_p*mean_CDD18_db,
-                                  ln_ely_p_cdd2 = ln_ely_p*(mean_CDD18_db^2),
-                                  ln_ely_p_own = ln_ely_p*as.numeric(as.character(ownership_d)),
-                                  ln_ely_p_nme = ln_ely_p*n_members,
-                                  mean_CDD18_db2 = mean_CDD18_db^2,
-                                  mean_CDD18_db_exp = ln_total_exp_usd_2011*mean_CDD18_db,
-                                  mean_CDD18_db2_exp = ln_total_exp_usd_2011*(mean_CDD18_db^2),
-                                  curr_CDD18_db2 = curr_CDD18_db^2)
+global <- global %>% mutate(ln_ely_p_cdd = ln_ely_p*mean_CDD18_db,
+                            ln_ely_p_cdd2 = ln_ely_p*(mean_CDD18_db^2),
+                            ln_ely_p_own = ln_ely_p*ownership_d,
+                            ln_ely_p_nme = ln_ely_p*n_members,
+                            mean_CDD18_db2 = mean_CDD18_db^2,
+                            mean_CDD18_db_exp = ln_total_exp_usd_2011*mean_CDD18_db,
+                            mean_CDD18_db2_exp = ln_total_exp_usd_2011*(mean_CDD18_db^2),
+                            curr_CDD18_db2 = curr_CDD18_db^2,
+                            edu_head_2 = as.factor(edu_head_2),
+                            housing_index_lab = as.factor(housing_index_lab))
 
-# Only those with not missing values 
-HH_Brazil <- HH_Brazil[complete.cases(HH_Brazil$ac), ]
-HH_Brazil <- HH_Brazil[complete.cases(HH_Brazil$mean_CDD18_db), ]
-HH_Brazil <- HH_Brazil[complete.cases(HH_Brazil$mean_HDD18_db), ]
-HH_Brazil <- HH_Brazil[complete.cases(HH_Brazil$curr_CDD18_db), ]
-HH_Brazil <- HH_Brazil[complete.cases(HH_Brazil$curr_HDD18_db), ]
-HH_Brazil <- HH_Brazil[complete.cases(HH_Brazil$ln_total_exp_usd_2011), ]
-HH_Brazil <- HH_Brazil[complete.cases(HH_Brazil$urban_sh), ]
-HH_Brazil <- HH_Brazil[complete.cases(HH_Brazil$n_members), ]
-HH_Brazil <- HH_Brazil[complete.cases(HH_Brazil$sh_under16), ]
-HH_Brazil <- HH_Brazil[complete.cases(HH_Brazil$housing_index_lab), ]
-HH_Brazil <- HH_Brazil[complete.cases(HH_Brazil$ownership_d), ]
-HH_Brazil <- HH_Brazil[complete.cases(HH_Brazil$edu_head_2), ]
-HH_Brazil <- HH_Brazil[complete.cases(HH_Brazil$age_head), ]
-HH_Brazil <- HH_Brazil[complete.cases(HH_Brazil$sex_head), ]
-HH_Brazil <- HH_Brazil[complete.cases(HH_Brazil$ln_ely_p), ]
-HH_Brazil <- HH_Brazil %>% filter(ln_ely_q > 0)
-HH_Brazil <- HH_Brazil %>% filter(weight > 0)
+# Check
+global <- global[complete.cases(global$ln_ely_q), ]
+global <- global[complete.cases(global$ac), ]
+global <- global[complete.cases(global$ln_total_exp_usd_2011), ]
+global <- global[complete.cases(global$mean_CDD18_db), ]
+global <- global[complete.cases(global$ownership_d), ]
+global <- global[complete.cases(global$n_members), ]
+global <- global[complete.cases(global$age_head), ]
+global <- global[complete.cases(global$country), ]
+global <- global[complete.cases(global$weight), ]
+global <- global[complete.cases(global$sex_head), ]
+global <- global[complete.cases(global$urban_sh), ]
+global <- global[complete.cases(global$ln_ely_p), ]
+global <- global[complete.cases(global$curr_CDD18_db), ]
+global <- global[complete.cases(global$curr_HDD18_db), ]
+global <- global[complete.cases(global$adm1), ]
+global <- global %>% filter(ln_ely_q > 0)
+global <- global %>% filter(weight > 0)
+
+# Select countries
+HH_Brazil <- dplyr::filter(global, country == "Brazil")
 
 # Scale variable
 HH_Brazil <- HH_Brazil %>% mutate(std_CDD_mean = as.numeric(scale(mean_CDD18_db)),
-                                  std_CDD = as.numeric(scale(curr_CDD18_db)),
                                   std_elyp = as.numeric(scale(ln_ely_p)),
+                                  std_CDD = as.numeric(scale(curr_CDD18_db)),
                                   std_texp = as.numeric(scale(ln_total_exp_usd_2011)),
                                   std_HDD = as.numeric(scale(curr_HDD18_db)),
                                   std_urban_sh = as.numeric(scale(urban_sh)),
                                   std_n_members = as.numeric(scale(n_members)),
-                                  std_age_head = as.numeric(scale(age_head)),
-                                  std_sh_under16 = as.numeric(scale(sh_under16)))
-
-# Survey
-HH_Brazil_svy <- svydesign(data = HH_Brazil, ids = ~adm1, weights = ~ weight)
-
-
-##################################
-
-#        Extensive margin        #
-
-##################################
+                                  std_age_head = as.numeric(scale(age_head)))
 
 # AC formula for Brazil
 ac_formula_bra <- ac ~ std_CDD_mean + I(std_CDD_mean^2) + std_CDD_mean*std_texp + I(std_CDD_mean^2)*std_texp + std_texp + std_CDD + I(std_CDD^2) +
   std_elyp + std_elyp*std_CDD_mean + std_elyp*I(std_CDD_mean^2) + std_elyp*ownership_d + std_elyp*std_n_members + std_urban_sh + std_n_members + 
-  ownership_d + edu_head_2 + std_age_head + sex_head + housing_index_lab + 
-  region3
+  ownership_d + edu_head_2 + std_age_head + sex_head + housing_index_lab | 
+  adm1
 
 # Logistic regression of AC on covariates
-reg_ac <- svyglm(ac_formula_bra, design = HH_Brazil_svy,
-                 family = binomial(logit), na.action=na.omit); summary(reg_ac)
+reg_ac <- feglm(ac_formula_bra, family = binomial(link = "logit"), 
+                data = HH_Brazil, weights = ~weight, cluster = c("adm1"))
 
-# Save AME results
-margins <- margins(reg_ac, design = HH_Brazil_svy)
-ac_margins <- summary(margins)
+# Average marginal effects (AMEs)
+ac_margins <- summary(avg_slopes(reg_ac, wts = HH_Brazil$weight))
+gc()
 
 # Predicted probabilities
 HH_Brazil$phat0_obs <- as.numeric(predict(reg_ac, type="response")) 
@@ -135,39 +121,17 @@ HH_Brazil$selection = ifelse(HH_Brazil$ac==1,
                              (HH_Brazil$xb_noac*log(HH_Brazil$xb_noac)/HH_Brazil$phat0_obs) + log(HH_Brazil$phat0_obs), 
                              (HH_Brazil$phat0_obs*log(HH_Brazil$phat0_obs)/HH_Brazil$xb_noac) + log(HH_Brazil$xb_noac))
 
-# Survey - re-run to add new variable
-HH_Brazil_svy <- svydesign(data = HH_Brazil, ids = ~adm1, weights = ~ weight)
-
-
-#################################################################
-
-#     Intensive margin + the role of AC
-
-#     1) We interact AC with a set of variables to understand
-#     how AC affects the adoption based on different charact.
-
-#     2) We compute coefficients not only at the averages, but
-#     also based on specific values of our variables.
-#     For instance, we compute the coefficients by decile, and
-#     not only for the average household
-
-#     Somehow point 1) is similar to a CDA, but without the
-#     other appliances. For simplicity, I am going to interact
-#     AC only with climate
-
-#################################################################
-
 # Formula electricity quantity without interactions
 ely_formula_bra <- ln_ely_q ~ ac + ac*std_CDD + ac*I(std_CDD^2) + std_CDD + I(std_CDD^2) + 
   std_texp + std_HDD + I(std_HDD^2) + std_elyp + 
   std_urban_sh + std_n_members + ownership_d + edu_head_2 + 
-  housing_index_lab + std_age_head + sex_head + selection + region3 
+  housing_index_lab + std_age_head + sex_head + selection | adm1 
 
 # With selection
-model <- svyglm(ely_formula_bra, design = HH_Brazil_svy, na.action=na.omit); summary(model)
+model <- feols(ely_formula_bra, data = HH_Brazil, weights = ~weight, cluster = c("adm1")); summary(model)
 
 # Marginal effect of AC
-ely_margins <- summary(margins(model, design = HH_Brazil_svy))
+ely_margins <- summary(avg_slopes(model, slope = "dydx", wts = HH_Brazil$weight))
 
 # Export
 save(list = c("ely_margins", "ac_margins"), file = paste(output,'/for_graphs/standardised/bra_dmcf.RData', sep=''))

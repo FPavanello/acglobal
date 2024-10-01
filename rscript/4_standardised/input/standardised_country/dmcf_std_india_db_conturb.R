@@ -26,6 +26,9 @@ library(margins)
 library(texreg)
 library(xtable)
 library(survey)
+library(fixest)
+library(tibble)
+library(marginaleffects)
 
 
 # Set directory
@@ -37,51 +40,50 @@ if (user=='fp') {
 }
 
 if (user=='gf') {
-  stub <- 'F:/.shortcut-targets-by-id/1JhN0qxmpnYQDoWQdBhnYKzbRCVGH_WXE/'
+  stub <- "F:/.shortcut-targets-by-id/1JhN0qxmpnYQDoWQdBhnYKzbRCVGH_WXE/"
 }
 
-house <- paste(stub,'6-Projections/data/household/India/chps/', sep='')
+
+house <- paste(stub,'6-Projections/data/household/', sep='')
 output <- paste(stub,'6-Projections/results/regressions/', sep='')
-script <- paste(stub,'6-Projections/rscripts/dmcf/regressions/standardised/with_continuous_urbanisation/', sep='')
+script <- paste(stub,'6-Projections/rscripts/dmcf/regressions/country/with_continuous_urbanisation/', sep='')
 
-# Load Household data
-HH_India <- readRDS(paste(house,'india_cmie.rds', sep=''))
-
-# Add urbanisation share
-source(paste0(stub, "6-Projections/rscripts/process_raw_data/add_urban/add_urban_ind.R"))
-HH_India$geometry <- NULL
-HH_India$adm1 <- as.character(HH_India$state)
+# Load global data
+global <- readRDS(paste(house,'global.rds', sep=''))
 
 # Interaction prices
-HH_India$housing_index_lab <- as.factor(HH_India$housing_index_lab)
-HH_India$mean_CDD18_db <- HH_India$meanpy_CDD18_db
-HH_India$mean_hDD18_db <- HH_India$meanpy_hDD18_db
-HH_India <- HH_India %>% mutate(ln_ely_p = log(ely_p_usd_2011),
-                                ln_ely_p_cdd = ln_ely_p*mean_CDD18_db,
-                                ln_ely_p_cdd2 = ln_ely_p*(mean_CDD18_db^2),
-                                ln_ely_p_own = ln_ely_p*as.numeric(as.character(ownership_d)),
-                                ln_ely_p_nme = ln_ely_p*n_members,
-                                mean_CDD18_db2 = mean_CDD18_db^2,
-                                mean_CDD18_db_exp = ln_total_exp_usd_2011*mean_CDD18_db,
-                                mean_CDD18_db2_exp = ln_total_exp_usd_2011*(mean_CDD18_db^2),
-                                curr_CDD18_db2 = curr_CDD18_db^2)
+global <- global %>% mutate(ln_ely_p_cdd = ln_ely_p*mean_CDD18_db,
+                            ln_ely_p_cdd2 = ln_ely_p*(mean_CDD18_db^2),
+                            ln_ely_p_own = ln_ely_p*ownership_d,
+                            ln_ely_p_nme = ln_ely_p*n_members,
+                            mean_CDD18_db2 = mean_CDD18_db^2,
+                            mean_CDD18_db_exp = ln_total_exp_usd_2011*mean_CDD18_db,
+                            mean_CDD18_db2_exp = ln_total_exp_usd_2011*(mean_CDD18_db^2),
+                            curr_CDD18_db2 = curr_CDD18_db^2,
+                            edu_head_2 = as.factor(edu_head_2),
+                            housing_index_lab = as.factor(housing_index_lab))
 
-# Only those with not missing values 
-HH_India <- HH_India[complete.cases(HH_India$ac), ]
-HH_India <- HH_India[complete.cases(HH_India$mean_CDD18_db), ]
-HH_India <- HH_India[complete.cases(HH_India$mean_HDD18_db), ]
-HH_India <- HH_India[complete.cases(HH_India$curr_CDD18_db), ]
-HH_India <- HH_India[complete.cases(HH_India$curr_HDD18_db), ]
-HH_India <- HH_India[complete.cases(HH_India$ln_total_exp_usd_2011), ]
-HH_India <- HH_India[complete.cases(HH_India$urban_sh), ]
-HH_India <- HH_India[complete.cases(HH_India$n_members), ]
-HH_India <- HH_India[complete.cases(HH_India$ownership_d), ]
-HH_India <- HH_India[complete.cases(HH_India$edu_head_2), ]
-HH_India <- HH_India[complete.cases(HH_India$ln_ely_p), ]
-HH_India <- HH_India[complete.cases(HH_India$age_head), ]
-HH_India <- HH_India[complete.cases(HH_India$sex_head), ]
-HH_India <- HH_India %>% filter(ln_ely_q > 0)
-HH_India <- HH_India %>% filter(weight > 0)
+# Check
+global <- global[complete.cases(global$ln_ely_q), ]
+global <- global[complete.cases(global$ac), ]
+global <- global[complete.cases(global$ln_total_exp_usd_2011), ]
+global <- global[complete.cases(global$mean_CDD18_db), ]
+global <- global[complete.cases(global$ownership_d), ]
+global <- global[complete.cases(global$n_members), ]
+global <- global[complete.cases(global$age_head), ]
+global <- global[complete.cases(global$country), ]
+global <- global[complete.cases(global$weight), ]
+global <- global[complete.cases(global$sex_head), ]
+global <- global[complete.cases(global$urban_sh), ]
+global <- global[complete.cases(global$ln_ely_p), ]
+global <- global[complete.cases(global$curr_CDD18_db), ]
+global <- global[complete.cases(global$curr_HDD18_db), ]
+global <- global[complete.cases(global$adm1), ]
+global <- global %>% filter(ln_ely_q > 0)
+global <- global %>% filter(weight > 0)
+
+# Select countries
+HH_India <- dplyr::filter(global, country == "India")
 
 # Scale variable
 HH_India <- HH_India %>% mutate(std_CDD_mean = as.numeric(scale(mean_CDD18_db)),
@@ -93,34 +95,24 @@ HH_India <- HH_India %>% mutate(std_CDD_mean = as.numeric(scale(mean_CDD18_db)),
                                 std_age_head = as.numeric(scale(age_head)),
                                 std_urban_sh = as.numeric(scale(urban_sh)))
 
-# Survey - re-run to add new variable
-HH_India_svy <- svydesign(data = HH_India, ids = ~adm1, weights = ~ weight)
-
-
-##################################
-
-#        Extensive margin        #
-
-##################################
-
 # AC formula for India
 ac_formula_ind <- ac ~ std_CDD_mean + I(std_CDD_mean^2) + std_CDD_mean*std_texp + I(std_CDD_mean^2)*std_texp + std_texp + std_CDD + I(std_CDD^2) + 
   std_elyp + std_elyp*std_CDD_mean + std_elyp*I(std_CDD_mean^2) + std_elyp*ownership_d + std_elyp*std_n_members + std_urban_sh + 
-  std_n_members + ownership_d + edu_head_2 + std_age_head + sex_head + 
-  state
+  std_n_members + ownership_d + edu_head_2 + std_age_head + sex_head | 
+  adm1
 
 # Logistic regression of AC on covariates
-reg_ac <- svyglm(ac_formula_ind, design = HH_India_svy,
-                 family = binomial(logit), na.action=na.omit); summary(reg_ac)
+reg_ac <- feglm(ac_formula_ind, family = binomial(link = "logit"), data = HH_India, weights = ~weight, cluster = c("adm1")); summary(reg_ac)
 
-# Save AME results
-margins <- margins(reg_ac, design = HH_India_svy)
-ac_margins <- summary(margins)
+# Average marginal effects (AMEs)
+ac_margins <- summary(avg_slopes(reg_ac, wts = HH_India$weight))
+gc()
+
+# Save data set for which there are obs both in first and second stage
+HH_India <- HH_India[obs(reg_ac),]
 
 # Predicted probabilities
 HH_India$phat0_obs <- as.numeric(predict(reg_ac, type="response")) 
-mean(as.numeric(HH_India$ac))-1
-summary(HH_India$phat0_obs)
 
 # Find old HHs classified as owning an AC (NB: using ROC curve we have seen that we are GOOD at predicting those who have AC)
 HH_India$ac_obs <- ifelse(HH_India$phat0_obs>0.5 & !is.na(HH_India$phat0_obs), 1 , 0)
@@ -131,38 +123,16 @@ HH_India$selection = ifelse(HH_India$ac==1,
                             (HH_India$xb_noac*log(HH_India$xb_noac)/HH_India$phat0_obs) + log(HH_India$phat0_obs), 
                             (HH_India$phat0_obs*log(HH_India$phat0_obs)/HH_India$xb_noac) + log(HH_India$xb_noac))
 
-# Survey - re-run to add new variable
-HH_India_svy <- svydesign(data = HH_India, ids = ~adm1, weights = ~ weight)
-
-
-#################################################################
-
-#     Intensive margin + the role of AC
-
-#     1) We interact AC with a set of variables to understand
-#     how AC affects the adoption based on different charact.
-
-#     2) We compute coefficients not only at the averages, but
-#     also based on specific values of our variables.
-#     For instance, we compute the coefficients by decile, and
-#     not only for the average household
-
-#     Somehow point 1) is similar to a CDA, but without the
-#     other appliances. For simplicity, I am going to interact
-#     AC only with climate
-
-#################################################################
-
 # Formula electricity expenditure with interactions
 ely_formula_ind <- ln_ely_q ~ ac + ac*std_CDD + ac*I(std_CDD^2) + std_CDD + I(std_CDD^2) + 
   std_texp + std_HDD + I(std_HDD^2) + std_elyp + 
-  std_urban_sh + ownership_d + std_n_members + edu_head_2 + std_age_head + sex_head + state + selection
+  std_urban_sh + ownership_d + std_n_members + edu_head_2 + std_age_head + sex_head + selection | adm1
 
 # With selection
-model <- svyglm(ely_formula_ind, design = HH_India_svy, na.action=na.omit); summary(model)
+model <- feols(ely_formula_ind, data = HH_India, weights = ~weight, cluster = c("adm1")); summary(model)
 
 # Marginal effect of AC
-ely_margins <- summary(margins(model, design = HH_India_svy))
+ely_margins <- summary(avg_slopes(model, slope = "dydx", wts = HH_India$weight))
 
 # Export
 save(list = c("ely_margins", "ac_margins"), file = paste(output,'/for_graphs/standardised/ind_dmcf.RData', sep=''))
