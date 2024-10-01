@@ -124,4 +124,4 @@ model <- feols(ely_formula_ind, data = HH_India, weights = ~weight, cluster = c(
 ely_margins <- summary(avg_slopes(model, slope = "dydx", wts = HH_India$weight))
 
 # Export
-save(list = c("ely_margins", "ac_margins"), file = paste(output,'/for_graphs/standardised/ind_dmcf.RData', sep=''))
+save(list = c("ely_margins", "ac_margins"), file = paste(interm,'standardised/ind_dmcf.RData', sep=''))

@@ -123,4 +123,4 @@ model <- feols(ely_formula_arg, data = HH_Argentina, weights = ~weight, cluster 
 ely_margins <- summary(avg_slopes(model, slope = "dydx", wts = HH_Argentina$weight))
 
 # Export
-save(list = c("ely_margins", "ac_margins"), file = paste(output,'/for_graphs/standardised/arg_dmcf.RData', sep=''))
+save(list = c("ely_margins", "ac_margins"), file = paste(interm,'standardised/arg_dmcf.RData', sep=''))

@@ -123,4 +123,4 @@ model <- feols(ely_formula_afr, data = HH_Africa, weights = ~weight, cluster = c
 ely_margins <- summary(avg_slopes(model, slope = "dydx", wts = HH_Africa$weight))
 
 # Save the R Environment will be used for the projections
-save(list = c("ely_margins", "ac_margins"), file = paste(output,'/for_graphs/standardised/afr_dmcf.RData', sep=''))
+save(list = c("ely_margins", "ac_margins"), file = paste(interm,'standardised/afr_dmcf.RData', sep=''))

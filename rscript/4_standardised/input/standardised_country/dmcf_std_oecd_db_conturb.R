@@ -167,9 +167,9 @@ ely_margins_noneu <- summary(avg_slopes(model, slope = "dydx", wts = HH_NonEurop
 ely_margins <- ely_margins_eu
 ac_margins <- ac_margins_eu
 
-save(list = c("ely_margins", "ac_margins"), file = paste(output,'/for_graphs/standardised/oecdeu_dmcf.RData', sep=''))
+save(list = c("ely_margins", "ac_margins"), file = paste(interm,'standardised/oecdeu_dmcf.RData', sep=''))
 
 ely_margins <- ely_margins_noneu
 ac_margins <- ac_margins_noneu
 
-save(list = c("ely_margins", "ac_margins"), file = paste(output,'/for_graphs/standardised/oecdnoneu_dmcf.RData', sep=''))
+save(list = c("ely_margins", "ac_margins"), file = paste(interm,'standardised/oecdnoneu_dmcf.RData', sep=''))

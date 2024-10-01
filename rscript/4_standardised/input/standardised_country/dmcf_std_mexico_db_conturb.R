@@ -123,5 +123,4 @@ model <- feols(ely_formula_mex, data = HH_Mexico, weights = ~weight, cluster = c
 # Marginal effect of AC
 ely_margins <- summary(avg_slopes(model, slope = "dydx", wts = HH_Mexico$weight))
 
-# Export
-save(list = c("ely_margins", "ac_margins"), file = paste(output,'/for_graphs/standardised/mex_dmcf.RData', sep=''))
+# Exportinterm,'standardised/mex_dmcf.RData', sep=''))
