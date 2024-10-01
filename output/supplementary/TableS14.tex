@@ -1,0 +1,32 @@
+
+\begin{table}[H]
+\caption{Robustness Checks - Electricity in Levels}
+\begin{center}
+\begin{tabular}{l c c c c c c}
+\hline
+ & Full & Full & Winsorized & Winsorized & Trimmed & Trimmed \\
+\hline
+AC                      & $1055.581^{***}$ & $633.571^{***}$ & $1029.046^{***}$ & $213.139$      & $872.664^{***}$ & $206.149$      \\
+                        & $(100.980)$      & $(231.602)$     & $(88.151)$       & $(214.726)$    & $(74.240)$      & $(162.781)$    \\
+AC $\times$ CDD         &                  & $30.868$        &                  & $93.276^{***}$ &                 & $73.697^{***}$ \\
+                        &                  & $(36.181)$      &                  & $(35.029)$     &                 & $(25.237)$     \\
+AC $\times$ CDD$^2$     &                  & $0.086$         &                  & $-1.635^{*}$   &                 & $-1.188^{*}$   \\
+                        &                  & $(0.946)$       &                  & $(0.925)$      &                 & $(0.642)$      \\
+\hline
+Correction Term         & YES              & YES             & YES              & YES            & YES             & YES            \\
+ADM-1 FE                & YES              & YES             & YES              & YES            & YES             & YES            \\
+Mean Outcome (kWh)      & $2495.943$       & $2495.943$      & $2277.863$       & $2277.863$     & $2123.612$      & $2123.612$     \\
+Countries               & $25$             & $25$            & $25$             & $25$           & $25$            & $25$           \\
+Num. obs.               & $682727$         & $682727$        & $682727$         & $682727$       & $616531$        & $616531$       \\
+Num. groups: adm1       & $393$            & $393$           & $393$            & $393$          & $374$           & $374$          \\
+R$^2$ (full model)      & $0.520$          & $0.520$         & $0.659$          & $0.661$        & $0.568$         & $0.570$        \\
+R$^2$ (proj model)      & $0.080$          & $0.081$         & $0.150$          & $0.155$        & $0.157$         & $0.162$        \\
+Adj. R$^2$ (full model) & $0.520$          & $0.520$         & $0.659$          & $0.660$        & $0.568$         & $0.570$        \\
+Adj. R$^2$ (proj model) & $0.080$          & $0.081$         & $0.150$          & $0.155$        & $0.157$         & $0.162$        \\
+\hline
+\multicolumn{7}{l}{\scriptsize{'Subnational' means at the most disaggregated geographical information for each country. Regressions are conducted using survey weights.
+          Standard errors are clustered at the ADM1 level. $^{***}p<0.01$; $^{**}p<0.05$; $^{*}p<0.1$.}}
+\end{tabular}
+\label{si: tableS14}
+\end{center}
+\end{table}

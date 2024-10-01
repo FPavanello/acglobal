@@ -1,0 +1,36 @@
+
+\begin{table}[H]
+\caption{Robustness Checks}
+\begin{center}
+\begin{tabular}{l c c c c c c c c c c}
+\hline
+ & Subnational FE & Subnational FE & Country FE & Country FE & CDD 24 - HDD 15 & CDD 24 - HDD 15 & No Elec. Price & No Elec. Price & Price Interactions & Price Interactions \\
+\hline
+AC                      & $0.315^{***}$ & $0.008$        & $0.332^{***}$ & $0.022$       & $0.362^{***}$ & $0.165^{***}$  & $0.358^{***}$ & $0.033$        & $0.358^{***}$ & $0.062$       \\
+                        & $(0.024)$     & $(0.040)$      & $(0.036)$     & $(0.063)$     & $(0.031)$     & $(0.037)$      & $(0.032)$     & $(0.062)$      & $(0.029)$     & $(0.062)$     \\
+AC $\times$ CDD         &               & $0.038^{***}$  &               & $0.038^{***}$ &               & $0.086^{***}$  &               & $0.039^{***}$  &               & $0.033^{***}$ \\
+                        &               & $(0.007)$      &               & $(0.010)$     &               & $(0.019)$      &               & $(0.010)$      &               & $(0.010)$     \\
+AC $\times$ CDD$^2$     &               & $-0.001^{***}$ &               & $-0.001^{**}$ &               & $-0.004^{***}$ &               & $-0.001^{***}$ &               & $-0.001^{**}$ \\
+                        &               & $(0.000)$      &               & $(0.000)$     &               & $(0.001)$      &               & $(0.000)$      &               & $(0.000)$     \\
+\hline
+Correction Term         & YES           & YES            & YES           & YES           & YES           & YES            & YES           & YES            & YES           & YES           \\
+Country FE              & NO            & NO             & NO            & YES           & YES           & NO             & NO            & NO             & NO            & NO            \\
+Subnational FE          & YES           & YES            & NO            & NO            & NO            & NO             & NO            & NO             & NO            & NO            \\
+ADM-1 FE                & NO            & NO             & NO            & NO            & YES           & YES            & YES           & YES            & YES           & YES           \\
+Mean Outcome (kWh)      & $2695.744$    & $2695.744$     & $2439.238$    & $2439.238$    & $2495.943$    & $2495.943$     & $2495.943$    & $2495.943$     & $2495.943$    & $2495.943$    \\
+Countries               & $25$          & $25$           & $25$          & $25$          & $25$          & $25$           & $25$          & $25$           & $25$          & $25$          \\
+Num. obs.               & $639793$      & $639793$       & $692718$      & $692718$      & $682727$      & $682727$       & $682727$      & $682727$       & $682727$      & $682727$      \\
+Num. groups: subnat     & $1714$        & $1714$         & $$            & $$            & $$            & $$             & $$            & $$             & $$            & $$            \\
+R$^2$ (full model)      & $0.728$       & $0.729$        & $0.723$       & $0.756$       & $0.730$       & $0.731$        & $0.726$       & $0.728$        & $0.733$       & $0.734$       \\
+R$^2$ (proj model)      & $0.228$       & $0.232$        & $0.268$       & $0.244$       & $0.242$       & $0.247$        & $0.232$       & $0.236$        & $0.250$       & $0.254$       \\
+Adj. R$^2$ (full model) & $0.727$       & $0.729$        & $0.723$       & $0.756$       & $0.730$       & $0.731$        & $0.726$       & $0.727$        & $0.733$       & $0.734$       \\
+Adj. R$^2$ (proj model) & $0.228$       & $0.232$        & $0.268$       & $0.244$       & $0.242$       & $0.247$        & $0.232$       & $0.236$        & $0.250$       & $0.254$       \\
+Num. groups: country    & $$            & $$             & $25$          & $$            & $$            & $$             & $$            & $$             & $$            & $$            \\
+Num. groups: adm1       & $$            & $$             & $$            & $512$         & $393$         & $393$          & $393$         & $393$          & $393$         & $393$         \\
+\hline
+\multicolumn{11}{l}{\scriptsize{'Subnational' means at the most disaggregated geographical information for each country. Regressions are conducted using survey weights.
+       Standard errors are clustered at the ADM1 level. $^{***}p<0.01$; $^{**}p<0.05$; $^{*}p<0.1$.}}
+\end{tabular}
+\label{main: tableA3}
+\end{center}
+\end{table}

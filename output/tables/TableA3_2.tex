@@ -1,0 +1,34 @@
+
+\begin{table}[H]
+\caption{Robustness Checks}
+\begin{center}
+\begin{tabular}{l c c c c c c c c c c}
+\hline
+ & Squared CT & Squared CT & Interaction CT with CDD & Interaction CT with CDD & Winsorized & Winsorized & Trimmed & Trimmed & Unweighted & Unweighted \\
+\hline
+AC                              & $0.358^{***}$ & $0.025$       & $0.348^{***}$ & $0.017$        & $0.435^{***}$ & $-0.030$       & $0.343^{***}$ & $0.011$        & $0.367^{***}$ & $-0.031$       \\
+                                & $(0.032)$     & $(0.063)$     & $(0.034)$     & $(0.061)$      & $(0.034)$     & $(0.072)$      & $(0.029)$     & $(0.059)$      & $(0.026)$     & $(0.057)$      \\
+AC $\times$ CDD                 &               & $0.039^{***}$ &               & $0.042^{***}$  &               & $0.059^{***}$  &               & $0.040^{***}$  &               & $0.034^{***}$  \\
+                                &               & $(0.010)$     &               & $(0.010)$      &               & $(0.012)$      &               & $(0.009)$      &               & $(0.007)$      \\
+AC $\times$ CDD$^2$             &               & $-0.001^{**}$ &               & $-0.001^{***}$ &               & $-0.001^{***}$ &               & $-0.001^{***}$ &               & $-0.001^{***}$ \\
+                                &               & $(0.000)$     &               & $(0.000)$      &               & $(0.000)$      &               & $(0.000)$      &               & $(0.000)$      \\
+\hline
+Correction Term                 & YES           & YES           & YES           & YES            & YES           & YES            & YES           & YES            & YES           & YES            \\
+ADM-1 FE                        & YES           & YES           & YES           & YES            & YES           & YES            & YES           & YES            & YES           & YES            \\
+Correction Term$^2$             & YES           & YES           & NO            & NO             & NO            & NO             & NO            & NO             & NO            & NO             \\
+Correction Term $\times$ f(CDD) & NO            & NO            & NO            & NO             & YES           & YES            & NO            & NO             & NO            & NO             \\
+Mean Outcome (kWh)              & $2495.943$    & $2495.943$    & $2495.943$    & $2495.943$     & $2277.863$    & $2277.863$     & $2123.612$    & $2123.612$     & $2495.943$    & $2495.943$     \\
+Countries                       & $25$          & $25$          & $25$          & $25$           & $25$          & $25$           & $25$          & $25$           & $25$          & $25$           \\
+Num. obs.                       & $682727$      & $682727$      & $682727$      & $682727$       & $682727$      & $682727$       & $616531$      & $616531$       & $682727$      & $682727$       \\
+Num. groups: adm1               & $393$         & $393$         & $393$         & $393$          & $393$         & $393$          & $374$         & $374$          & $393$         & $393$          \\
+R$^2$ (full model)              & $0.730$       & $0.731$       & $0.730$       & $0.731$        & $0.672$       & $0.675$        & $0.596$       & $0.598$        & $0.729$       & $0.731$        \\
+R$^2$ (proj model)              & $0.242$       & $0.246$       & $0.243$       & $0.246$        & $0.186$       & $0.193$        & $0.241$       & $0.246$        & $0.299$       & $0.303$        \\
+Adj. R$^2$ (full model)         & $0.730$       & $0.731$       & $0.730$       & $0.731$        & $0.672$       & $0.675$        & $0.595$       & $0.598$        & $0.729$       & $0.731$        \\
+Adj. R$^2$ (proj model)         & $0.242$       & $0.246$       & $0.243$       & $0.246$        & $0.186$       & $0.193$        & $0.241$       & $0.246$        & $0.299$       & $0.303$        \\
+\hline
+\multicolumn{11}{l}{\scriptsize{'Subnational' means at the most disaggregated geographical information for each country. Regressions are conducted using survey weights.
+       Standard errors are clustered at the ADM1 level. $^{***}p<0.01$; $^{**}p<0.05$; $^{*}p<0.1$.}}
+\end{tabular}
+\label{main: tableA3}
+\end{center}
+\end{table}

@@ -227,7 +227,7 @@ texreg(list(model1, model_iv1, model2, model_iv2), digits = 3,
        caption = "The Effect of Air-conditioning on Residential Electricity Quantity - Instrumenting Electricity Prices",
        stars = c(0.1, 0.05, 0.01), custom.model.names = c("DMF","DMF","DMF","DMF"),
        custom.note = "Clustered standard errors at the ADM1 level in parentheses. Regressions are conducted using survey weights. $^{***}p<0.01$; $^{**}p<0.05$; $^{*}p<0.1$", 
-       file = paste(output,'Table_S17.tex', sep=''), append=F,  
+       file = paste(output,'TableS17.tex', sep=''), append=F,  
        float.pos = "htbp", label = "si: tableS17",
        omit.coef = "(country)|(Intercept)|(selection)",
        custom.coef.map = list("ac"= "AC", "ac:curr_CDD18_db" = "AC $\\times$ CDD", 
@@ -290,6 +290,10 @@ gc()
 mean <- weighted.mean(exp(global$ln_ely_q), global$weight)
 mean
 
+# Country
+cntry <- length(unique.default(global$country))
+cntry
+
 
 # Export
 # Only AC
@@ -297,7 +301,7 @@ texreg(list(modelac0, modelac1, modelac2), digits = 3,
        caption = "Air-conditioning ownership - Instrumenting Electricity Prices",
        stars = c(0.1, 0.05, 0.01), custom.model.names = c("LPM","2SLS", "2SLS"),
        custom.note = "Clustered standard errors at the ADM1 level in parentheses. Regressions are conducted using survey weights. $^{***}p<0.01$; $^{**}p<0.05$; $^{*}p<0.1$", 
-       file = paste(output,'Table_S18.tex', sep=''), append=F,  
+       file = paste(output,'TableS18.tex', sep=''), append=F,  
        float.pos = "htbp", label = "si: tableS18",
        omit.coef = "(country)|(Intercept)|(selection)",
        custom.coef.map = list(
@@ -306,7 +310,7 @@ texreg(list(modelac0, modelac1, modelac2), digits = 3,
        custom.gof.rows = list("Controls" = c("YES", "YES", "YES"),
                               "Mean Outcome" = c(mean, mean, mean),
                               "Kleibergen-Paap Wald test" = c("", round(kpac1, digits = 3), round(kpac2, digits = 3)),
-                              "Countries" = c("25", "25", "25")), 
+                              "Countries" = c(cntry, cntry, cntry)), 
        caption.above = TRUE)
 
 # Clean
