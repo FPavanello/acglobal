@@ -1,10 +1,5 @@
 
-## This R-script:
-##      1) exploits CDD-dry bulb 24 deg and HDD-dry bulb 15 deg
-##      2) conducts STANDARDISED logit regressions for Mexico using 2016 wave
-##      3) run intensive margin regressions: electricity expenditure on climate + covariates
-##         using Dubin and McFadden (1984) approach
-
+# .rs.restartR()
 rm(list=ls(all=TRUE)) # Removes all previously created variables
 gc()                  # frees up memory resources
 
@@ -14,38 +9,33 @@ library(plyr)
 library(dplyr)
 library(FSA)
 library(haven)
-library(readstata13)
 library(stringr)
 library(tidyverse)
 library(sandwich)
 library(lmtest)
 library(ResourceSelection)
 library(multiwayvcov)
-library(msm) # https://stats.oarc.ucla.edu/r/faq/how-can-i-estimate-the-standard-error-of-transformed-regression-parameters-in-r-using-the-delta-method/
-library(margins)
 library(texreg)
 library(xtable)
-library(survey)
+library(stargazer)
+library(effects)
 library(fixest)
-library(tibble)
 library(marginaleffects)
 
 # Set users
-user <- 'fp'
-#user <- 'gf'
+user <- 'user'
 
-if (user=='fp') {
-  stub <- 'G:/.shortcut-targets-by-id/1JhN0qxmpnYQDoWQdBhnYKzbRCVGH_WXE/'
+if (user=='user') {
+  stub <- 'G:/.shortcut-targets-by-id/1JhN0qxmpnYQDoWQdBhnYKzbRCVGH_WXE/6-Projections/'
 }
 
-if (user=='gf') {
-  stub <- "F:/.shortcut-targets-by-id/1JhN0qxmpnYQDoWQdBhnYKzbRCVGH_WXE/"
-}
+house <- paste(stub,'data/household/', sep='')
+interm <- paste(stub,'results/regressions/for_graphs/subsamples/', sep='')
+interm <- 'C:/Users/Standard/Documents/Github/acglobal/interm/'
+output <- paste(stub,'output/figures/', sep='')
+output <- 'C:/Users/Standard/Documents/Github/acglobal/output/figures/'
+script <- 'C:/Users/Standard/Documents/Github/acglobal/rscript/4_standardised/input/standardised_country/'
 
-
-house <- paste(stub,'6-Projections/data/household/', sep='')
-output <- paste(stub,'6-Projections/results/regressions/', sep='')
-script <- paste(stub,'6-Projections/rscripts/dmcf/regressions/country/with_continuous_urbanisation/', sep='')
 
 # Load global data
 global <- readRDS(paste(house,'global.rds', sep=''))
