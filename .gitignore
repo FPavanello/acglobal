@@ -1,3 +1,4 @@
 
 *.ini
 rscript/1_descriptives/.Rhistory
+*.RData
