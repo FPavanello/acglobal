@@ -119,8 +119,8 @@ sec$ac_obs <- ifelse(sec$phat0_obs>0.5 & !is.na(sec$phat0_obs), 1 , 0)
 # Selection term
 sec$xb_noac = 1-sec$phat0_obs               
 sec$selection = ifelse(sec$ac==1, 
-                       (sec$xb_noac*log(sec$xb_noac)/sec$phat0_obs) + log(sec$phat0_obs), 
-                       (sec$phat0_obs*log(sec$phat0_obs)/sec$xb_noac) + log(sec$xb_noac))
+                       (sec$xb_noac*log(sec$xb_noac)/sec$phat0_obs) + log(sec$phat0_obs), # [P_0 * lnP_0 / (1 - P_0)] + lnP_1 = [P_0 * lnP_0 / P_1] + lnP_1
+                       (sec$phat0_obs*log(sec$phat0_obs)/sec$xb_noac) + log(sec$xb_noac)) # [P_1 * lnP_1 / (1 - P_1)] + lnP_0 = [P_1 * lnP_1 / P_0] + lnP_0
 
 # Mean AC
 mean_ac <- weighted.mean(sec$ac, sec$weight)

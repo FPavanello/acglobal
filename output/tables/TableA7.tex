@@ -6,27 +6,27 @@
 \hline
  & DMF & DMF & DMF \\
 \hline
-AC                          & $0.362^{***}$  & $0.364^{***}$  & $0.362^{***}$  \\
-                            & $(0.031)$      & $(0.036)$      & $(0.031)$      \\
-PV Capacity                 & $-0.045$       & $-0.042$       & $-0.280^{*}$   \\
-                            & $(0.041)$      & $(0.046)$      & $(0.170)$      \\
-AC $\times$ PV Capacity     &                & $-0.005$       &                \\
-                            &                & $(0.030)$      &                \\
-Log(P)                      & $-0.392^{***}$ & $-0.392^{***}$ & $-0.385^{***}$ \\
-                            & $(0.040)$      & $(0.040)$      & $(0.040)$      \\
-Log(P) $\times$ PV Capacity &                &                & $-0.134$       \\
-                            &                &                & $(0.082)$      \\
+AC                                 & $0.361^{***}$  & $0.401^{***}$  & $0.361^{***}$  \\
+                                   & $(0.031)$      & $(0.043)$      & $(0.031)$      \\
+asinh(PV Capacity)                 & $-0.008$       & $-0.007$       & $-0.042^{*}$   \\
+                                   & $(0.008)$      & $(0.008)$      & $(0.024)$      \\
+AC $\times$ asinh(PV Capacity)     &                & $-0.008$       &                \\
+                                   &                & $(0.008)$      &                \\
+Log(P)                             & $-0.393^{***}$ & $-0.395^{***}$ & $-0.369^{***}$ \\
+                                   & $(0.040)$      & $(0.040)$      & $(0.038)$      \\
+Log(P) $\times$ asinh(PV Capacity) &                &                & $-0.018^{*}$   \\
+                                   &                &                & $(0.010)$      \\
 \hline
-Correction Term             & YES            & YES            & YES            \\
-ADM-1 FE                    & YES            & YES            & YES            \\
-Mean Outcome                & $2495.943$     & $2495.943$     & $2495.943$     \\
-Countries                   & $25$           & $25$           & $25$           \\
-Num. obs.                   & $682727$       & $682727$       & $682727$       \\
-Num. groups: adm1           & $393$          & $393$          & $393$          \\
-R$^2$ (full model)          & $0.730$        & $0.730$        & $0.730$        \\
-R$^2$ (proj model)          & $0.241$        & $0.241$        & $0.241$        \\
-Adj. R$^2$ (full model)     & $0.729$        & $0.729$        & $0.729$        \\
-Adj. R$^2$ (proj model)     & $0.241$        & $0.241$        & $0.241$        \\
+Correction Term                    & YES            & YES            & YES            \\
+ADM-1 FE                           & YES            & YES            & YES            \\
+Mean Outcome                       & $2495.943$     & $2495.943$     & $2495.943$     \\
+Countries                          & $25$           & $25$           & $25$           \\
+Num. obs.                          & $682727$       & $682727$       & $682727$       \\
+Num. groups: adm1                  & $393$          & $393$          & $393$          \\
+R$^2$ (full model)                 & $0.730$        & $0.730$        & $0.730$        \\
+R$^2$ (proj model)                 & $0.241$        & $0.241$        & $0.242$        \\
+Adj. R$^2$ (full model)            & $0.729$        & $0.729$        & $0.729$        \\
+Adj. R$^2$ (proj model)            & $0.241$        & $0.241$        & $0.241$        \\
 \hline
 \multicolumn{4}{l}{\scriptsize{Clustered standard errors at the ADM1 level in parentheses. Regressions are conducted using survey weights. $^{***}p<0.01$; $^{**}p<0.05$; $^{*}p<0.1$}}
 \end{tabular}

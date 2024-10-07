@@ -56,10 +56,10 @@ global <- global %>% mutate(ln_ely_p_cdd = ln_ely_p*mean_CDD18_db,
                             edu_head_2 = as.factor(edu_head_2))
 
 # Median 
-global  <- global %>% mutate(pvcap_kw = pvcap*1000, # from MW to kW
-                             pvgen = pvcap*pvout, # pvgen in MW
-                             pvgen_kWh = pvcap_kw*pvout, # kW/(kWh/kW) -> kWh
-                             dpvint = ifelse(pvgen > median(pvgen, na.rm = TRUE), 1, 0))
+global  <- global %>% mutate(pvgen = pvcap*pvout, # pvgen in MW
+                             pvgen_kWh = pvcap*1000*pvout, # kW/(kWh/kW) -> kWh
+                             dpvint = ifelse(pvgen > median(pvgen, na.rm = TRUE), 1, 0),
+                             pvgen = asinh(pvgen))
 
 # Check
 global <- global[complete.cases(global$ln_ely_q), ]
@@ -158,10 +158,10 @@ texreg(list(model1, model2, model3), digits = 3,
        float.pos = "htbp", label = "main: tableA8",
        custom.coef.map = list("ac"= "AC", "ac:curr_CDD18_db" = "AC $\\times$ CDD", 
                               "ac:I(curr_CDD18_db^2)" = "AC $\\times$ CDD$^2$",
-                              "pvgen" = "PVGEN",
-                              "ac:pvgen" = "AC $\\times$ PV Capacity $\\times$ PVGEN",
+                              "pvgen" = "asinh(PV Generation)",
+                              "ac:pvgen" = "AC $\\times$ PV Capacity $\\times$ asinh(PV Generation)",
                               "ln_ely_p" = "Log(P)",
-                              "ln_ely_p:pvgen" = "Log(P) $\\times$ PVGEN"),
+                              "ln_ely_p:pvgen" = "Log(P) $\\times$ asinh(PV Generation)"),
        custom.gof.rows = list("Correction Term" = c("YES", "YES", "YES"), 
                               "ADM-1 FE" = c("YES", "YES", "YES"), 
                               "Mean Outcome" = c(mean, mean, mean), 
@@ -177,7 +177,7 @@ texreg(list(fs), digits = 3, caption = "Logit Regression for Air-conditioning Ow
        omit.coef = "(country)|(Intercept)", 
        custom.coef.map = list("pvout" = "PVOUT",
                               "pvcap" = "PV Capacity",
-                              "pvcap:pvout" = "PV Capacity $\\times$ PVOUT"),
+                              "pvgen" = "asinh(PV Generation)"),
        custom.gof.rows = list("ADM-1 FE" = c("YES"), 
                               "Mean Outcome" = c(mean_ac), 
                               "Countries" = c(cntry)), caption.above = TRUE)
