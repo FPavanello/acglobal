@@ -1,38 +1,35 @@
 
 \begin{table}[htbp]
-\caption{The Effect of Air-conditioning on Residential Electricity Quantity - PC}
+\caption{The Effect of Air-conditioning on Residential Electricity Quantity - PV Capacity}
 \begin{center}
-\begin{tabular}{l c c c c c c}
+\begin{tabular}{l c c c}
 \hline
- & DMF & DMF & DMF & DMF & DMF & DMF \\
+ & DMF & DMF & DMF \\
 \hline
-AC                      & $0.412^{***}$ & $0.352^{***}$ & $0.012$       & $0.350^{***}$ & $0.351^{***}$ & $0.006$       \\
-                        & $(0.036)$     & $(0.030)$     & $(0.102)$     & $(0.030)$     & $(0.029)$     & $(0.099)$     \\
-AC $\times$ CDD         &               &               & $0.037^{***}$ &               &               & $0.038^{***}$ \\
-                        &               &               & $(0.014)$     &               &               & $(0.014)$     \\
-AC $\times$ CDD$^2$     &               &               & $-0.001$      &               &               & $-0.001$      \\
-                        &               &               & $(0.000)$     &               &               & $(0.000)$     \\
-PC                      &               & $0.257^{***}$ & $0.254^{***}$ & $0.221^{***}$ & $0.230^{***}$ & $0.277^{***}$ \\
-                        &               & $(0.018)$     & $(0.017)$     & $(0.034)$     & $(0.054)$     & $(0.046)$     \\
-PC $\times$ CDD         &               &               &               & $0.003$       & $0.002$       & $-0.003$      \\
-                        &               &               &               & $(0.002)$     & $(0.008)$     & $(0.007)$     \\
-PC $\times$ CDD$^2$     &               &               &               &               & $0.000$       & $0.000$       \\
-                        &               &               &               &               & $(0.000)$     & $(0.000)$     \\
+AC                                 & $0.361^{***}$  & $0.401^{***}$  & $0.361^{***}$  \\
+                                   & $(0.031)$      & $(0.043)$      & $(0.031)$      \\
+asinh(PV Capacity)                 & $-0.008$       & $-0.007$       & $-0.042^{*}$   \\
+                                   & $(0.008)$      & $(0.008)$      & $(0.024)$      \\
+AC $\times$ asinh(PV Capacity)     &                & $-0.008$       &                \\
+                                   &                & $(0.008)$      &                \\
+Log(P)                             & $-0.393^{***}$ & $-0.395^{***}$ & $-0.369^{***}$ \\
+                                   & $(0.040)$      & $(0.040)$      & $(0.038)$      \\
+Log(P) $\times$ asinh(PV Capacity) &                &                & $-0.018^{*}$   \\
+                                   &                &                & $(0.010)$      \\
 \hline
-Correction Term (AC)    & YES           & YES           & YES           & YES           & YES           & YES           \\
-Correction Term (pc)    & NO            & YES           & YES           & YES           & YES           & YES           \\
-ADM-1 FE                & YES           & YES           & YES           & YES           & YES           & YES           \\
-Mean Outcome            & $1936.902$    & $1936.902$    & $1936.902$    & $1936.902$    & $1936.902$    & $1936.902$    \\
-Countries               & $19$          & $19$          & $19$          & $19$          & $19$          & $19$          \\
-Num. obs.               & $384391$      & $384391$      & $384391$      & $384391$      & $384391$      & $384391$      \\
-Num. groups: adm1       & $221$         & $221$         & $221$         & $221$         & $221$         & $221$         \\
-R$^2$ (full model)      & $0.697$       & $0.706$       & $0.708$       & $0.706$       & $0.706$       & $0.708$       \\
-R$^2$ (proj model)      & $0.224$       & $0.246$       & $0.251$       & $0.247$       & $0.247$       & $0.251$       \\
-Adj. R$^2$ (full model) & $0.697$       & $0.706$       & $0.707$       & $0.706$       & $0.706$       & $0.707$       \\
-Adj. R$^2$ (proj model) & $0.224$       & $0.246$       & $0.251$       & $0.246$       & $0.246$       & $0.251$       \\
+Correction Term                    & YES            & YES            & YES            \\
+ADM-1 FE                           & YES            & YES            & YES            \\
+Mean Outcome                       & $2495.943$     & $2495.943$     & $2495.943$     \\
+Countries                          & $25$           & $25$           & $25$           \\
+Num. obs.                          & $682727$       & $682727$       & $682727$       \\
+Num. groups: adm1                  & $393$          & $393$          & $393$          \\
+R$^2$ (full model)                 & $0.730$        & $0.730$        & $0.730$        \\
+R$^2$ (proj model)                 & $0.241$        & $0.241$        & $0.242$        \\
+Adj. R$^2$ (full model)            & $0.729$        & $0.729$        & $0.729$        \\
+Adj. R$^2$ (proj model)            & $0.241$        & $0.241$        & $0.241$        \\
 \hline
-\multicolumn{7}{l}{\scriptsize{Clustered standard errors at the ADM1 level in parentheses. Regressions are conducted using survey weights. $^{***}p<0.01$; $^{**}p<0.05$; $^{*}p<0.1$}}
+\multicolumn{4}{l}{\scriptsize{Clustered standard errors at the ADM1 level in parentheses. Regressions are conducted using survey weights. $^{***}p<0.01$; $^{**}p<0.05$; $^{*}p<0.1$}}
 \end{tabular}
-\label{main: tableA12}
+\label{main: tableA7}
 \end{center}
 \end{table}

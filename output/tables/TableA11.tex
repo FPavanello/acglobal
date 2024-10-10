@@ -1,38 +1,35 @@
 
 \begin{table}[htbp]
-\caption{The Effect of Air-conditioning on Residential Electricity Quantity - Television}
+\caption{The Effect of Air-conditioning on Residential Electricity Quantity - PV Potential Output}
 \begin{center}
-\begin{tabular}{l c c c c c c}
+\begin{tabular}{l c c c}
 \hline
- & DMF & DMF & DMF & DMF & DMF & DMF \\
+ & DMF & DMF & DMF \\
 \hline
-AC                      & $0.365^{***}$ & $0.358^{***}$ & $0.055$       & $0.359^{***}$ & $0.359^{***}$ & $0.056$      \\
-                        & $(0.035)$     & $(0.034)$     & $(0.085)$     & $(0.034)$     & $(0.034)$     & $(0.085)$    \\
-AC $\times$ CDD         &               &               & $0.033^{**}$  &               &               & $0.033^{**}$ \\
-                        &               &               & $(0.013)$     &               &               & $(0.013)$    \\
-AC $\times$ CDD$^2$     &               &               & $-0.001^{*}$  &               &               & $-0.001^{*}$ \\
-                        &               &               & $(0.000)$     &               &               & $(0.000)$    \\
-TV                      &               & $0.253^{***}$ & $0.247^{***}$ & $0.162^{***}$ & $0.191^{**}$  & $0.212^{**}$ \\
-                        &               & $(0.031)$     & $(0.031)$     & $(0.059)$     & $(0.097)$     & $(0.097)$    \\
-TV $\times$ CDD         &               &               &               & $0.004$       & $0.000$       & $-0.002$     \\
-                        &               &               &               & $(0.003)$     & $(0.012)$     & $(0.011)$    \\
-TV $\times$ CDD$^2$     &               &               &               &               & $0.000$       & $0.000$      \\
-                        &               &               &               &               & $(0.000)$     & $(0.000)$    \\
+AC                      & $0.361^{***}$  & $0.552^{***}$  & $0.361^{***}$ \\
+                        & $(0.031)$      & $(0.186)$      & $(0.031)$     \\
+PVOUT                   & $-0.207^{**}$  & $-0.196^{*}$   & $-0.141$      \\
+                        & $(0.099)$      & $(0.101)$      & $(0.179)$     \\
+AC $\times$ PVOUT       &                & $-0.051$       &               \\
+                        &                & $(0.047)$      &               \\
+Log(P)                  & $-0.386^{***}$ & $-0.385^{***}$ & $-0.549^{*}$  \\
+                        & $(0.039)$      & $(0.039)$      & $(0.315)$     \\
+Log(P) $\times$ PVOUT   &                &                & $0.041$       \\
+                        &                &                & $(0.081)$     \\
 \hline
-Correction Term (AC)    & YES           & YES           & YES           & YES           & YES           & YES          \\
-Correction Term (TV)    & NO            & YES           & YES           & YES           & YES           & YES          \\
-ADM-1 FE                & YES           & YES           & YES           & YES           & YES           & YES          \\
-Mean Outcome            & $1767.430$    & $1767.430$    & $1767.430$    & $1767.430$    & $1767.430$    & $1767.430$   \\
-Countries               & $23$          & $23$          & $23$          & $23$          & $23$          & $23$         \\
-Num. obs.               & $586153$      & $586153$      & $586153$      & $586153$      & $586153$      & $586153$     \\
-Num. groups: adm1       & $287$         & $287$         & $287$         & $287$         & $287$         & $287$        \\
-R$^2$ (full model)      & $0.676$       & $0.679$       & $0.680$       & $0.679$       & $0.679$       & $0.680$      \\
-R$^2$ (proj model)      & $0.261$       & $0.268$       & $0.271$       & $0.268$       & $0.268$       & $0.271$      \\
-Adj. R$^2$ (full model) & $0.676$       & $0.679$       & $0.680$       & $0.679$       & $0.679$       & $0.680$      \\
-Adj. R$^2$ (proj model) & $0.261$       & $0.268$       & $0.271$       & $0.268$       & $0.268$       & $0.271$      \\
+Correction Term         & YES            & YES            & YES           \\
+ADM-1 FE                & YES            & YES            & YES           \\
+Mean Outcome            & $2495.943$     & $2495.943$     & $2495.943$    \\
+Countries               & $25$           & $25$           & $25$          \\
+Num. obs.               & $682727$       & $682727$       & $682727$      \\
+Num. groups: adm1       & $393$          & $393$          & $393$         \\
+R$^2$ (full model)      & $0.730$        & $0.730$        & $0.730$       \\
+R$^2$ (proj model)      & $0.242$        & $0.242$        & $0.242$       \\
+Adj. R$^2$ (full model) & $0.730$        & $0.730$        & $0.730$       \\
+Adj. R$^2$ (proj model) & $0.242$        & $0.242$        & $0.242$       \\
 \hline
-\multicolumn{7}{l}{\scriptsize{Clustered standard errors at the ADM1 level in parentheses. Regressions are conducted using survey weights. $^{***}p<0.01$; $^{**}p<0.05$; $^{*}p<0.1$}}
+\multicolumn{4}{l}{\scriptsize{Clustered standard errors at the ADM1 level in parentheses. Regressions are conducted using survey weights. $^{***}p<0.01$; $^{**}p<0.05$; $^{*}p<0.1$}}
 \end{tabular}
-\label{main: tableA11}
+\label{main: tableA6}
 \end{center}
 \end{table}
