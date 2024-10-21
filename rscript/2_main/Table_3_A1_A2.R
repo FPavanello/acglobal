@@ -152,7 +152,7 @@ texreg(list(reg_ac00, reg_ac0, fs), digits = 3, caption = "Logit Regression for 
                               "ln_ely_p_nme" = "Log(P) $\\times$ Household Size",
                               "ln_ely_p_own" = "Log(P) $\\times$ House Ownership",
                               "urban_sh" = "Urbanisation (\\%)", 
-                              "ownership_d1" = "House Ownership (Yes = 1)", 
+                              "ownership_d" = "House Ownership (Yes = 1)", 
                               "n_members" = "Household Size", 
                               "edu_head_21" = "Primary Edu.", 
                               "edu_head_22" = "Secondary Edu.", 
