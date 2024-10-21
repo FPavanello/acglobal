@@ -86,6 +86,7 @@ global <- global %>% filter(weight > 0)
 # Formula first-stage
 ac_formula <- ac ~ mean_CDD18_db + mean_CDD18_db2 + 
   mean_CDD18_db_exp + mean_CDD18_db2_exp + ln_total_exp_usd_2011 + curr_CDD18_db + curr_CDD18_db2 + 
+  curr_HDD18_db + I(curr_HDD18_db^2) +
   ln_ely_p + ln_ely_p_cdd + ln_ely_p_cdd2 + ln_ely_p_nme + ln_ely_p_own + 
   urban_sh + ownership_d + 
   n_members + edu_head_2 + age_head + sex_head + pvgen | country
@@ -146,6 +147,7 @@ gc()
 # Formula first-stage
 ac_formula <- ac ~ mean_CDD18_db + mean_CDD18_db2 + 
   mean_CDD18_db_exp + mean_CDD18_db2_exp + ln_total_exp_usd_2011 + curr_CDD18_db + curr_CDD18_db2 + 
+  curr_HDD18_db + I(curr_HDD18_db^2) +
   ln_ely_p + ln_ely_p_cdd + ln_ely_p_cdd2 + ln_ely_p_nme + ln_ely_p_own + 
   urban_sh + ownership_d + 
   n_members + edu_head_2 + age_head + sex_head + dpvint | country
@@ -206,6 +208,7 @@ gc()
 # Formula first-stage
 ac_formula <- ac ~ mean_CDD18_db + mean_CDD18_db2 + 
   mean_CDD18_db_exp + mean_CDD18_db2_exp + ln_total_exp_usd_2011 + curr_CDD18_db + curr_CDD18_db2 + 
+  curr_HDD18_db + I(curr_HDD18_db^2) +
   ln_ely_p + ln_ely_p_cdd + ln_ely_p_cdd2 + ln_ely_p_nme + ln_ely_p_own + 
   urban_sh + ownership_d + 
   n_members + edu_head_2 + age_head + sex_head + pvcap | country
@@ -266,6 +269,7 @@ gc()
 # Formula first-stage
 ac_formula <- ac ~ mean_CDD18_db + mean_CDD18_db2 + 
   mean_CDD18_db_exp + mean_CDD18_db2_exp + ln_total_exp_usd_2011 + curr_CDD18_db + curr_CDD18_db2 + 
+  curr_HDD18_db + I(curr_HDD18_db^2) +
   ln_ely_p + ln_ely_p_cdd + ln_ely_p_cdd2 + ln_ely_p_nme + ln_ely_p_own + 
   urban_sh + ownership_d + 
   n_members + edu_head_2 + age_head + sex_head + pvout | country

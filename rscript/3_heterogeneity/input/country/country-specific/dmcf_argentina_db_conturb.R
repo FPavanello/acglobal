@@ -76,7 +76,8 @@ HH_Argentina <- dplyr::filter(global, country == "Argentina")
 
 
 # AC formula for Argentina
-ac_formula_arg <- ac ~ mean_CDD18_db + mean_CDD18_db2 + curr_CDD18_db + curr_CDD18_db2 + 
+ac_formula_arg <- ac ~ mean_CDD18_db + mean_CDD18_db2 + curr_CDD18_db + curr_CDD18_db2 +  
+  curr_HDD18_db + I(curr_HDD18_db^2) +
   mean_CDD18_db_exp + mean_CDD18_db2_exp + ln_total_exp_usd_2011 +
   ln_ely_p + ln_ely_p_cdd + ln_ely_p_cdd2 + ln_ely_p_nme + ln_ely_p_own + 
   urban_sh + ownership_d + 
@@ -135,10 +136,9 @@ model3 <- feols(ely_formula_arg, data = HH_Argentina, weights = ~weight, cluster
 
 # Marginal effect of AC
 ac_eff <- avg_slopes(model3, variables = "ac", slope = "dydx", wts = HH_Argentina$weight)
-summary(ac_eff)
 
 # Save coefficients in data frame
-dydx_ac <- summary(ac_eff)
+dydx_ac <- ac_eff
 
 # Save the R Environment will be used for the projections
 save(list = c("reg_ac", "HH_Argentina", "model3", "dydx_ac"), 

@@ -89,6 +89,7 @@ global <- global %>% filter(weight > 0)
 # AC formula for global
 ac_formula <- as.numeric(as.character(ac)) ~ mean_CDD18_db + mean_CDD18_db2 + 
   mean_CDD18_db_exp + mean_CDD18_db2_exp + ln_total_exp_usd_2011 + curr_CDD18_db + curr_CDD18_db2 + 
+  curr_HDD18_db + I(curr_HDD18_db^2) +
   ln_ely_p + ln_ely_p_cdd + ln_ely_p_cdd2 + ln_ely_p_nme + ln_ely_p_own + 
   urban_sh + ownership_d + 
   n_members + edu_head_2 + age_head + sex_head | adm1
@@ -174,7 +175,7 @@ ac_c <- ac_cdd %>%
   ggplot(aes(x= cdd, y=AME)) + geom_point() + 
   geom_errorbar(aes(ymin=CI_lb, ymax=CI_ub), alpha=0.6, size=0.6, width=0.4) +
   geom_bar(aes(x=cdd, y=Freq/10000000),stat="identity", fill = "steelblue", alpha = 0.3) + # scale for plotting reasons
-  geom_hline(aes(yintercept=35.1), linetype="dashed", color = "red") +
+  geom_hline(aes(yintercept=36.2), linetype="dashed", color = "red") +
   xlab("Cooling Degree Days") +
   ylab("Additional Electricity Demand due to Air-conditioning \n(Marginal Effect, %)") +
   theme_classic() +

@@ -77,12 +77,13 @@ HH_Pakistan <- dplyr::filter(global, country == "Pakistan")
 # AC formula for Pakistan
 ac_formula_pak <- ac ~ mean_CDD18_db + mean_CDD18_db2 + curr_CDD18_db + curr_CDD18_db2 + 
   mean_CDD18_db_exp + mean_CDD18_db2_exp + ln_total_exp_usd_2011 +
+  curr_HDD18_db + I(curr_HDD18_db^2) +
   ln_ely_p + ln_ely_p_cdd + ln_ely_p_cdd2 + ln_ely_p_nme + ln_ely_p_own + 
   urban_sh + ownership_d + 
   n_members + edu_head_2 + age_head + sex_head + housing_index_lab | adm1
 
 # Logistic regression of AC on covariates
-reg_ac <- feglm(ac_formula_pak, family = binomial(link = "logit"), data = HH_Pakistan, weights = ~weight, cluster = c("adm1"))
+reg_ac <- feglm(ac_formula_pak, family = binomial(link = "logit"), data = HH_Pakistan, weights = ~weight, cluster = c("adm1"), glm.iter = 50)
 
 # Predicted probabilities
 HH_Pakistan$phat0_obs <- as.numeric(predict(reg_ac, type="response")) 
@@ -133,10 +134,9 @@ model3 <- feols(ely_formula_pak, data = HH_Pakistan, weights = ~weight, cluster 
 
 #  Marginal effect of AC
 ac_eff <- avg_slopes(model3, variables = "ac", slope = "dydx", wts = HH_Pakistan$weight)
-summary(ac_eff)
 
 # Save coefficients in data frame
-dydx_ac <- summary(ac_eff)
+dydx_ac <- ac_eff
 
 # Save the R Environment will be used for the projections
 save(list = c("reg_ac", "HH_Pakistan", "model3", "dydx_ac"), 

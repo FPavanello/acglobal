@@ -1,7 +1,7 @@
 
 ##########################################
 
-#                 Table A6
+#                 Table A11
 
 ##########################################
 
@@ -78,6 +78,7 @@ global <- global %>% filter(weight > 0)
 # Formula first-stage
 ac_formula <- ac ~ mean_CDD18_db + mean_CDD18_db2 + 
   mean_CDD18_db_exp + mean_CDD18_db2_exp + ln_total_exp_usd_2011 + curr_CDD18_db + curr_CDD18_db2 + 
+  curr_HDD18_db + I(curr_HDD18_db^2) +
   ln_ely_p + ln_ely_p_cdd + ln_ely_p_cdd2 + ln_ely_p_nme + ln_ely_p_own + 
   urban_sh + ownership_d + 
   n_members + edu_head_2 + age_head + sex_head + pvout | adm1
@@ -153,8 +154,8 @@ texreg(list(model1, model2, model3), digits = 3,
        caption = "The Effect of Air-conditioning on Residential Electricity Quantity - PV Potential Output",
        stars = c(0.1, 0.05, 0.01), custom.model.names = c("DMF", "DMF", "DMF"),
        custom.note = "Clustered standard errors at the ADM1 level in parentheses. Regressions are conducted using survey weights. $^{***}p<0.01$; $^{**}p<0.05$; $^{*}p<0.1$", 
-       file = paste(output,'TableA6.tex', sep=''), append=F,  
-       float.pos = "htbp", label = "main: tableA6",
+       file = paste(output,'TableA11.tex', sep=''), append=F,  
+       float.pos = "htbp", label = "main: tableA11",
        custom.coef.map = list("ac"= "AC", "ac:curr_CDD18_db" = "AC $\\times$ CDD", 
                               "ac:I(curr_CDD18_db^2)" = "AC $\\times$ CDD$^2$",
                               "pvout" = "PVOUT",

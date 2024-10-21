@@ -53,6 +53,7 @@ global <- global %>% mutate(ln_ely_p_cdd = ln_ely_p*mean_CDD18_db,
                             mean_CDD18_db_exp = ln_total_exp_usd_2011*mean_CDD18_db,
                             mean_CDD18_db2_exp = ln_total_exp_usd_2011*(mean_CDD18_db^2),
                             curr_CDD18_db2 = curr_CDD18_db^2,
+                            curr_HDD18_db2 = curr_HDD18_db^2,
                             edu_head_2 = as.factor(edu_head_2))
 
 # Check
@@ -85,7 +86,8 @@ global <- global %>% filter(weight > 0)
 
 # AC formula for global
 ac_formula <- ac ~ mean_CDD18_db + mean_CDD18_db2 +
-  ln_total_exp_usd_2011 + curr_CDD18_db + curr_CDD18_db2 +  
+  ln_total_exp_usd_2011 + curr_CDD18_db + curr_CDD18_db2 + 
+  curr_HDD18_db + curr_HDD18_db2 + 
   ln_ely_p + ln_ely_p_cdd + ln_ely_p_cdd2 + ln_ely_p_nme + ln_ely_p_own + 
   urban_sh + ownership_d +
   n_members + edu_head_2 + age_head + sex_head | adm1
@@ -96,6 +98,7 @@ reg_ac00 <- feols(ac_formula, data = global, weights = ~weight, cluster = c("adm
 # AC formula for global
 ac_formula <- ac ~ mean_CDD18_db + mean_CDD18_db2 + 
   mean_CDD18_db_exp + mean_CDD18_db2_exp + ln_total_exp_usd_2011 + curr_CDD18_db + curr_CDD18_db2 + 
+  curr_HDD18_db + curr_HDD18_db2 + 
   ln_ely_p + ln_ely_p_cdd + ln_ely_p_cdd2 + ln_ely_p_nme + ln_ely_p_own + 
   urban_sh + ownership_d + 
   n_members + edu_head_2 + age_head + sex_head | adm1
@@ -141,6 +144,7 @@ texreg(list(reg_ac00, reg_ac0, fs), digits = 3, caption = "Logit Regression for 
                               "mean_CDD18_db_exp" = "$\\overline{CDD}$ $\\times$ Log(Exp)", 
                               "mean_CDD18_db2_exp" = "$\\overline{CDD}^2$ $\\times$ Log(Exp)",
                               "curr_CDD18_db" = "$CDD$", "curr_CDD18_db2" = "$CDD^2$",
+                              "curr_HDD18_db" = "$HDD$", "curr_HDD18_db2" = "$HDD^2$",
                               "ln_ely_p_cdd" = "$\\overline{CDD}$ $\\times$ Log(P)", 
                               "ln_ely_p_cdd2" = "$\\overline{CDD}^2$ $\\times$ Log(P)",
                               "ln_total_exp_usd_2011" = "Log(Exp)",
@@ -160,7 +164,8 @@ texreg(list(reg_ac00, reg_ac0, fs), digits = 3, caption = "Logit Regression for 
                               "Countries" = c(ncoun, ncoun, ncoun)), caption.above = TRUE)
 
 # Average marginal effects (AMEs)
-margins <- avg_slopes(fs, wts = global$weight)
+rm(reg_ac0, reg_ac00)
+margins <- avg_slopes(fs, wts = sec$weight, newdata = sec)
 summary(margins)
 gc()
 
@@ -171,9 +176,31 @@ print(xtable(summary(margins), display=rep('g', 9), caption = "Logit Regression 
       caption.placement="top")
 
 # Clean
-rm(reg_ac0, reg_ac00)
+rm(margins)
 gc()
 
+
+# Get full marginal effects
+# AC formula for global
+ac_formula <- ac ~ mean_CDD18_db + I(mean_CDD18_db^2) + 
+  mean_CDD18_db*ln_total_exp_usd_2011 + I(mean_CDD18_db^2)*ln_total_exp_usd_2011 + ln_total_exp_usd_2011 + 
+  curr_CDD18_db + I(curr_CDD18_db^2) +
+  curr_HDD18_db + I(curr_HDD18_db^2) +
+  ln_ely_p + ln_ely_p*mean_CDD18_db + ln_ely_p*I(mean_CDD18_db^2) + ln_ely_p*n_members + ln_ely_p*ownership_d + 
+  urban_sh + ownership_d + 
+  n_members + edu_head_2 + age_head + sex_head | adm1
+
+# LPM
+flpm <- feols(ac_formula, data = global, weights = ~weight, cluster = c("adm1")); summary(flpm)
+flpm_marg <- avg_slopes(flpm, wts = sec$weight, newdata = sec)
+summary(flpm_marg) # 100 CDD -> 4.1, 1% Exp -> 0.08
+gc()
+
+# Logit regression
+ffs <- feglm(ac_formula, family = binomial(link = "logit"), data = global, weights = ~weight, cluster = c("adm1")); summary(ffs)
+ffs_marg <- avg_slopes(ffs, wts = sec$weight, newdata = sec)
+summary(ffs_marg) # 100 CDD -> 5.7, 1% Exp -> 0.08
+gc()
 
 
 ########################################

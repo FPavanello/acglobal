@@ -84,6 +84,7 @@ global <- global %>% filter(weight > 0)
 # AC formula for global
 ac_formula <- ac ~ mean_CDD18_db + mean_CDD18_db2 +
   mean_CDD18_db_exp + mean_CDD18_db2_exp + ln_total_exp_usd_2011 + curr_CDD18_db + curr_CDD18_db2 +  
+  curr_HDD18_db + I(curr_HDD18_db^2) +
   ln_ely_p + ln_ely_p_cdd + ln_ely_p_cdd2 + ln_ely_p_nme + ln_ely_p_own + 
   urban_sh + ownership_d +
   n_members + edu_head_2 + age_head + sex_head | subnat
@@ -142,7 +143,8 @@ gc()
 
 # AC formula for global
 ac_formula <- ac ~ mean_CDD18_db + mean_CDD18_db2 +
-  mean_CDD18_db_exp + mean_CDD18_db2_exp + ln_total_exp_usd_2011 + curr_CDD18_db + curr_CDD18_db2 +  
+  mean_CDD18_db_exp + mean_CDD18_db2_exp + ln_total_exp_usd_2011 + curr_CDD18_db + curr_CDD18_db2 + 
+  curr_HDD18_db + I(curr_HDD18_db^2) +
   ln_ely_p + ln_ely_p_cdd + ln_ely_p_cdd2 + ln_ely_p_nme + ln_ely_p_own + 
   urban_sh + ownership_d +
   n_members + edu_head_2 + age_head + sex_head | country
@@ -204,6 +206,7 @@ gc()
 # AC formula for global
 ac_formula <- ac ~ mean_CDD_db + I(mean_CDD_db^2) +
   ln_total_exp_usd_2011*mean_CDD_db + ln_total_exp_usd_2011*I(mean_CDD_db^2) + ln_total_exp_usd_2011 + curr_CDD_db + I(curr_CDD_db^2) +  
+  curr_HDD_db + I(curr_HDD_db^2) +
   ln_ely_p + ln_ely_p*mean_CDD_db + ln_ely_p*I(mean_CDD_db^2) + ln_ely_p_nme + ln_ely_p_own + 
   urban_sh + ownership_d +
   n_members + edu_head_2 + age_head + sex_head | adm1
@@ -263,6 +266,7 @@ gc()
 # AC formula for global
 ac_formula <- ac ~ mean_CDD18_db + mean_CDD18_db2 +
   mean_CDD18_db_exp + mean_CDD18_db2_exp + ln_total_exp_usd_2011 + curr_CDD18_db + curr_CDD18_db2 + 
+  curr_HDD18_db + I(curr_HDD18_db^2) +
   ln_ely_p + ln_ely_p*mean_CDD_db + ln_ely_p*I(mean_CDD_db^2) + ln_ely_p_nme + ln_ely_p_own + 
   urban_sh + ownership_d + 
   n_members + edu_head_2 + age_head + sex_head | adm1
@@ -327,6 +331,7 @@ setDT(global)[,dec_inc := cut(total_exp_usd_2011, breaks = quantile(total_exp_us
 # AC formula for global
 ac_formula <- as.numeric(as.character(ac)) ~ mean_CDD18_db + mean_CDD18_db2 + 
   mean_CDD18_db_exp + mean_CDD18_db2_exp + ln_total_exp_usd_2011 + curr_CDD18_db + curr_CDD18_db2 + 
+  curr_HDD18_db + I(curr_HDD18_db^2) +
   ln_ely_p + ln_ely_p_cdd + ln_ely_p_cdd2 + ln_ely_p_nme + ln_ely_p_own + ln_ely_p*dec_inc + dec_inc +
   urban_sh + ownership_d + 
   n_members + edu_head_2 + age_head + sex_head | adm1
@@ -386,7 +391,8 @@ gc()
 
 # AC formula for global
 ac_formula <- ac ~ mean_CDD18_db + mean_CDD18_db2 +
-  mean_CDD18_db_exp + mean_CDD18_db2_exp + ln_total_exp_usd_2011 + curr_CDD18_db + curr_CDD18_db2 +  
+  mean_CDD18_db_exp + mean_CDD18_db2_exp + ln_total_exp_usd_2011 + curr_CDD18_db + curr_CDD18_db2 + 
+  curr_HDD18_db + I(curr_HDD18_db^2) +
   ln_ely_p + ln_ely_p_cdd + ln_ely_p_cdd2 + ln_ely_p_nme + ln_ely_p_own + 
   urban_sh + ownership_d +
   n_members + edu_head_2 + age_head + sex_head | adm1
@@ -449,6 +455,7 @@ gc()
 # AC formula for global
 ac_formula <- ac ~ mean_CDD18_db + mean_CDD18_db2 +
   mean_CDD18_db_exp + mean_CDD18_db2_exp + ln_total_exp_usd_2011 + curr_CDD18_db + curr_CDD18_db2 +  
+  curr_HDD18_db + I(curr_HDD18_db^2) +
   ln_ely_p + ln_ely_p_cdd + ln_ely_p_cdd2 + ln_ely_p_nme + ln_ely_p_own + 
   urban_sh + ownership_d +
   n_members + edu_head_2 + age_head + sex_head | adm1
@@ -524,7 +531,7 @@ gc()
 # AC formula for global
 ac_formula <- ac ~ mean_CDD18_dbw + I(mean_CDD18_dbw^2) +
   ln_total_exp_usd_2011w*mean_CDD18_dbw + ln_total_exp_usd_2011w*I(mean_CDD18_dbw^2) + ln_total_exp_usd_2011w + curr_CDD18_dbw + I(curr_CDD18_dbw^2) +  
-  ln_ely_p + ln_ely_p*mean_CDD18_dbw + ln_ely_p*I(mean_CDD18_dbw^2) + ln_ely_p_nme + ln_ely_p_own + 
+  curr_HDD18_db + I(curr_HDD18_db^2) + ln_ely_p + ln_ely_p*mean_CDD18_dbw + ln_ely_p*I(mean_CDD18_dbw^2) + ln_ely_p_nme + ln_ely_p_own + 
   urban_sh + ownership_d +
   n_members + edu_head_2 + age_head + sex_head  | adm1
 
@@ -590,7 +597,8 @@ global_trim <- filter(global, ely_q >= cut_point_bottom & ely_q <= cut_point_top
 
 # AC formula for global
 ac_formula <- ac ~ mean_CDD18_db + mean_CDD18_db2 +
-  mean_CDD18_db_exp + mean_CDD18_db2_exp + ln_total_exp_usd_2011 + curr_CDD18_db + curr_CDD18_db2 +  
+  mean_CDD18_db_exp + mean_CDD18_db2_exp + ln_total_exp_usd_2011 + curr_CDD18_db + curr_CDD18_db2 + 
+  curr_HDD18_db + I(curr_HDD18_db^2) +
   ln_ely_p + ln_ely_p_cdd + ln_ely_p_cdd2 + ln_ely_p_nme + ln_ely_p_own + 
   urban_sh + ownership_d +
   n_members + edu_head_2 + age_head + sex_head | adm1
@@ -651,6 +659,7 @@ gc()
 # AC formula for global
 ac_formula <- ac ~ mean_CDD18_db + mean_CDD18_db2 +
   mean_CDD18_db_exp + mean_CDD18_db2_exp + ln_total_exp_usd_2011 + curr_CDD18_db + curr_CDD18_db2 +  
+  curr_HDD18_db + I(curr_HDD18_db^2) +
   ln_ely_p + ln_ely_p_cdd + ln_ely_p_cdd2 + ln_ely_p_nme + ln_ely_p_own + 
   urban_sh + ownership_d +
   n_members + edu_head_2 + age_head + sex_head | adm1

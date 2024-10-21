@@ -85,6 +85,7 @@ global <- global %>% filter(weight > 0)
 # Formula first-stage
 ac_formula <- ac ~ mean_CDD18_db + mean_CDD18_db2 + 
   mean_CDD18_db_exp + mean_CDD18_db2_exp + ln_total_exp_usd_2011 + curr_CDD18_db + curr_CDD18_db2 + 
+  curr_HDD18_db + I(curr_HDD18_db^2) +
   ln_ely_p + ln_ely_p_cdd + ln_ely_p_cdd2 + ln_ely_p_nme + ln_ely_p_own + 
   urban_sh + ownership_d + 
   n_members + edu_head_2 + age_head + sex_head + pvgen | adm1
@@ -154,8 +155,8 @@ texreg(list(model1, model2, model3), digits = 3,
        stars = c(0.1, 0.05, 0.01), custom.model.names = c("DMF", "DMF", "DMF"),
        omit.coef = "(country)|(Intercept)|(selection)",
        custom.note = "Clustered standard errors at the ADM1 level in parentheses. Regressions are conducted using survey weights. $^{***}p<0.01$; $^{**}p<0.05$; $^{*}p<0.1$", 
-       file = paste(output,'TableA8.tex', sep=''), append=F,  
-       float.pos = "htbp", label = "main: tableA8",
+       file = paste(output,'TableA13.tex', sep=''), append=F,  
+       float.pos = "htbp", label = "main: tableA13",
        custom.coef.map = list("ac"= "AC", "ac:curr_CDD18_db" = "AC $\\times$ CDD", 
                               "ac:I(curr_CDD18_db^2)" = "AC $\\times$ CDD$^2$",
                               "pvgen" = "asinh(PV Generation)",
@@ -172,8 +173,8 @@ texreg(list(model1, model2, model3), digits = 3,
 texreg(list(fs), digits = 3, caption = "Logit Regression for Air-conditioning Ownership - PV Potential Output and PV Capacity (continuous)",
        stars = c(0.1, 0.05, 0.01), custom.model.names = c("Logit"),
        custom.note = "\\textbf{Notes}: Dependent variable is air-conditioning (0,1). Clustered std. errors at the ADM-1 level in parentheses. $^{***}p<0.01$; $^{**}p<0.05$; $^{*}p<0.1$. Regressions are conducted using survey weights.", 
-       file = paste(output,'TableA9_1.tex', sep=''), append=F,  
-       float.pos = "H", label = "main: tableA9",
+       file = paste(output,'TableA14_1.tex', sep=''), append=F,  
+       float.pos = "H", label = "main: tableA14",
        omit.coef = "(country)|(Intercept)", 
        custom.coef.map = list("pvout" = "PVOUT",
                               "pvcap" = "PV Capacity",
@@ -192,6 +193,7 @@ gc()
 # Formula first-stage
 ac_formula <- ac ~ mean_CDD18_db + mean_CDD18_db2 + 
   mean_CDD18_db_exp + mean_CDD18_db2_exp + ln_total_exp_usd_2011 + curr_CDD18_db + curr_CDD18_db2 + 
+  curr_HDD18_db + I(curr_HDD18_db^2) +
   ln_ely_p + ln_ely_p_cdd + ln_ely_p_cdd2 + ln_ely_p_nme + ln_ely_p_own + 
   urban_sh + ownership_d + 
   n_members + edu_head_2 + age_head + sex_head + dpvint | adm1
@@ -285,8 +287,8 @@ texreg(list(model4, model5, model6), digits = 3,
 texreg(list(fs), digits = 3, caption = "Logit Regression for Air-conditioning Ownership - PV Potential Output and PV Capacity (dummy)",
        stars = c(0.1, 0.05, 0.01), custom.model.names = c("Logit"),
        custom.note = "\\textbf{Notes}: Dependent variable is air-conditioning (0,1). Clustered std. errors at the ADM-1 level in parentheses. $^{***}p<0.01$; $^{**}p<0.05$; $^{*}p<0.1$. Regressions are conducted using survey weights.", 
-       file = paste(output,'tableA9_2.tex', sep=''), append=F,  
-       float.pos = "H", label = "main: tableA9_2",
+       file = paste(output,'tableA14_2.tex', sep=''), append=F,  
+       float.pos = "H", label = "main: tableA14_2",
        omit.coef = "(country)|(Intercept)", 
        custom.coef.map = list("dpvint" = "$\\mathds{1}$(PV Gen. $\\times$ PVOUT > Median)"),
        custom.gof.rows = list("ADM-1 FE" = c("YES"), 

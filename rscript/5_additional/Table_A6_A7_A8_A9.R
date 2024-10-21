@@ -81,27 +81,27 @@ appl <- global %>% group_by(country) %>% summarise(ac = mean(ac, na.rm = TRUE),
 
 # AC formula for global
 ac_formula <- ac ~ mean_CDD18_db + mean_CDD18_db2 + mean_CDD18_db_exp + mean_CDD18_db2_exp + ln_total_exp_usd_2011 + curr_CDD18_db + curr_CDD18_db2 + 
-  ln_ely_p + ln_ely_p_cdd + ln_ely_p_cdd2 + ln_ely_p_nme + ln_ely_p_own + urban_sh + ownership_d + 
+  curr_HDD18_db + I(curr_HDD18_db^2) + ln_ely_p + ln_ely_p_cdd + ln_ely_p_cdd2 + ln_ely_p_nme + ln_ely_p_own + urban_sh + ownership_d + 
   n_members + edu_head_2 + age_head + sex_head | adm1
 
 # REF formula for global
 ref_formula <- ref ~ mean_CDD18_db + mean_CDD18_db2 + mean_CDD18_db_exp + mean_CDD18_db2_exp + ln_total_exp_usd_2011 + curr_CDD18_db + curr_CDD18_db2 + 
-  ln_ely_p + ln_ely_p_cdd + ln_ely_p_cdd2 + ln_ely_p_nme + ln_ely_p_own + urban_sh + ownership_d + 
+  curr_HDD18_db + I(curr_HDD18_db^2) + ln_ely_p + ln_ely_p_cdd + ln_ely_p_cdd2 + ln_ely_p_nme + ln_ely_p_own + urban_sh + ownership_d + 
   n_members + edu_head_2 + age_head + sex_head | adm1
 
 # TV formula for global
 tv_formula <- tv ~ mean_CDD18_db + mean_CDD18_db2 + mean_CDD18_db_exp + mean_CDD18_db2_exp + ln_total_exp_usd_2011 + curr_CDD18_db + curr_CDD18_db2 + 
-  ln_ely_p + ln_ely_p_cdd + ln_ely_p_cdd2 + ln_ely_p_nme + ln_ely_p_own + urban_sh + ownership_d + 
+  curr_HDD18_db + I(curr_HDD18_db^2) + ln_ely_p + ln_ely_p_cdd + ln_ely_p_cdd2 + ln_ely_p_nme + ln_ely_p_own + urban_sh + ownership_d + 
   n_members + edu_head_2 + age_head + sex_head | adm1
 
 # PC formula for global
 pc_formula <- pc ~ mean_CDD18_db + mean_CDD18_db2 + mean_CDD18_db_exp + mean_CDD18_db2_exp + ln_total_exp_usd_2011 + curr_CDD18_db + curr_CDD18_db2 + 
-  ln_ely_p + ln_ely_p_cdd + ln_ely_p_cdd2 + ln_ely_p_nme + ln_ely_p_own + urban_sh + ownership_d + 
+  curr_HDD18_db + I(curr_HDD18_db^2) + ln_ely_p + ln_ely_p_cdd + ln_ely_p_cdd2 + ln_ely_p_nme + ln_ely_p_own + urban_sh + ownership_d + 
   n_members + edu_head_2 + age_head + sex_head | adm1
 
 # Washing machine formula for global
 wshm_formula <- wshm ~ mean_CDD18_db + mean_CDD18_db2 + mean_CDD18_db_exp + mean_CDD18_db2_exp + ln_total_exp_usd_2011 + curr_CDD18_db + curr_CDD18_db2 + 
-  ln_ely_p + ln_ely_p_cdd + ln_ely_p_cdd2 + ln_ely_p_nme + ln_ely_p_own + urban_sh + ownership_d + 
+  curr_HDD18_db + I(curr_HDD18_db^2) + ln_ely_p + ln_ely_p_cdd + ln_ely_p_cdd2 + ln_ely_p_nme + ln_ely_p_own + urban_sh + ownership_d + 
   n_members + edu_head_2 + age_head + sex_head | adm1
 
 
@@ -521,7 +521,7 @@ texreg(list(model_ref1, model_ref2, model_ref3, model_ref4, model_ref5, model_re
        caption = "The Effect of Air-conditioning on Residential Electricity Quantity - Refrigerators",
        stars = c(0.1, 0.05, 0.01), custom.model.names = c("DMF", "DMF", "DMF", "DMF", "DMF", "DMF"),
        custom.note = "Clustered standard errors at the ADM1 level in parentheses. Regressions are conducted using survey weights. $^{***}p<0.01$; $^{**}p<0.05$; $^{*}p<0.1$", 
-       file = paste(output,'TableA10.tex', sep=''), append=F,  
+       file = paste(output,'TableA6.tex', sep=''), append=F,  
        float.pos = "htbp", label = "main: tableA10",
        omit.coef = "(country)|(Intercept)|(selection)",
        custom.coef.map = list("ac"= "AC", "ac:curr_CDD18_db" = "AC $\\times$ CDD", 
@@ -542,7 +542,7 @@ texreg(list(model_tv1, model_tv2, model_tv3, model_tv4, model_tv5, model_tv6), d
        caption = "The Effect of Air-conditioning on Residential Electricity Quantity - Television",
        stars = c(0.1, 0.05, 0.01), custom.model.names = c("DMF", "DMF", "DMF", "DMF", "DMF", "DMF"),
        custom.note = "Clustered standard errors at the ADM1 level in parentheses. Regressions are conducted using survey weights. $^{***}p<0.01$; $^{**}p<0.05$; $^{*}p<0.1$", 
-       file = paste(output,'TableA11.tex', sep=''), append=F,  
+       file = paste(output,'TableA7.tex', sep=''), append=F,  
        float.pos = "htbp", label = "main: tableA11",
        omit.coef = "(country)|(Intercept)|(selection)",
        custom.coef.map = list("ac"= "AC", "ac:curr_CDD18_db" = "AC $\\times$ CDD", 
@@ -563,7 +563,7 @@ texreg(list(model_pc1, model_pc2, model_pc3, model_pc4, model_pc5, model_pc6), d
        caption = "The Effect of Air-conditioning on Residential Electricity Quantity - PC",
        stars = c(0.1, 0.05, 0.01), custom.model.names = c("DMF", "DMF", "DMF", "DMF", "DMF", "DMF"),
        custom.note = "Clustered standard errors at the ADM1 level in parentheses. Regressions are conducted using survey weights. $^{***}p<0.01$; $^{**}p<0.05$; $^{*}p<0.1$", 
-       file = paste(output,'TableA12.tex', sep=''), append=F,  
+       file = paste(output,'TableA8.tex', sep=''), append=F,  
        float.pos = "htbp", label = "main: tableA12",
        omit.coef = "(country)|(Intercept)|(selection)",
        custom.coef.map = list("ac"= "AC", "ac:curr_CDD18_db" = "AC $\\times$ CDD", 
@@ -584,7 +584,7 @@ texreg(list(model_wshm1, model_wshm2, model_wshm3, model_wshm4, model_wshm5, mod
        caption = "The Effect of Air-conditioning on Residential Electricity Quantity - Washing Machine",
        stars = c(0.1, 0.05, 0.01), custom.model.names = c("DMF", "DMF", "DMF", "DMF", "DMF", "DMF"),
        custom.note = "Clustered standard errors at the ADM1 level in parentheses. Regressions are conducted using survey weights. $^{***}p<0.01$; $^{**}p<0.05$; $^{*}p<0.1$", 
-       file = paste(output,'TableA13.tex', sep=''), append=F,  
+       file = paste(output,'TableA9.tex', sep=''), append=F,  
        float.pos = "htbp", label = "main: tableA13",
        omit.coef = "(country)|(Intercept)|(selection)",
        custom.coef.map = list("ac"= "AC", "ac:curr_CDD18_db" = "AC $\\times$ CDD", 

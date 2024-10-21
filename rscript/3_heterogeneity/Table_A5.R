@@ -6,9 +6,9 @@
 ##########################################
 
 # Free memory
-.rs.restartR()
 rm(list=ls(all=TRUE)) # Removes all previously created variables
 gc()                  # frees up memory resources
+.rs.restartR()
 
 # Load packages
 library(data.table)
@@ -85,6 +85,7 @@ setDT(global)[,qnt_inc := cut(total_exp_usd_2011, breaks = quantile(total_exp_us
 # AC formula for global
 ac_formula <- as.numeric(as.character(ac)) ~ mean_CDD18_db + mean_CDD18_db2 + 
   mean_CDD18_db_exp + mean_CDD18_db2_exp + ln_total_exp_usd_2011 + curr_CDD18_db + curr_CDD18_db2 + 
+  curr_HDD18_db + I(curr_HDD18_db^2) +
   ln_ely_p + ln_ely_p_cdd + ln_ely_p_cdd2 + ln_ely_p_nme + ln_ely_p_own + 
   urban_sh + ownership_d + 
   n_members + edu_head_2 + age_head + sex_head | adm1
@@ -259,7 +260,7 @@ ac_cdd5$qnt_inc <- "5th"
 ac_cdd <- rbind(ac_cdd1, ac_cdd2, ac_cdd3, ac_cdd4, ac_cdd5)
 ac_cdd <- melt(setDT(ac_cdd), id = c("qnt_inc", "Var"), 
                value.name = c("value"), variable.name = "cdd")
-ac_cdd <- cast(ac_cdd, qnt_inc + cdd ~ Var)
+ac_cdd <- reshape::cast(ac_cdd, qnt_inc + cdd ~ Var)
 ac_cdd <- ac_cdd %>% mutate(CI_lb = AME - 1.96*SE,
                             CI_ub = AME + 1.96*SE)
 

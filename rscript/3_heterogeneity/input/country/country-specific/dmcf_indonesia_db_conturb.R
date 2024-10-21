@@ -85,7 +85,8 @@ HH_Indonesia <- dplyr::filter(global, country == "Indonesia")
 ac_formula_idn <- ac ~ mean_CDD18_db + mean_CDD18_db2 + curr_CDD18_db + curr_CDD18_db2 +  
   mean_CDD18_db_exp + mean_CDD18_db2_exp + ln_total_exp_usd_2011 +
   ln_ely_p + ln_ely_p_cdd + ln_ely_p_cdd2 + ln_ely_p_nme + ln_ely_p_own + 
-  urban_sh + ownership_d + 
+  urban_sh + ownership_d +  
+  curr_HDD18_db + I(curr_HDD18_db^2) +
   n_members + edu_head_2 + age_head + sex_head + housing_index_lab | adm1
 
 # Logistic regression of AC on covariates
@@ -145,10 +146,9 @@ model3 <- feols(ely_formula_idn, data = HH_Indonesia, weights = ~weight, cluster
 
 # Marginal effect of AC
 ac_eff <- avg_slopes(model3, variables = "ac", slope = "dydx", wts = HH_Indonesia$weight)
-summary(ac_eff)
 
 # Save coefficients in data frame
-dydx_ac <- summary(ac_eff)
+dydx_ac <- ac_eff
 
 # Save the R Environment will be used for the projections
 save(list = c("reg_ac", "HH_Indonesia", "model3", "dydx_ac"), 
