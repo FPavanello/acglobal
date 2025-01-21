@@ -28,56 +28,6 @@ if (user=='gf') {
 data <- paste(stub,'6-Projections/results/regressions/for_graphs/standardised', sep='')
 output <- paste(stub,'6-Projections/results/graphs/', sep='')
 
-list_p <- list.files(path="G:/.shortcut-targets-by-id/1JhN0qxmpnYQDoWQdBhnYKzbRCVGH_WXE/6-Projections/results/regressions/for_graphs/standardised", full.names = T, pattern = "RData")
-
-merger <- function(X){
-  
-  load(list_p[[X]])
-  
-  ac_margins$term <- ifelse(ac_margins$term=="ownership_d1", "ownership_d", ac_margins$term)
-  ac_margins$term <- ifelse(ac_margins$term=="sex_head1", "sex_head", ac_margins$term)
-  ac_margins$term <- ifelse(ac_margins$term=="sex_head2", "sex_head", ac_margins$term)
-  ac_margins$country <- toupper(unlist(qdapRegex::ex_between(list_p[X], "F:/.shortcut-targets-by-id/1JhN0qxmpnYQDoWQdBhnYKzbRCVGH_WXE/6-Projections/results/regressions/for_graphs/standardised/", "_dmcf.RData")))
-  ac_margins$country <- toupper(unlist(qdapRegex::ex_between(list_p[X], "F:/.shortcut-targets-by-id/1JhN0qxmpnYQDoWQdBhnYKzbRCVGH_WXE/6-Projections/results/regressions/for_graphs/standardised/", "_dmcf.RData")))
-  
-  ac_margins <- dplyr::filter(ac_margins, !grepl("state|country|region|macro", term))
-  
-  ac_margins$driver_type <- ifelse(grepl("CDD|HDD|exp|elyp", ac_margins$term, ignore.case = T), "Income and climate drivers", "Socio-economic drivers")
-  
-  ac_margins$glob <- as.factor(ifelse(ac_margins$country=="GLOBAL", 1, 0))
-  
-  return(ac_margins)
-  
-}
-
-pp <- lapply(1:length(list_p), merger)
-
-pp <- as.data.frame(do.call(rbind, pp))
-
-pp <- filter(pp, term!="std_year_postschool")
-
-pp$sign <- ifelse(pp$p<0.05, 1, 0)
-
-pp <- filter(pp, term!="std_elyp")
-
-p3<- ggplot(pp %>% filter(sign==1)) +
-  theme_classic()+
-  geom_hline(yintercept = 0, colour="black", linetype="dashed")+
-  geom_boxplot2(aes(x= term, y=estimate, fill=driver_type))+
-  scale_fill_manual(name="Driver type", values = c("#4DBBD5B2", "#00A087B2")) + 
-  geom_point(aes(x= term, y=estimate, shape=glob), size=2.5)+
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1), legend.position = "none")+
-  ylab("Average marginal effect on AC \nadoption probability (%)")+
-  scale_y_continuous(labels = scales::label_percent())+
-  xlab("Drivers of AC adoption")+
-  scale_shape_manual(name="Type", values = c(1, 17))+
-  scale_x_discrete(labels = c("Primary education", "Secondary education", "Higer education", "Housing index - 2", "Housing index - 3", "Home ownership", "Female HH head", "Age HH head", "Contempor. CDDs", "Historical CDDs", "Contempor. HDDs", "HH size",  "Total HH expenditure", "Urbanisation"))
-
-
-#ggsave("F:/.shortcut-targets-by-id/1JhN0qxmpnYQDoWQdBhnYKzbRCVGH_WXE/6-Projections/results/graphs/p2.png", p3, scale=2.5, width = 7)
-
-###
-
 # redo for ely
 
 list_p <- list.files(path="G:/.shortcut-targets-by-id/1JhN0qxmpnYQDoWQdBhnYKzbRCVGH_WXE/6-Projections/results/regressions/for_graphs/standardised", full.names = T, pattern = "RData")
