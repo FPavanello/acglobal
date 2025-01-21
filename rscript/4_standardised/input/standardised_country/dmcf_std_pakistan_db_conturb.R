@@ -87,7 +87,8 @@ HH_Pakistan <- HH_Pakistan %>% mutate(std_CDD_mean = as.numeric(scale(mean_CDD18
 
 # AC formula for Pakistan
 ac_formula_pak <- ac ~ std_CDD_mean + I(std_CDD_mean^2) + std_CDD_mean*std_texp + I(std_CDD_mean^2)*std_texp + std_texp + std_CDD + I(std_CDD^2) +
-  std_elyp + std_elyp*std_CDD_mean + std_elyp*I(std_CDD_mean^2) + std_elyp*ownership_d + std_elyp*std_n_members +
+  std_elyp + std_elyp*std_CDD_mean + std_elyp*I(std_CDD_mean^2) + std_HDD + I(std_HDD^2) + 
+  std_elyp*ownership_d + std_elyp*std_n_members +
   std_urban_sh + std_n_members + ownership_d + edu_head_2 + std_age_head + sex_head + 
   housing_index_lab | adm1
 
@@ -95,7 +96,7 @@ ac_formula_pak <- ac ~ std_CDD_mean + I(std_CDD_mean^2) + std_CDD_mean*std_texp 
 reg_ac <- feglm(ac_formula_pak, family = binomial(link = "logit"), data = HH_Pakistan, weights = ~weight, cluster = c("adm1"))
 
 # Average marginal effects (AMEs)
-ac_margins <- summary(avg_slopes(reg_ac, wts = HH_Pakistan$weight))
+ac_margins <- avg_slopes(reg_ac, wts = HH_Pakistan$weight)
 gc()
 
 # Predicted probabilities
@@ -120,7 +121,7 @@ ely_formula_pak <- ln_ely_q ~ ac + ac*std_CDD + ac*I(std_CDD^2) + std_CDD + I(st
 model <- feols(ely_formula_pak, data = HH_Pakistan, weights = ~weight, cluster = c("adm1")); summary(model)
 
 # Marginal effects
-ely_margins <- summary(avg_slopes(model, slope = "dydx", wts = HH_Pakistan$weight))
+ely_margins <- avg_slopes(model, slope = "dydx", wts = HH_Pakistan$weight)
 
 # Export
 save(list = c("ely_margins", "ac_margins"), file = paste(interm,'standardised/pak_dmcf.RData', sep=''))

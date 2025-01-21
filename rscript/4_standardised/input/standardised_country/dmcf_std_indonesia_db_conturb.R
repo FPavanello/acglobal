@@ -85,7 +85,8 @@ HH_Indonesia <- HH_Indonesia %>% mutate(std_CDD_mean = as.numeric(scale(mean_CDD
 
 # AC formula for Indonesia
 ac_formula_idn <- ac ~ std_CDD_mean + I(std_CDD_mean^2) + std_CDD_mean*std_texp + I(std_CDD_mean^2)*std_texp + std_texp + std_CDD + I(std_CDD^2) +
-  std_elyp + std_elyp*std_CDD_mean + std_elyp*I(std_CDD_mean^2) + std_elyp*ownership_d + std_elyp*std_n_members + std_urban_sh + 
+  std_elyp + std_elyp*std_CDD_mean + std_elyp*I(std_CDD_mean^2) + std_HDD + I(std_HDD^2) + 
+  std_elyp*ownership_d + std_elyp*std_n_members + std_urban_sh + 
   std_n_members + ownership_d + edu_head_2 + std_age_head + sex_head + 
   housing_index_lab | adm1
 
@@ -94,7 +95,7 @@ reg_ac <- feglm(ac_formula_idn, family = binomial(link = "logit"),
                 data = HH_Indonesia, weights = ~weight, cluster = c("adm1"))
 
 # Average marginal effects (AMEs)
-ac_margins <- summary(avg_slopes(reg_ac, wts = HH_Indonesia$weight))
+ac_margins <- avg_slopes(reg_ac, wts = HH_Indonesia$weight)
 gc()
 
 # Predicted probabilities
@@ -119,7 +120,7 @@ ely_formula_idn <- ln_ely_q ~ ac + ac*std_CDD + ac*I(std_CDD^2) + std_CDD + I(st
 model <- feols(ely_formula_idn, data = HH_Indonesia, weights = ~weight, cluster = c("adm1")); summary(model)
 
 # Marginal effect of AC
-ely_margins <- summary(avg_slopes(model, slope = "dydx", wts = HH_Indonesia$weight))
+ely_margins <- avg_slopes(model, slope = "dydx", wts = HH_Indonesia$weight)
 
 # Export
 save(list = c("ely_margins", "ac_margins"), file = paste(interm,'standardised/idn_dmcf.RData', sep=''))

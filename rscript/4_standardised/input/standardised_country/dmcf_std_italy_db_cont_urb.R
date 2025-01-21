@@ -85,15 +85,16 @@ HH_Italy <- HH_Italy %>% mutate(std_CDD_mean = as.numeric(scale(mean_CDD18_db)),
 
 # AC formula for Italy - no ownership_id at the moment
 ac_formula_ita <- ac ~ std_CDD_mean + I(std_CDD_mean^2) + std_CDD_mean*std_texp + I(std_CDD_mean^2)*std_texp + std_texp + std_CDD + I(std_CDD^2) + 
-  std_elyp + std_elyp*std_CDD_mean + std_elyp*I(std_CDD_mean^2) + std_elyp*ownership_d + std_elyp*std_n_members + std_urban_sh +  
+  std_elyp + std_elyp*std_CDD_mean + std_elyp*I(std_CDD_mean^2) + std_HDD + I(std_HDD^2) + 
+  std_elyp*ownership_d + std_elyp*std_n_members + std_urban_sh +  
   std_n_members + ownership_d + edu_head_2 + std_age_head + sex_head | macroarea
 
 # Logistic regression of AC on covariates
-reg_ac <- feglm(ac_formula_ITA, family = binomial(link = "logit"), 
+reg_ac <- feglm(ac_formula_ita, family = binomial(link = "logit"), 
                 data = HH_Italy, weights = ~weight, cluster = c("adm1"))
 
 # Average marginal effects (AMEs)
-ac_margins <- summary(avg_slopes(reg_ac, wts = HH_Italy$weight))
+ac_margins <- avg_slopes(reg_ac, wts = HH_Italy$weight)
 gc()
 
 # Predicted probabilities
@@ -118,7 +119,7 @@ ely_formula_ita <- ln_ely_q ~ ac + ac*std_CDD + ac*I(std_CDD^2) + std_CDD + I(st
 model <- feols(ely_formula_ita, data = HH_Italy, weights = ~weight, cluster = c("adm1")); summary(model)
 
 # Marginal effect of AC
-ely_margins <- summary(avg_slopes(model, slope = "dydx", wts = HH_Italy$weight))
+ely_margins <- avg_slopes(model, slope = "dydx", wts = HH_Italy$weight)
 
 # Export
 save(list = c("ely_margins", "ac_margins"), file = paste(interm,'standardised/ita_dmcf.RData', sep=''))

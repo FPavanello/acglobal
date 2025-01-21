@@ -89,7 +89,7 @@ ac_formula <- ac ~ std_CDD_mean + I(std_CDD_mean^2) + std_CDD_mean*std_texp + I(
 reg_ac <- feglm(ac_formula, family = binomial(link = "logit"), data = global, weights = ~weight, cluster = c("adm1")); summary(reg_ac)
 
 # Average marginal effects (AMEs)
-ac_margins <- summary(avg_slopes(reg_ac, wts = global$weight))
+ac_margins <- avg_slopes(reg_ac, wts = global$weight)
 gc()
 
 # Save data set for which there are obs both in first and second stage
@@ -116,7 +116,8 @@ ely_formula  <- ln_ely_q ~ ac + ac*std_CDD + ac*I(std_CDD^2) + std_CDD + I(std_C
 model <- feols(ely_formula, data = sec, weights = ~weight, cluster = c("adm1")); summary(model)
 
 # Marginal effect of AC
-ely_margins <- summary(avg_slopes(model, slope = "dydx", wts = sec$weight))
+ely_margins <- avg_slopes(model, slope = "dydx", wts = sec$weight)
+gc()
 
 # Export
 save(list = c("ely_margins", "ac_margins"), file = paste(interm,'standardised/global_dmcf.RData', sep=''))

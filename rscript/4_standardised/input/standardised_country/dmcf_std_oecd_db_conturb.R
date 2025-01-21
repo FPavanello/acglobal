@@ -101,7 +101,8 @@ HH_NonEurope <- HH_NonEurope %>% mutate(std_CDD_mean = as.numeric(scale(mean_CDD
 
 # AC formula for OECD
 ac_formula_oecd <- ac ~ std_CDD_mean + I(std_CDD_mean^2) + std_CDD_mean*std_texp + I(std_CDD_mean^2)*std_texp + std_texp + std_CDD + I(std_CDD^2) +
-  std_elyp + std_elyp*std_CDD_mean + std_elyp*I(std_CDD_mean^2) + std_elyp*ownership_d + std_elyp*std_n_members + 
+  std_elyp + std_elyp*std_CDD_mean + std_elyp*I(std_CDD_mean^2) + std_HDD + I(std_HDD^2) + 
+  std_elyp*ownership_d + std_elyp*std_n_members + 
   std_urban_sh + std_n_members + ownership_d + edu_head_2 + std_age_head + sex_head | country
 
 ## Logistic regression of AC on covariates
@@ -110,7 +111,7 @@ reg_ac_eu <- feglm(ac_formula_oecd, family = binomial(link = "logit"),
                    data = HH_Europe, weights = ~weight, cluster = c("adm1"))
 
 # Average marginal effects (AMEs)
-ac_margins_eu <- summary(avg_slopes(reg_ac_eu, wts = HH_Europe$weight))
+ac_margins_eu <- avg_slopes(reg_ac_eu, wts = HH_Europe$weight)
 gc()
 
 # Predicted probabilities
@@ -121,7 +122,7 @@ reg_ac_noneu <- feglm(ac_formula_oecd, family = binomial(link = "logit"),
                       data = HH_NonEurope, weights = ~weight, cluster = c("adm1"))
 
 # Average marginal effects (AMEs)
-ac_margins_noneu <- summary(avg_slopes(reg_ac_noneu, wts = HH_NonEurope$weight))
+ac_margins_noneu <- avg_slopes(reg_ac_noneu, wts = HH_NonEurope$weight)
 gc()
 
 # Predicted probabilities
@@ -154,14 +155,14 @@ ely_formula_oecd <- ln_ely_q ~ ac + ac*std_CDD + ac*I(std_CDD^2) + std_CDD + I(s
 model <- feols(ely_formula_oecd, data = HH_Europe, weights = ~weight, cluster = c("adm1")); summary(model)
 
 # Marginal effects
-ely_margins_eu <- summary(avg_slopes(model, slope = "dydx", wts = HH_Europe$weight))
+ely_margins_eu <- avg_slopes(model, slope = "dydx", wts = HH_Europe$weight)
 
 ## Non-Europe
 # With selection
 model <- feols(ely_formula_oecd, data = HH_NonEurope, weights = ~weight, cluster = c("adm1")); summary(model)
 
 # Marginal effects
-ely_margins_noneu <- summary(avg_slopes(model, slope = "dydx", wts = HH_NonEurope$weight))
+ely_margins_noneu <- avg_slopes(model, slope = "dydx", wts = HH_NonEurope$weight)
 
 # Export
 ely_margins <- ely_margins_eu
