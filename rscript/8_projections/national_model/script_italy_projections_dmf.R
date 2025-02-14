@@ -544,8 +544,8 @@ data_c <- bind_cols(data_c, pop_features_edu)
 
 library(fuzzyjoin); library(dplyr);data_c$NAME_1.y<-NULL;
 
-data_c_map <- data_c
-data_c_map$NAME_1 <- data_c$state
+data_c_map <- data_c %>% dplyr::select(adm1)
+data_c_map$NAME_1 <- data_c$adm1
 data_c_map <- data_c_map[!duplicated(data_c_map[ , c("NAME_1")]), ] 
 
 data_c_sp <- stringdist_join(data_c_map, gadm, 
@@ -558,9 +558,7 @@ data_c_sp <- stringdist_join(data_c_map, gadm,
   group_by(NAME_1.x) %>%
   slice_min(order_by = dist, n = 1)
 
-data_c_sp <- dplyr::select(data_c_sp, NAME_1.x, NAME_1.y, geometry)
-
-data_c_sp <- merge(data_c, data_c_sp, by.x="state", by.y="NAME_1.x")
+data_c_sp <- merge(data_c, data_c_sp, by.x="adm1", by.y="NAME_1.x")
 
 custom_shape$NAME_1 <- gadm$NAME_1
 
@@ -704,7 +702,8 @@ hdd_585_cmip6 <-  readRDS(paste0(stub, "data/projections/climate/processed/", HD
 cmip6_merged <- Reduce(function(dtf1, dtf2) merge(dtf1, dtf2, by = c("state", "country"), all.x = TRUE),
                        list(cdd_hist_cmip6, cdd_245_cmip6, cdd_585_cmip6, hdd_hist_cmip6, hdd_245_cmip6, hdd_585_cmip6))
 
-data_c_map <- dplyr::select(data_c_map, state)
+data_c_map <- dplyr::select(data_c_map, adm1)
+data_c_map$state <- data_c_map$adm1
 
 cmip6_merged <- stringdist_join(cmip6_merged, data_c_map, 
                              by = "state",
@@ -716,7 +715,7 @@ cmip6_merged <- stringdist_join(cmip6_merged, data_c_map,
   group_by(state.x) %>%
   slice_min(order_by = dist, n = 1)
 
-data_c_sp <- merge(data_c_sp, cmip6_merged, by.x="state", by.y="state.y")
+data_c_sp <- merge(data_c_sp, cmip6_merged, by.x="adm1", by.y="state.y")
 data_c_sp = data_c_sp[!duplicated(data_c_sp$hhid),]
 
 ####################
@@ -911,6 +910,8 @@ data_c_sp_export <- data_c_sp
 
 data_c_sp_export$geometry.x <- NULL
 data_c_sp_export$geometry.y <- NULL
+
+library(fixest)
 
 orig_data <- HH_Italy[obs(reg_ac),]
 
@@ -1129,7 +1130,7 @@ baseline_hist <- as.numeric(predict(lm1, type="response"))
 
 orig_data <- orig_data_bk
 
-orig_data$ac = as.factor(data_c_sp[,paste0(ssp, ".", (year))])
+orig_data$ac = (data_c_sp[,paste0(ssp, ".", (year))])
 
 orig_data$ln_total_exp_usd_2011 = data_c_sp[,paste0("exp_cap_usd_", ssp, "_", (year))]
 
@@ -1157,7 +1158,7 @@ total <- as.numeric(predict(lm1, orig_data, type="response"))
 
 orig_data <- orig_data_bk
 
-orig_data$ac = as.factor(data_c_sp[,paste0(ssp, ".", (year))])
+orig_data$ac = (data_c_sp[,paste0(ssp, ".", (year))])
 
 decomp_ac <- as.numeric(predict(lm1, orig_data, type="response"))
 
@@ -1309,7 +1310,7 @@ for (ssp in c("SSP2", "SSP5")){
     
     print(year)
 
-    orig_data$ac = as.factor(0)
+    orig_data$ac = (0)
     
     orig_data$ln_total_exp_usd_2011 = data_c_sp[,paste0("exp_cap_usd_", ssp, "_", (year))]
     
@@ -1371,7 +1372,7 @@ for (ssp in c("SSP2", "SSP5")){
     
     print(year)
     
-    orig_data$ac = as.factor(data_c_sp[,paste0(ssp, ".", (year))])
+    orig_data$ac = ifelse(data_c_sp[,paste0(ssp, ".", (year))]>0.5, 1, 0)
     
     orig_data$ln_total_exp_usd_2011 = data_c_sp[,paste0("exp_cap_usd_", ssp, "_", (year))]
     

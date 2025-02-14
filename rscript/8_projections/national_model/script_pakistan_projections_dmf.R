@@ -542,7 +542,7 @@ data_c <- bind_cols(data_c, housing_index_lab_s1_hhs, housing_index_lab_s2_hhs)
 library(fuzzyjoin); library(dplyr);data_c$NAME_2.y<-NULL;
 
 data_c_map <- data_c
-data_c_map$NAME_2 <- data_c$district
+data_c_map$NAME_2 <- data_c$adm2
 data_c_map <- data_c_map[!duplicated(data_c_map[ , c("NAME_2")]), ] 
 
 data_c_sp <- stringdist_join(data_c_map, gadm, 
@@ -557,7 +557,7 @@ data_c_sp <- stringdist_join(data_c_map, gadm,
 
 data_c_sp <- dplyr::select(data_c_sp, NAME_2.x, NAME_2.y, geometry)
 
-data_c_sp <- merge(data_c, data_c_sp, by.x="district", by.y="NAME_2.x")
+data_c_sp <- merge(data_c, data_c_sp, by.x="adm2", by.y="NAME_2.x")
 
 custom_shape$NAME_2 <- gadm$NAME_2
 
@@ -702,8 +702,8 @@ cmip6_merged <- Reduce(function(dtf1, dtf2) merge(dtf1, dtf2, by = c("country", 
                        list(cdd_hist_cmip6, cdd_245_cmip6, cdd_585_cmip6, hdd_hist_cmip6, hdd_245_cmip6, hdd_585_cmip6))
 
 
-data_c_map <- dplyr::select(data_c_map, district)
-data_c_map$district2 <- data_c_map$district
+data_c_map <- dplyr::select(data_c_map, adm2)
+data_c_map$district2 <- data_c_map$adm2
 
 cmip6_merged <- stringdist_join(cmip6_merged, data_c_map, 
                                 by = "district2",
@@ -716,7 +716,7 @@ cmip6_merged <- stringdist_join(cmip6_merged, data_c_map,
   slice_min(order_by = dist, n = 1)
 
 
-data_c_sp <- merge(data_c_sp, cmip6_merged, by.x="district", by.y="district2.y")
+data_c_sp <- merge(data_c_sp, cmip6_merged, by.x="adm2", by.y="district2.y")
 
 
 for (year in seq(2020, 2050, 10)){
@@ -905,6 +905,8 @@ data_c_sp_export <- data_c_sp
 data_c_sp_export$geometry.x <- NULL
 data_c_sp_export$geometry.y <- NULL
 
+library(fixest)
+
 orig_data <- HH_Pakistan[obs(reg_ac),]
 
 save(orig_data, data_c_sp_export, file = paste0(stub, "results/drivers_evolution/", countryiso3, ".Rdata"))
@@ -1090,7 +1092,7 @@ ggsave(paste0(stub, "results/graphs/map_ac_", countryiso3, ".png"), map_ac, scal
 data_c_bk <- data_c
 
 ely_formula <- ln_ely_q ~ ac + curr_CDD18_db + curr_HDD18_db + ln_total_exp_usd_2011 + n_members + 
-  sh_under16 + ownership_d + edu_head_2 + housing_index_lab + 
+  ownership_d + edu_head_2 + housing_index_lab + 
   age_head + sex_head + urban_sh
 
 lm1 <- lm(ely_formula, data = data_c, na.action=na.omit)
@@ -1135,7 +1137,7 @@ baseline_hist <- as.numeric(predict(lm1, type="response"))
 
 orig_data <- orig_data_bk
 
-orig_data$ac = as.factor(data_c_sp[,paste0(ssp, ".", (year))])
+orig_data$ac = (data_c_sp[,paste0(ssp, ".", (year))])
 
 orig_data$ln_total_exp_usd_2011 = data_c_sp[,paste0("exp_cap_usd_", ssp, "_", (year))]
 
@@ -1163,7 +1165,7 @@ total <- as.numeric(predict(lm1, orig_data, type="response"))
 
 orig_data <- orig_data_bk
 
-orig_data$ac = as.factor(data_c_sp[,paste0(ssp, ".", (year))])
+orig_data$ac = (data_c_sp[,paste0(ssp, ".", (year))])
 
 decomp_ac <- as.numeric(predict(lm1, orig_data, type="response"))
 
@@ -1313,7 +1315,7 @@ for (ssp in c("SSP2", "SSP5")){
     
     print(year)
     
-    orig_data$ac = as.factor(0)
+    orig_data$ac = (0)
     
     orig_data$ln_total_exp_usd_2011 = data_c_sp[,paste0("exp_cap_usd_", ssp, "_", (year))]
     
@@ -1375,7 +1377,7 @@ for (ssp in c("SSP2", "SSP5")){
     
     print(year)
     
-    orig_data$ac = as.factor(data_c_sp[,paste0(ssp, ".", (year))])
+    orig_data$ac = ifelse(data_c_sp[,paste0(ssp, ".", (year))]>0.5, 1, 0)
     
     orig_data$ln_total_exp_usd_2011 = data_c_sp[,paste0("exp_cap_usd_", ssp, "_", (year))]
     

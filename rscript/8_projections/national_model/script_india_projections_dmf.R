@@ -699,7 +699,9 @@ hdd_585_cmip6 <-  readRDS(paste0(stub, "data/projections/climate/processed/", HD
 cmip6_merged <- Reduce(function(dtf1, dtf2) merge(dtf1, dtf2, by = c("country", "district2", "state2"), all.x = TRUE),
                        list(cdd_hist_cmip6, cdd_245_cmip6, cdd_585_cmip6, hdd_hist_cmip6, hdd_245_cmip6, hdd_585_cmip6))
 
-data_c_sp<- merge(data_c_sp, cmip6_merged, by.x=c("ST_NM", "DISTRICT.y"), by.y=c("state2", "district2"))
+data_c_sp <- merge(data_c_sp, cmip6_merged, by.x=c("adm2"), by.y=c("district2"), all.x=T)
+
+data_c_sp <- distinct(data_c_sp , hhid, .keep_all = T)
 
 ####################
 # calibrate CDDs to historical / survey year CDDs to ensure consistency (for 2nd stage prediction only)
@@ -889,6 +891,8 @@ for (year in seq(2020, 2050, 10)){
 #
 
 data_c_sp_export <- data_c_sp
+
+library(fixest)
 
 data_c_sp_export$geometry.x <- NULL
 data_c_sp_export$geometry.y <- NULL
@@ -1367,7 +1371,7 @@ for (ssp in c("SSP2", "SSP5")){
     
     print(year)
     
-    orig_data$ac = data_c_sp[,paste0(ssp, ".", (year))]
+    orig_data$ac = ifelse(data_c_sp[,paste0(ssp, ".", (year))]>0.5, 1, 0)
     
     orig_data$ln_total_exp_usd_2011 = data_c_sp[,paste0("exp_cap_usd_", ssp, "_", (year))]
     

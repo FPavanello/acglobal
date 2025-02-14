@@ -534,7 +534,7 @@ data_c <- bind_cols(data_c, housing_index_lab_s1_hhs, housing_index_lab_s2_hhs)
 library(fuzzyjoin); library(dplyr);data_c$NAME_1.y<-NULL;
 
 data_c_map <- data_c
-data_c_map$NAME_1 <- data_c$state3
+data_c_map$NAME_1 <- data_c$adm1
 data_c_map <- data_c_map[!duplicated(data_c_map[ , c("NAME_1")]), ] 
 
 data_c_sp <- stringdist_join(data_c_map, gadm, 
@@ -549,7 +549,7 @@ data_c_sp <- stringdist_join(data_c_map, gadm,
 
 data_c_sp <- dplyr::select(data_c_sp, NAME_1.x, NAME_1.y, geometry)
 
-data_c_sp <- merge(data_c, data_c_sp, by.x="state3", by.y="NAME_1.x")
+data_c_sp <- merge(data_c, data_c_sp, by.x="adm1", by.y="NAME_1.x")
 
 custom_shape$NAME_1 <- gadm$NAME_1
 
@@ -899,6 +899,8 @@ data_c_sp_export <- data_c_sp
 data_c_sp_export$geometry.x <- NULL
 data_c_sp_export$geometry.y <- NULL
 
+library(fixest)
+
 orig_data <- HH_Brazil[obs(reg_ac),]
 
 save(orig_data, data_c_sp_export, file = paste0(stub, "results/drivers_evolution/", countryiso3, ".Rdata"))
@@ -1016,13 +1018,13 @@ national_summary_ac <- future_ac_adoption %>%
   pivot_longer(cols = 1:8, names_to = c('ssp', 'year'), names_sep = ".") %>%
   mutate(ssp=rep(c("SSP245","SSP585"), each=4), year=rep(seq(2020, 2050, 10), 2))
 
-future_ac_adoption$state <- data_c_sp$state3
+future_ac_adoption$state <- data_c_sp$adm1
 
 regional_summary_ac <- future_ac_adoption %>%
   group_by(state) %>%
   dplyr::summarise_all(mean, na.rm=T) %>%
   pivot_longer(cols = 2:9, names_to = c('ssp', 'year'), names_sep = ".") %>%
-  mutate(ssp=rep(rep(c("SSP245", "SSP585"), each=4), length(unique(data_c_sp$state))), year=rep(rep(seq(2020, 2050, 10), 2), length(unique(data_c_sp$state))))
+  mutate(ssp=rep(rep(c("SSP245", "SSP585"), each=4), length(unique(data_c_sp$adm1))), year=rep(rep(seq(2020, 2050, 10), 2), length(unique(data_c_sp$adm1))))
 
 # plot projections
 
@@ -1067,7 +1069,7 @@ ggsave(paste0(stub, "results/graphs/map_ac_", countryiso3, ".png"), map_ac, scal
 
 data_c_bk <- data_c
 
-ely_formula <- "ln_ely_q ~ ac + curr_CDD18_db + ln_total_exp_usd_2011 + curr_HDD18_db + urban_sh + n_members + sh_under16 + ownership_d + edu_head_2 + housing_index_lab + age_head + sex_head"
+ely_formula <- "ln_ely_q ~ ac + curr_CDD18_db + ln_total_exp_usd_2011 + curr_HDD18_db + urban_sh + n_members + ownership_d + edu_head_2 + housing_index_lab + age_head + sex_head"
 
 lm1 <- lm(ely_formula, data = data_c, na.action=na.omit)
 
@@ -1111,7 +1113,7 @@ baseline_hist <- as.numeric(predict(lm1, type="response"))
 
 orig_data <- orig_data_bk
 
-orig_data$ac = as.factor(data_c_sp[,paste0(ssp, ".", (year))])
+orig_data$ac = (data_c_sp[,paste0(ssp, ".", (year))])
 
 orig_data$ln_total_exp_usd_2011 = data_c_sp[,paste0("exp_cap_usd_", ssp, "_", (year))]
 
@@ -1138,7 +1140,7 @@ total <- as.numeric(predict(lm1, orig_data, type="response"))
 
 orig_data <- orig_data_bk
 
-orig_data$ac = as.factor(data_c_sp[,paste0(ssp, ".", (year))])
+orig_data$ac = (data_c_sp[,paste0(ssp, ".", (year))])
 
 decomp_ac <- as.numeric(predict(lm1, orig_data, type="response"))
 
@@ -1265,7 +1267,8 @@ save(all, decomposition_plot, file=paste0(stub, "results/graphs/", countryiso3, 
 # 3.2) Electricity consumption projections
 # 3.2.1) Predict consumption without AC
 
-orig_data <- model3$model
+orig_data <- HH_Brazil[obs(model3),]
+
 orig_data$ely_q <- NULL
 
 orig_data_bk <- orig_data
@@ -1288,7 +1291,7 @@ for (ssp in c("SSP2", "SSP5")){
     
     print(year)
     
-    orig_data$ac = as.factor(0)
+    orig_data$ac = (0)
     
     orig_data$ln_total_exp_usd_2011 = data_c_sp[,paste0("exp_cap_usd_", ssp, "_", (year))]
     
@@ -1327,7 +1330,7 @@ output_noac <- as.data.frame(do.call("cbind", output))
 
 # 3.2.2) Predict consumption with AC
 
-orig_data <- model3$model
+orig_data <- HH_Brazil[obs(model3),]
 orig_data$ely_q <- NULL
 
 orig_data_bk <- orig_data
@@ -1350,7 +1353,7 @@ for (ssp in c("SSP2", "SSP5")){
     
     print(year)
     
-    orig_data$ac = as.factor(data_c_sp[,paste0(ssp, ".", (year))])
+    orig_data$ac = ifelse(data_c_sp[,paste0(ssp, ".", (year))]>0.5, 1, 0)
     
     orig_data$ln_total_exp_usd_2011 = data_c_sp[,paste0("exp_cap_usd_", ssp, "_", (year))]
     

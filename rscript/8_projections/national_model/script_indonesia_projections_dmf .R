@@ -542,7 +542,7 @@ data_c <- bind_cols(data_c, housing_index_lab_s1_hhs, housing_index_lab_s2_hhs)
 library(fuzzyjoin); library(dplyr);data_c$NAME_1.y<-NULL;
 
 data_c_map <- data_c
-data_c_map$NAME_1 <- data_c$state3
+data_c_map$NAME_1 <- data_c$adm1
 data_c_map <- data_c_map[!duplicated(data_c_map[ , c("NAME_1")]), ] 
 
 data_c_sp <- stringdist_join(data_c_map, gadm, 
@@ -557,7 +557,7 @@ data_c_sp <- stringdist_join(data_c_map, gadm,
 
 data_c_sp <- dplyr::select(data_c_sp, NAME_1.x, NAME_1.y, geometry)
 
-data_c_sp <- merge(data_c, data_c_sp, by.x="state3", by.y="NAME_1.x")
+data_c_sp <- merge(data_c, data_c_sp, by.x="adm1", by.y="NAME_1.x")
 
 custom_shape$NAME_1 <- gadm$NAME_1
 
@@ -702,23 +702,25 @@ cmip6_merged <- Reduce(function(dtf1, dtf2) merge(dtf1, dtf2, by = c("country", 
 
 cmip6_merged <- dplyr::group_by(cmip6_merged, state2) %>%  dplyr::select(where(is.numeric)) %>% dplyr::summarise_all(.funs="mean", na.rm=T)
 
+
 cmip6_merged$state3 <- cmip6_merged$state2
 
-data_c_map <- dplyr::select(data_c_map, state3)
+data_c_map$state2 <- data_c_map$adm1
+data_c_map <- dplyr::select(data_c_map, state2)
 
 cmip6_merged <- stringdist_join(cmip6_merged, data_c_map, 
-                                by = "state3",
+                                by = "state2",
                                 mode = "left",
                                 ignore_case = TRUE, 
                                 method = "jw", 
                                 max_dist = 99, 
                                 distance_col = "dist") %>%
-  group_by(state3.x) %>%
+  group_by(state2.x) %>%
   slice_min(order_by = dist, n = 1)
 
 data_c_sp$id <- 1:nrow(data_c_sp)
 
-data_c_sp <- merge(data_c_sp, cmip6_merged, by.x="state3", by.y="state3.y")
+data_c_sp <- merge(data_c_sp, cmip6_merged, by.x="adm1", by.y="state2.y")
 
 data_c_sp <- data_c_sp %>% distinct(id, .keep_all = TRUE)
 
@@ -914,6 +916,8 @@ data_c_sp_export <- data_c_sp
 data_c_sp_export$geometry.x <- NULL
 data_c_sp_export$geometry.y <- NULL
 
+library(fixest)
+
 orig_data <- HH_Indonesia[obs(reg_ac),]
 
 save(orig_data, data_c_sp_export, file = paste0(stub, "results/drivers_evolution/", countryiso3, ".Rdata"))
@@ -1034,13 +1038,13 @@ national_summary_ac <- future_ac_adoption %>%
   pivot_longer(cols = 1:8, names_to = c('ssp', 'year'), names_sep = ".") %>%
   mutate(ssp=rep(c("SSP245","SSP585"), each=4), year=rep(seq(2020, 2050, 10), 2))
 
-future_ac_adoption$state3 <- data_c_sp$state3
+future_ac_adoption$state3 <- data_c_sp$adm1
 
 regional_summary_ac <- future_ac_adoption %>%
   group_by(state3) %>%
   dplyr::summarise_all(mean, na.rm=T) %>%
   pivot_longer(cols = 2:9, names_to = c('ssp', 'year'), names_sep = ".") %>%
-  mutate(ssp=rep(rep(c("SSP245", "SSP585"), each=4), length(unique(data_c_sp$state3))), year=rep(rep(seq(2020, 2050, 10), 2), length(unique(data_c_sp$state3))))
+  mutate(ssp=rep(rep(c("SSP245", "SSP585"), each=4), length(unique(data_c_sp$adm1))), year=rep(rep(seq(2020, 2050, 10), 2), length(unique(data_c_sp$adm1))))
 
 # plot projections
 
@@ -1086,7 +1090,7 @@ ggsave(paste0(stub, "results/graphs/map_ac_", countryiso3, ".png"), map_ac, scal
 data_c_bk <- data_c
 
 ely_formula <- ln_ely_q ~ ac + curr_CDD18_db + ln_total_exp_usd_2011 + n_members + 
-  sh_under16 + ownership_d + edu_head_2 + 
+  ownership_d + edu_head_2 + 
   housing_index_lab + age_head + sex_head + urban_sh
 
 lm1 <- lm(ely_formula, data = data_c, na.action=na.omit)
@@ -1131,7 +1135,7 @@ baseline_hist <- as.numeric(predict(lm1, type="response"))
 
 orig_data <- orig_data_bk
 
-orig_data$ac = as.factor(data_c_sp[,paste0(ssp, ".", (year))])
+orig_data$ac = (data_c_sp[,paste0(ssp, ".", (year))])
 
 orig_data$ln_total_exp_usd_2011 = data_c_sp[,paste0("exp_cap_usd_", ssp, "_", (year))]
 
@@ -1159,7 +1163,7 @@ total <- as.numeric(predict(lm1, orig_data, type="response"))
 
 orig_data <- orig_data_bk
 
-orig_data$ac = as.factor(data_c_sp[,paste0(ssp, ".", (year))])
+orig_data$ac = (data_c_sp[,paste0(ssp, ".", (year))])
 
 decomp_ac <- as.numeric(predict(lm1, orig_data, type="response"))
 
@@ -1310,7 +1314,7 @@ for (ssp in c("SSP2", "SSP5")){
     
     print(year)
     
-    orig_data$ac = as.factor(0)
+    orig_data$ac = 0
     
     orig_data$ln_total_exp_usd_2011 = data_c_sp[,paste0("exp_cap_usd_", ssp, "_", (year))]
     
@@ -1372,7 +1376,7 @@ for (ssp in c("SSP2", "SSP5")){
     
     print(year)
     
-    orig_data$ac = as.factor(data_c_sp[,paste0(ssp, ".", (year))])
+    orig_data$ac = ifelse(data_c_sp[,paste0(ssp, ".", (year))]>0.5, 1, 0)
     
     orig_data$ln_total_exp_usd_2011 = data_c_sp[,paste0("exp_cap_usd_", ssp, "_", (year))]
     
