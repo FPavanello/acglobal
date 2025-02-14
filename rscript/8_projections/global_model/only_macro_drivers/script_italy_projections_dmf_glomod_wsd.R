@@ -1105,7 +1105,7 @@ ggsave(paste0(stub, "results/graphs/map_ac_", countryiso3, ".png"), map_ac, scal
 
 data_c_bk <- data_c
 
-ely_formula <- ln_ely_q ~ ac + curr_CDD18_db + curr_HDD18_db + ln_total_exp_usd_2011 + n_members + 
+ely_formula <- ln_ely_q ~ as.factor(ac) + curr_CDD18_db + curr_HDD18_db + ln_total_exp_usd_2011 + n_members + 
   edu_head_2 + 
   age_head + sex_head  + urban_sh
 
@@ -1151,7 +1151,7 @@ baseline_hist <- as.numeric(predict(lm1, type="response"))
 
 orig_data <- orig_data_bk
 
-orig_data$ac = as.factor(ifelse(data_c_sp[,paste0(ssp, ".", (year))]>0.5, 1, 0))
+orig_data$ac = as.factor(as.character(ifelse(data_c_sp[,paste0(ssp, ".", (year))]>0.5, 1, 0)))
 
 orig_data$ln_total_exp_usd_2011 = data_c_sp[,paste0("exp_cap_usd_", ssp, "_", (year))]
 
@@ -1179,7 +1179,7 @@ total <- as.numeric(predict(lm1, orig_data, type="response"))
 
 orig_data <- orig_data_bk
 
-orig_data$ac = as.factor(ifelse(data_c_sp[,paste0(ssp, ".", (year))]>0.5, 1, 0))
+orig_data$ac = as.factor(as.character(ifelse(data_c_sp[,paste0(ssp, ".", (year))]>0.5, 1, 0)))
 
 decomp_ac <- as.numeric(predict(lm1, orig_data, type="response"))
 
@@ -1328,7 +1328,7 @@ for (ssp in c("SSP2", "SSP5")){
     
     print(year)
 
-    orig_data$ac = as.factor(0)
+    orig_data$ac = as.factor(as.character(0))
     
     orig_data$ln_total_exp_usd_2011 = data_c_sp[,paste0("exp_cap_usd_", ssp, "_", (year))]
     
@@ -1349,7 +1349,7 @@ for (ssp in c("SSP2", "SSP5")){
 	#orig_data$urban_sh = data_c_sp[,paste0("weighted_mean.URB_", ssp, "_", (year))]
     
     #
-    orig_data$country = as.factor(data_c$country); projected <- predict(model3, orig_data)
+    orig_data$country = as.factor(data_c$country); projected <- predict(reg_ely, orig_data)
 
     output2[[as.character(year)]] <- projected
     
@@ -1390,7 +1390,7 @@ for (ssp in c("SSP2", "SSP5")){
     
     print(year)
     
-    orig_data$ac = as.factor(ifelse(data_c_sp[,paste0(ssp, ".", (year))]>0.5, 1, 0))
+    orig_data$ac = as.factor(as.character(ifelse(data_c_sp[,paste0(ssp, ".", (year))]>0.5, 1, 0)))
     
     orig_data$ln_total_exp_usd_2011 = data_c_sp[,paste0("exp_cap_usd_", ssp, "_", (year))]
     
@@ -1411,7 +1411,7 @@ for (ssp in c("SSP2", "SSP5")){
 	#orig_data$urban_sh = data_c_sp[,paste0("weighted_mean.URB_", ssp, "_", (year))]
     
     #
-    orig_data$country = as.factor(data_c$country); projected <- predict(model3, orig_data)
+    orig_data$country = as.factor(data_c$country); projected <- predict(reg_ely, orig_data)
 
     output2[[as.character(year)]] <- projected
     
@@ -1495,7 +1495,7 @@ pop_long$ssp <- substr(pop_long$name, 1, 4)
 pop_long$year <- substr(pop_long$name, 6, 9)
 pop_long <- filter(pop_long, year>2010 & year<=2050)
 
-hhsize <- 3
+hhsize <- 3.45
 
 
 pop_long$value <- pop_long$value / weighted.mean(data_c$n_members, data_c$weight) # https://globaldatalab.org/areadata/hhsize
