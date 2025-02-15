@@ -520,11 +520,11 @@ gc()
 library(DescTools)
 
 # Winsorize based on electricity consumption, income and CDD
-global$ely_qw <- DescTools::Winsorize(global$ely_q, probs = c(0.05, 0.95), na.rm = TRUE)
-global$ln_ely_qw <- DescTools::Winsorize(global$ln_ely_q, probs = c(0.05, 0.95), na.rm = TRUE)
-global$ln_total_exp_usd_2011w <- Winsorize(global$total_exp_usd_2011, probs = c(0.05, 0.95), na.rm = TRUE)
-global$curr_CDD18_dbw <- Winsorize(global$curr_CDD18_db, probs = c(0.05, 0.95), na.rm = TRUE)
-global$mean_CDD18_dbw <- Winsorize(global$mean_CDD18_db, probs = c(0.05, 0.95), na.rm = TRUE)
+global$ely_qw <- DescTools::Winsorize(global$ely_q, quantile(global$ely_q, probs = c(0.05, 0.95), na.rm = TRUE))
+global$ln_ely_qw <- DescTools::Winsorize(global$ln_ely_q, quantile(global$ln_ely_q, probs = c(0.05, 0.95), na.rm = TRUE))
+global$ln_total_exp_usd_2011w <- Winsorize(global$total_exp_usd_2011, quantile(global$total_exp_usd_2011, probs = c(0.05, 0.95), na.rm = TRUE))
+global$curr_CDD18_dbw <- Winsorize(global$curr_CDD18_db, quantile(global$curr_CDD18_db, probs = c(0.05, 0.95), na.rm = TRUE))
+global$mean_CDD18_dbw <- Winsorize(global$mean_CDD18_db, quantile(global$mean_CDD18_db, probs = c(0.05, 0.95), na.rm = TRUE))
 gc()
 
 

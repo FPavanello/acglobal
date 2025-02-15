@@ -1,7 +1,7 @@
 
 ################################################
 
-#  Table A10, Table A11, Table A12, Table A13
+#    Table A6, Table A7, Table A8, Table A9
 
 ################################################
 
@@ -522,7 +522,7 @@ texreg(list(model_ref1, model_ref2, model_ref3, model_ref4, model_ref5, model_re
        stars = c(0.1, 0.05, 0.01), custom.model.names = c("DMF", "DMF", "DMF", "DMF", "DMF", "DMF"),
        custom.note = "Clustered standard errors at the ADM1 level in parentheses. Regressions are conducted using survey weights. $^{***}p<0.01$; $^{**}p<0.05$; $^{*}p<0.1$", 
        file = paste(output,'TableA6.tex', sep=''), append=F,  
-       float.pos = "htbp", label = "main: tableA10",
+       float.pos = "htbp", label = "main: tableA6",
        omit.coef = "(country)|(Intercept)|(selection)",
        custom.coef.map = list("ac"= "AC", "ac:curr_CDD18_db" = "AC $\\times$ CDD", 
                               "ac:I(curr_CDD18_db^2)" = "AC $\\times$ CDD$^2$",
@@ -543,7 +543,7 @@ texreg(list(model_tv1, model_tv2, model_tv3, model_tv4, model_tv5, model_tv6), d
        stars = c(0.1, 0.05, 0.01), custom.model.names = c("DMF", "DMF", "DMF", "DMF", "DMF", "DMF"),
        custom.note = "Clustered standard errors at the ADM1 level in parentheses. Regressions are conducted using survey weights. $^{***}p<0.01$; $^{**}p<0.05$; $^{*}p<0.1$", 
        file = paste(output,'TableA7.tex', sep=''), append=F,  
-       float.pos = "htbp", label = "main: tableA11",
+       float.pos = "htbp", label = "main: tableA7",
        omit.coef = "(country)|(Intercept)|(selection)",
        custom.coef.map = list("ac"= "AC", "ac:curr_CDD18_db" = "AC $\\times$ CDD", 
                               "ac:I(curr_CDD18_db^2)" = "AC $\\times$ CDD$^2$",
@@ -564,7 +564,7 @@ texreg(list(model_pc1, model_pc2, model_pc3, model_pc4, model_pc5, model_pc6), d
        stars = c(0.1, 0.05, 0.01), custom.model.names = c("DMF", "DMF", "DMF", "DMF", "DMF", "DMF"),
        custom.note = "Clustered standard errors at the ADM1 level in parentheses. Regressions are conducted using survey weights. $^{***}p<0.01$; $^{**}p<0.05$; $^{*}p<0.1$", 
        file = paste(output,'TableA8.tex', sep=''), append=F,  
-       float.pos = "htbp", label = "main: tableA12",
+       float.pos = "htbp", label = "main: tableA8",
        omit.coef = "(country)|(Intercept)|(selection)",
        custom.coef.map = list("ac"= "AC", "ac:curr_CDD18_db" = "AC $\\times$ CDD", 
                               "ac:I(curr_CDD18_db^2)" = "AC $\\times$ CDD$^2$",
@@ -585,7 +585,7 @@ texreg(list(model_wshm1, model_wshm2, model_wshm3, model_wshm4, model_wshm5, mod
        stars = c(0.1, 0.05, 0.01), custom.model.names = c("DMF", "DMF", "DMF", "DMF", "DMF", "DMF"),
        custom.note = "Clustered standard errors at the ADM1 level in parentheses. Regressions are conducted using survey weights. $^{***}p<0.01$; $^{**}p<0.05$; $^{*}p<0.1$", 
        file = paste(output,'TableA9.tex', sep=''), append=F,  
-       float.pos = "htbp", label = "main: tableA13",
+       float.pos = "htbp", label = "main: tableA9",
        omit.coef = "(country)|(Intercept)|(selection)",
        custom.coef.map = list("ac"= "AC", "ac:curr_CDD18_db" = "AC $\\times$ CDD", 
                               "ac:I(curr_CDD18_db^2)" = "AC $\\times$ CDD$^2$",
