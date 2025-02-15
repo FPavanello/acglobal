@@ -6,60 +6,33 @@
 ##########################################
 
 # Free memory
+.rs.restartR()
 rm(list=ls(all=TRUE)) # Removes all previously created variables
 gc()                  # frees up memory resources
 
 # Packages
-library(sandwich)
-library(lmtest)
-library(foreign)
-library(ResourceSelection)
-library(optmatch)
 library(tidyverse)
-library(haven)
-library(psych)
-library(raster)
 library(rnaturalearthdata)
 library(sf)
-library(gdata)
-library(exactextractr)
-library(nngeo)
-library(caret)
-library(MatchIt)
-library(ggsci)
-library(gdata)
-library(jtools)
-library(glm2)
 library(reshape2)
-library(cobalt)
 library(spatstat)
-library(rnaturalearth)
-library(rnaturalearthdata)
-library(viridis)
 #devtools::install_github("yutannihilation/ggsflabel")
 library(ggsflabel)
 library(patchwork)
 
 # Set users
-user <- 'fp'
-user <- 'gf'
-
-if (user=='fp') {
-  stub <- 'G:/.shortcut-targets-by-id/1JhN0qxmpnYQDoWQdBhnYKzbRCVGH_WXE/6-Projections'
-}
-
-if (user=='gf') {
-  stub <- 'F:/.shortcut-targets-by-id/1JhN0qxmpnYQDoWQdBhnYKzbRCVGH_WXE/6-Projections'
-}
-
 user <- 'user'
 
 if (user=='user') {
-  stub <- "add your repository"
+  stub <- "G:/.shortcut-targets-by-id/1JhN0qxmpnYQDoWQdBhnYKzbRCVGH_WXE/6-Projections/"
 }
 
 house <- paste(stub,'data/household/', sep='')
+interm <- paste(stub,'results/regressions/for_graphs/subsamples/', sep='')
+interm <- "C:/Users/Standard/Documents/Github/acglobal/interm/"
 output <- paste(stub,'output/figures/', sep='')
+output <- 'C:/Users/Standard/Documents/Github/acglobal/output/figures/'
+
 
 # Load pooled data
 global <- readRDS(paste(house,'global.rds', sep='')) %>% dplyr::select(country, ac, ely_q, contains("CDD"), total_exp_usd_2011, weight)
@@ -85,7 +58,7 @@ e # check
 sf <- st_as_sf(rnaturalearthdata::countries110)
 
 # Merge
-# sf2 <- merge(sf, all_merge_s, by.x="name", by.y="country") # it should be 25 for perfect merge
+sf$name[sf$name == "United States of America"] <- "United States"
 sf <- merge(sf, all_merge_s, by.x="name", by.y="country", all.x=T) 
 sf <- filter(sf, sovereignt != "Antarctica")
 
