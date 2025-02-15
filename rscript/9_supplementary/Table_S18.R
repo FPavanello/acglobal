@@ -1,7 +1,7 @@
 
 ##########################################
 
-#                 Table S19
+#                 Table S18
 
 ##########################################
 
@@ -333,8 +333,8 @@ texreg(list(model1, model2, model3, model4, model5, model6, model7, model8), dig
        stars = c(0.1, 0.05, 0.01), custom.model.names = c("DMF", "DMF", "DMF", "DMF", "DMF", "DMF", "DMF", "DMF"),
        omit.coef = "(country)|(Intercept)|(selection)",
        custom.note = "Clustered standard errors at the ADM1 level in parentheses. Regressions are conducted using survey weights. $^{***}p<0.01$; $^{**}p<0.05$; $^{*}p<0.1$", 
-       file = paste(output,'TableS19.tex', sep=''), append=F,  
-       float.pos = "htbp", label = "si: tableS19",
+       file = paste(output,'TableS18.tex', sep=''), append=F,  
+       float.pos = "htbp", label = "si: tableS18",
        custom.coef.map = list("ac"= "AC",
                               "pvgen" = "asinh(PV Generation)",
                               "dpvint" = "$\\mathds{1}$(PV Gen. $\\times$ PVOUT > Median)",

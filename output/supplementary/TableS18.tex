@@ -1,25 +1,53 @@
 
 \begin{table}[htbp]
-\caption{Air-conditioning ownership - Instrumenting Electricity Prices}
+\caption{The Effect of Air-conditioning on Residential Electricity Quantity - PV (Country FE)}
 \begin{center}
-\begin{tabular}{l c c c}
+\begin{tabular}{l c c c c c c c c}
 \hline
- & LPM & 2SLS & 2SLS \\
+ & DMF & DMF & DMF & DMF & DMF & DMF & DMF & DMF \\
 \hline
-Log(P)                    & $0.019$    & $0.029$    & $0.013$     \\
-                          & $(0.026)$  & $(0.036)$  & $(0.031)$   \\
+AC                                                        & $0.526^{***}$  & $0.334^{***}$  & $0.550^{***}$  & $0.334^{***}$  & $0.504^{***}$  & $0.333^{***}$  & $-0.006$       & $0.332^{***}$ \\
+                                                          & $(0.058)$      & $(0.033)$      & $(0.062)$      & $(0.033)$      & $(0.056)$      & $(0.033)$      & $(0.205)$      & $(0.032)$     \\
+asinh(PV Generation)                                      & $0.001$        & $0.029^{*}$    &                &                &                &                &                &               \\
+                                                          & $(0.006)$      & $(0.017)$      &                &                &                &                &                &               \\
+$\mathds{1}$(PV Gen. $\times$ PVOUT > Median)             &                &                & $0.100^{***}$  & $0.339^{***}$  &                &                &                &               \\
+                                                          &                &                & $(0.035)$      & $(0.112)$      &                &                &                &               \\
+asinh(PV Capacity)                                        &                &                &                &                & $-0.002$       & $0.025$        &                &               \\
+                                                          &                &                &                &                & $(0.007)$      & $(0.021)$      &                &               \\
+PVOUT                                                     &                &                &                &                &                &                & $-0.137^{**}$  & $-0.208$      \\
+                                                          &                &                &                &                &                &                & $(0.056)$      & $(0.200)$     \\
+AC $\times$ asinh(PV Generation)                          & $-0.032^{***}$ &                &                &                &                &                &                &               \\
+                                                          & $(0.008)$      &                &                &                &                &                &                &               \\
+AC $\times$ $\mathds{1}$(PV Gen. $\times$ PVOUT > Median) &                &                & $-0.247^{***}$ &                &                &                &                &               \\
+                                                          &                &                & $(0.065)$      &                &                &                &                &               \\
+AC $\times$ asinh(PV Capacity)                            &                &                &                &                & $-0.034^{***}$ &                &                &               \\
+                                                          &                &                &                &                & $(0.009)$      &                &                &               \\
+AC $\times$ PVOUT                                         &                &                &                &                &                &                & $0.092^{*}$    &               \\
+                                                          &                &                &                &                &                &                & $(0.052)$      &               \\
+Log(P)                                                    & $-0.402^{***}$ & $-0.450^{***}$ & $-0.405^{***}$ & $-0.469^{***}$ & $-0.401^{***}$ & $-0.440^{***}$ & $-0.398^{***}$ & $-0.180$      \\
+                                                          & $(0.085)$      & $(0.076)$      & $(0.088)$      & $(0.069)$      & $(0.085)$      & $(0.078)$      & $(0.087)$      & $(0.405)$     \\
+Log(P) $\times$ asinh(PV Generation)                      &                & $0.019^{**}$   &                &                &                &                &                &               \\
+                                                          &                & $(0.009)$      &                &                &                &                &                &               \\
+Log(P) $\times$ $\mathds{1}$(PV Gen > Median)             &                &                &                & $0.151^{**}$   &                &                &                &               \\
+                                                          &                &                &                & $(0.061)$      &                &                &                &               \\
+Log(P) $\times$ asinh(PV Capacity)                        &                &                &                &                &                & $0.019^{*}$    &                &               \\
+                                                          &                &                &                &                &                & $(0.010)$      &                &               \\
+Log(P) $\times$ PVOUT                                     &                &                &                &                &                &                &                & $-0.053$      \\
+                                                          &                &                &                &                &                &                &                & $(0.107)$     \\
 \hline
-Controls                  & YES        & YES        & YES         \\
-Mean Outcome              & $2439.238$ & $2439.238$ & $2439.238$  \\
-Kleibergen-Paap Wald test &            & 181.642    & 1578672.763 \\
-Countries                 & $25$       & $25$       & $25$        \\
-Num. obs.                 & $692718$   & $692718$   & $692718$    \\
-R$^2$ (full model)        & $0.371$    & $0.371$    & $0.371$     \\
-R$^2$ (proj model)        & $$         & $$         & $$          \\
-Adj. R$^2$ (full model)   & $0.371$    & $0.371$    & $0.371$     \\
-Adj. R$^2$ (proj model)   & $$         & $$         & $$          \\
+Correction Term                                           & YES            & YES            & YES            & YES            & YES            & YES            & YES            & YES           \\
+Country FE                                                & YES            & YES            & YES            & YES            & YES            & YES            & YES            & YES           \\
+Controls                                                  & YES            & YES            & YES            & YES            & YES            & YES            & YES            & YES           \\
+Mean Outcome                                              & $2439.091$     & $2439.091$     & $2439.091$     & $2439.091$     & $2439.238$     & $2439.238$     & $2439.091$     & $2439.091$    \\
+Countries                                                 & $25$           & $25$           & $25$           & $25$           & $25$           & $25$           & $25$           & $25$          \\
+Num. obs.                                                 & $692710$       & $692710$       & $692710$       & $692710$       & $692718$       & $692718$       & $692710$       & $692710$      \\
+Num. groups: country                                      & $25$           & $25$           & $25$           & $25$           & $25$           & $25$           & $25$           & $25$          \\
+R$^2$ (full model)                                        & $0.724$        & $0.723$        & $0.724$        & $0.724$        & $0.724$        & $0.723$        & $0.724$        & $0.724$       \\
+R$^2$ (proj model)                                        & $0.271$        & $0.269$        & $0.271$        & $0.270$        & $0.271$        & $0.269$        & $0.271$        & $0.271$       \\
+Adj. R$^2$ (full model)                                   & $0.724$        & $0.723$        & $0.724$        & $0.724$        & $0.724$        & $0.723$        & $0.724$        & $0.724$       \\
+Adj. R$^2$ (proj model)                                   & $0.271$        & $0.269$        & $0.271$        & $0.270$        & $0.271$        & $0.269$        & $0.271$        & $0.270$       \\
 \hline
-\multicolumn{4}{l}{\scriptsize{Clustered standard errors at the ADM1 level in parentheses. Regressions are conducted using survey weights. $^{***}p<0.01$; $^{**}p<0.05$; $^{*}p<0.1$}}
+\multicolumn{9}{l}{\scriptsize{Clustered standard errors at the ADM1 level in parentheses. Regressions are conducted using survey weights. $^{***}p<0.01$; $^{**}p<0.05$; $^{*}p<0.1$}}
 \end{tabular}
 \label{si: tableS18}
 \end{center}

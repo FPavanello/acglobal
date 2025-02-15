@@ -1,7 +1,7 @@
 
 ##########################################
 
-#           Table S17, Table S18
+#                 Table S17
 
 ##########################################
 
@@ -245,79 +245,4 @@ texreg(list(model1, model_iv1, model2, model_iv2), digits = 3,
 
 # Clean
 rm(model_iv1, model_iv2, model_ivfs, model1, model2, stat1, stat2, kp1, kp2, sec, fs, meaniv1, meaniv2)
-gc()
-
-
-## 2) ADM-1/Country as instruments for air-conditioning
-# Formula
-ac_formula <- ac ~ mean_CDD18_db + mean_CDD18_db2 + 
-  mean_CDD18_db_exp + mean_CDD18_db2_exp + ln_total_exp_usd_2011 + curr_CDD18_db + curr_CDD18_db2 + 
-  curr_HDD18_db + I(curr_HDD18_db^2) +
-  ln_ely_p + urban_sh + ownership_d + 
-  n_members + edu_head_2 + age_head + sex_head
-
-# OLS
-modelac0 <- feols(ac_formula, data = global, weights = ~weight, cluster = c("adm1")); summary(modelac0)
-
-# Formula
-ac_formula <- ac ~ mean_CDD18_db + mean_CDD18_db2 + 
-  mean_CDD18_db_exp + mean_CDD18_db2_exp + ln_total_exp_usd_2011 + curr_CDD18_db + curr_CDD18_db2 + 
-  curr_HDD18_db + I(curr_HDD18_db^2) +
-  urban_sh + ownership_d + 
-  n_members + edu_head_2 + age_head + sex_head | ln_ely_p ~ as.factor(country)
-
-# IV
-modelac1 <- feols(ac_formula, data = global, weights = ~weight, cluster = c("adm1")); summary(modelac1)
-
-# First-stage
-fitstat(modelac1, ~ ivwald + ivwaldall + wh + sargan, cluster = "adm1")
-statac1 <- fitstat(modelac1, ~ ivwald + ivwaldall + wh + sargan, cluster = "adm1")
-kpac1 <- statac1$`ivwald1::ln_ely_p`$stat
-gc()
-
-# Formula
-ac_formula <- ac ~ mean_CDD18_db + mean_CDD18_db2 + 
-  mean_CDD18_db_exp + mean_CDD18_db2_exp + ln_total_exp_usd_2011 + curr_CDD18_db + curr_CDD18_db2 + 
-  curr_HDD18_db + I(curr_HDD18_db^2) +
-  urban_sh + ownership_d + 
-  n_members + edu_head_2 + age_head + sex_head | ln_ely_p ~ as.factor(adm1)
-
-# IV
-modelac2 <- feols(ac_formula, data = global, weights = ~weight, cluster = c("adm1")); summary(modelac2)
-
-# First-stage
-fitstat(modelac2, ~ ivwald + ivwaldall + wh + sargan, cluster = "adm1")
-statac2 <- fitstat(modelac2, ~ ivwald + ivwaldall + wh + sargan, cluster = "adm1")
-kpac2 <- statac2$`ivwald1::ln_ely_p`$stat
-gc()
-
-# Mean electricity quantity
-mean <- weighted.mean(exp(global$ln_ely_q), global$weight)
-mean
-
-# Country
-cntry <- length(unique.default(global$country))
-cntry
-
-
-# Export
-# Only AC
-texreg(list(modelac0, modelac1, modelac2), digits = 3, 
-       caption = "Air-conditioning ownership - Instrumenting Electricity Prices",
-       stars = c(0.1, 0.05, 0.01), custom.model.names = c("LPM","2SLS", "2SLS"),
-       custom.note = "Clustered standard errors at the ADM1 level in parentheses. Regressions are conducted using survey weights. $^{***}p<0.01$; $^{**}p<0.05$; $^{*}p<0.1$", 
-       file = paste(output,'TableS18.tex', sep=''), append=F,  
-       float.pos = "htbp", label = "si: tableS18",
-       omit.coef = "(country)|(Intercept)|(selection)",
-       custom.coef.map = list(
-         "ln_ely_p" = "Log(P)",
-         "fit_ln_ely_p" = "Log(P)"),
-       custom.gof.rows = list("Controls" = c("YES", "YES", "YES"),
-                              "Mean Outcome" = c(mean, mean, mean),
-                              "Kleibergen-Paap Wald test" = c("", round(kpac1, digits = 3), round(kpac2, digits = 3)),
-                              "Countries" = c(cntry, cntry, cntry)), 
-       caption.above = TRUE)
-
-# Clean
-rm(modelac0, modelac1, modelac2, kpac1, kpac2, mean, statac1, statac2)
 gc()
