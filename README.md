@@ -26,4 +26,4 @@ In the `rscript/` folder the analysis is conducted following **seven** steps:
 5. **Robustness** - code to produce the robustness checks (Table A3, Table A4)
 7. **Projections** - code to produce the projections and the relative analysis (Table 4, Figure A3, Figure A4, Table A10)
 8. **Implications** - code to produce the 'implications' results: budget share, distribution of electricity consumption, energy supply, and CO2 emissions (Figure 6, Figure 7, Figure A2, Table A15)
-9. **Supplementary** - code to produce Supplementary Information results (Table S1-S18, Figure S1-S7)
+9. **Supplementary** - code to produce Supplementary Information results (Table S1-S18, Figure S1-S6)
