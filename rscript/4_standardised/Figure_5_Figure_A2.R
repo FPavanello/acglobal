@@ -1,37 +1,40 @@
 
-## This R-script:
-##      1) Figure 1: Boxplot of social and macro-drivers of air-conditoning adoption and electricity quantity
+##########################################
+
+#                 Figure 5
+
+##########################################
 
 # Free memory
 rm(list=ls(all=TRUE)) # Removes all previously created variables
 gc()                  # frees up memory resources
 
 # Packages
+#remotes::install_github('rpkgs/gg.layers')
 library(gg.layers)
 library(tidyverse)
 library(patchwork)
-#remotes::install_github('rpkgs/gg.layers')
 library(ggsci)
 
 # Set users
-user <- 'fp'
-user <- 'gf'
+user <- 'user'
 
-if (user=='fp') {
-  stub <- 'G:/.shortcut-targets-by-id/1JhN0qxmpnYQDoWQdBhnYKzbRCVGH_WXE/'
+if (user=='user') {
+  stub <- "G:/.shortcut-targets-by-id/1JhN0qxmpnYQDoWQdBhnYKzbRCVGH_WXE/6-Projections/"
 }
 
-if (user=='gf') {
-  stub <- 'F:/.shortcut-targets-by-id/1JhN0qxmpnYQDoWQdBhnYKzbRCVGH_WXE/'
-}
+house <- paste(stub,'data/household/', sep='')
+interm <- paste(stub,'results/regressions/for_graphs/subsamples/', sep='')
+interm <- 'C:/Users/Standard/Documents/Github/acglobal/interm/standardised/'
+output <- paste(stub,'output/figures/', sep='')
+output <- 'C:/Users/Standard/Documents/Github/acglobal/output/figures/'
 
-data <- paste(stub,'6-Projections/results/regressions/for_graphs/standardised', sep='')
-output <- paste(stub,'6-Projections/results/graphs/', sep='')
 
-# redo for ely
+## Figure 5
+# Set
+list_p <- list.files(path=paste(interm), full.names = T, pattern = "RData")
 
-list_p <- list.files(path="G:/.shortcut-targets-by-id/1JhN0qxmpnYQDoWQdBhnYKzbRCVGH_WXE/6-Projections/results/regressions/for_graphs/standardised", full.names = T, pattern = "RData")
-
+# Function
 merger <- function(X){
   
   load(list_p[[X]])
@@ -53,7 +56,7 @@ merger <- function(X){
   ely_margins$term <- ifelse(ely_margins$term=="ownership_d", "ownership_d", ely_margins$term)
   
   
-  ely_margins$country <- toupper(unlist(qdapRegex::ex_between(list_p[X], "G:/.shortcut-targets-by-id/1JhN0qxmpnYQDoWQdBhnYKzbRCVGH_WXE/6-Projections/results/regressions/for_graphs/standardised/", "_dmcf.RData")))
+  ely_margins$country <- toupper(unlist(qdapRegex::ex_between(list_p[X], "C:/Users/Standard/Documents/Github/acglobal/interm/standardised/", "_dmcf.RData")))
   
   ely_margins <- dplyr::filter(ely_margins, !grepl("state|country|region|macro|selection", term))
   
@@ -65,14 +68,16 @@ merger <- function(X){
   
 }
 
+# Call
 pp <- lapply(1:length(list_p), merger)
 
+# Append
 pp <- as.data.frame(do.call(rbind, pp))
 
+# Significance
 pp$sign <- ifelse(pp$p.value<0.05, 1, 0)
 
-#View(pp %>% filter(sign==1))
-
+# Plot
 p5<- ggplot(pp %>% filter(sign==1)) +
   theme_classic()+
   geom_hline(yintercept = 0, colour="black")+
@@ -88,16 +93,16 @@ p5<- ggplot(pp %>% filter(sign==1)) +
                               "Housing index - 2", "Housing index - 3", "Home ownership", "Female HH head", 
                               "Age HH head", "Yearly CDDs", "Electricity price", "Yearly HDDs", "HH size", 
                               "Total HH expenditure", "Urbanisation"))
-###
-p5
 
-ggsave("C:/Users/Standard/Documents/Github/acglobal/output/figures/Figure5.png", last_plot(), scale=2.5, width = 3.5, height = 4/2)
+# Save
+ggsave(paste(output, 'Figure5.png', sep = ''), last_plot(), scale=2.5, width = 3.5, height = 4/2)
 
 
-# redo for ely
+## Figure A2
+# Load
+list_p <- list.files(path=paste(interm), full.names = T, pattern = "RData")
 
-list_p <- list.files(path="G:/.shortcut-targets-by-id/1JhN0qxmpnYQDoWQdBhnYKzbRCVGH_WXE/6-Projections/results/regressions/for_graphs/standardised", full.names = T, pattern = "RData")[-6]
-
+# Function
 merger <- function(X){
   
   load(list_p[[X]])
@@ -118,7 +123,7 @@ merger <- function(X){
   ely_margins$term <- ifelse(ely_margins$term=="ac", "ac", ely_margins$term)
   ely_margins$term <- ifelse(ely_margins$term=="ownership_d", "ownership_d", ely_margins$term)
   
-  ely_margins$country <- toupper(unlist(qdapRegex::ex_between(list_p[X], "G:/.shortcut-targets-by-id/1JhN0qxmpnYQDoWQdBhnYKzbRCVGH_WXE/6-Projections/results/regressions/for_graphs/standardised/", "_dmcf.RData")))
+  ely_margins$country <- toupper(unlist(qdapRegex::ex_between(list_p[X], paste(interm), "_dmcf.RData")))
   
   ely_margins <- dplyr::filter(ely_margins, !grepl("state|country|region|macro|selection", term))
   
@@ -126,20 +131,20 @@ merger <- function(X){
   
   ely_margins$oecd = ifelse(ely_margins$country %in% toupper(c("deu", "ita", "oecdeu", "oecdnoneu", "usa", "mex")), "OECD", "Non-OECD")
   
-  #ely_margins$glob <- as.factor(ifelse(ely_margins$country=="GLOBAL", 1, 0))
-  
   return(ely_margins)
   
 }
 
+# Call
 pp <- lapply(1:length(list_p), merger)
 
+# Append
 pp <- as.data.frame(do.call(rbind, pp))
 
+# Significance
 pp$sign <- ifelse(pp$p.value<0.05, 1, 0)
 
-#View(pp %>% filter(sign==1))
-
+# Plot
 p5<- ggplot(pp %>% filter(sign==1)) +
   theme_classic()+
   facet_wrap(vars(as.factor(oecd)), ncol=1)+
@@ -156,4 +161,5 @@ p5<- ggplot(pp %>% filter(sign==1)) +
 
 p5
 
-ggsave("C:/Users/Standard/Documents/Github/acglobal/output/figures/FigureA2.png", last_plot(), scale=2.5, width = 3.5, height = 4/2)
+# Save
+ggsave(paste(output, 'FigureA2.png', sep = ''), last_plot(), scale=2.5, width = 3.5, height = 4/2)
