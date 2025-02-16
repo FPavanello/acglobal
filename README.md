@@ -4,7 +4,7 @@ Replication package for Enrica De Cian, Giacomo Falchetta, Filippo Pavanello, Ya
 [Old Working Paper](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4604871)
 
 # Description
-This repository provides the codes required to reproduce the tables, figures, and in-text summary statistics in De Cian et al. (mimeo). 
+This repository provides the codes required to reproduce the tables, figures, and in-text summary statistics in De Cian et al. (2025, JEEM). 
 
 ## Folders
 
