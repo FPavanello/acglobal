@@ -9,6 +9,7 @@ This repository provides the codes required to reproduce the tables, figures, an
 ## Folders
 
  - `rscript/` - contains all R codes that replicates tables and figures in the paper
+ - `interm/` - where intermediate inputs are stored
  - `output/` - where all results are stored
 
 ## Data for replications
@@ -16,7 +17,7 @@ The data used in the paper are available for download in the following repositor
 
 ## Steps
 
-In the `rscript/` folder the analysis is conducted following **seven** steps:
+In the `rscript/` folder the analysis is conducted following **nine** steps:
 
 1. **Descriptives** - code to produce the descriptive analysis in the paper (Table 1, Table 2, Figure 1)
 2. **Main** - code to produce the main specification of the paper (Table 3, Figure 2, Table A1, Table A2)
