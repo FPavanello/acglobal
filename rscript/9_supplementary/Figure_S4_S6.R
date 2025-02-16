@@ -200,7 +200,7 @@ ac_country <- all %>%
 ac_country
 
 # Save
-ggsave(paste(output, 'FigureS5.png', sep = ''), last_plot(), scale=2.5, width = 3.5, height = 2)
+ggsave(paste(output, 'FigureS4.png', sep = ''), last_plot(), scale=2.5, width = 3.5, height = 2)
 
 
 
@@ -254,7 +254,7 @@ ac_country <- all %>%
 ac_country
 
 # Save
-ggsave(paste(output, 'FigureS6.png', sep = ''), last_plot(), scale=2.5, width = 3.5, height = 2)
+ggsave(paste(output, 'FigureS5.png', sep = ''), last_plot(), scale=2.5, width = 3.5, height = 2)
 
 
 
@@ -303,6 +303,6 @@ ac_country <- all %>%
 ac_country
 
 # Save
-ggsave(paste(output, 'FigureS7.png', sep = ''), last_plot(), scale=2.5, width = 3.5, height = 2)
+ggsave(paste(output, 'FigureS6.png', sep = ''), last_plot(), scale=2.5, width = 3.5, height = 2)
 
 
