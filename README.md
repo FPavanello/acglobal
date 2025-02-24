@@ -1,4 +1,4 @@
-# The Impact of Air-conditioning on Residential Electricity Demand across World Countries.
+# The Impact of Air conditioning on Residential Electricity Demand across World Countries.
 Replication package for Enrica De Cian, Giacomo Falchetta, Filippo Pavanello, Yasmin Romitti, Ian Sue Wing, "**The Impact of Air conditioning on Residential Electricity Demand across World Countries**" \[Journal of Environmental Economics and Management\]
 
 [Old Working Paper](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4604871)
