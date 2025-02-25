@@ -1,8 +1,10 @@
 
-## This R-script:
-##      1) Figure 3: expenditure distribution analysis
+##########################################
 
-# Free memory
+#               Figure 7
+
+##########################################
+
 rm(list=ls(all=TRUE)) # Removes all previously created variables
 gc()                  # frees up memory resources
 
@@ -14,19 +16,20 @@ library(patchwork)
 library(ggsci)
 
 # Set users
-user <- 'fp'
-user <- 'gf'
+user <- 'user'
 
-if (user=='fp') {
-  stub <- 'G:/Il mio Drive/'
+if (user=='user') {
+  stub <- "G:/.shortcut-targets-by-id/1JhN0qxmpnYQDoWQdBhnYKzbRCVGH_WXE/6-Projections/"
 }
 
-if (user=='gf') {
-  stub <- 'F:/.shortcut-targets-by-id/1JhN0qxmpnYQDoWQdBhnYKzbRCVGH_WXE/'
-}
+house <- paste(stub,'data/household/', sep='')
+output <- paste(stub,'output/figures/', sep='')
+output <- 'C:/Users/Standard/Documents/Github/acglobal/output/figures/'
+interm <- "C:/Users/Standard/Documents/Github/acglobal/interm/"
+interm <- paste(stub,'6-Projections/results/graphs/', sep='')
 
-output <- paste(stub,'6-Projections/results/graphs/', sep='')
 
+# Load data
 list_p <- list.files(path=output, full.names = T, pattern = "distribution")
 list_p <- list_p[grepl("Rdata", list_p)][]
 
@@ -44,12 +47,9 @@ pp <- lapply(1:length(list_p), merger)
 
 pp <- as.data.frame(do.call(rbind, pp))
 
-#pp$country[pp$country=="DEU"] <- "OECD-EU"
-
+# Labels
 pp$country[pp$country=="OECD-EU"] <- "OECD - EU"
 pp$country[pp$country=="OECD-NONEU"] <- "OECD - non EU"
-
-###
 
 pp$country[pp$country=="ARG"] <- "Argentina"
 pp$country[pp$country=="BRA"] <- "Brazil"
@@ -61,11 +61,8 @@ pp$country[pp$country=="MEX"] <- "Mexico"
 pp$country[pp$country=="PAK"] <- "Pakistan"
 pp$country[pp$country=="USA"] <- "United States"
 
-###########
-
+# Arrange
 pp <- filter(pp, year==2020 | year==2050)
-#pp$mean <- ifelse(is.na(pp$mean), 11, pp$mean)
-
 pp <- filter(pp, country!="DEU")
 pp <- filter(pp, value>0 & value<20000)
 pp = filter(pp, ely_p < 1)
@@ -91,6 +88,7 @@ pp <- pp %>% filter(!(ssp=="SSP585" & year==2020))
 
 pp$ssp <- ifelse(pp$year==2020 & pp$ssp=="SSP245", "2020", pp$ssp)
 
+# Distribution
 distribution_plots <- ggplot(pp %>% filter(value>15), aes(x = exp, y = after_stat(count), group=ssp, colour=as.factor(ssp)))+ theme_classic() +   geom_density(adjust=.7)+ facet_wrap(vars(country), ncol=3, scales="free")+
   geom_vline(aes(xintercept = mean, group=ssp, colour=as.factor(ssp)), linetype="dashed", size=.3)+
   ylab("Count of households")+
@@ -101,5 +99,6 @@ distribution_plots <- ggplot(pp %>% filter(value>15), aes(x = exp, y = after_sta
 
 distribution_plots
 
-ggsave(paste0(output, "fig3_distr_exp_new.png"), distribution_plots, scale=1.2, width = 7, height = 10*(2/3))
+# Save
+ggsave(paste0(output, "Figure7.png"), distribution_plots, scale=1.2, width = 7, height = 10*(2/3))
 

@@ -1,8 +1,10 @@
 
-## This R-script:
-##      1) plots AC elasticities by income country-specific quintile - coefficient plot (Figure 2)
+##########################################
 
-# Free memory
+#               Figure A4
+
+##########################################
+
 rm(list=ls(all=TRUE)) # Removes all previously created variables
 gc()                  # frees up memory resources
 
@@ -13,16 +15,14 @@ library(patchwork)
 library(ggsci)
 
 # Set users
-#user <- 'fp'
-user <- 'gf'
+user <- 'user'
 
-if (user=='fp') {
-  stub <- 'G:/.shortcut-targets-by-id/1JhN0qxmpnYQDoWQdBhnYKzbRCVGH_WXE/'
+if (user=='user') {
+  stub <- "G:/.shortcut-targets-by-id/1JhN0qxmpnYQDoWQdBhnYKzbRCVGH_WXE/"
 }
 
-if (user=='gf') {
-  stub <- 'F:/.shortcut-targets-by-id/1JhN0qxmpnYQDoWQdBhnYKzbRCVGH_WXE/'
-}
+output <- paste(stub,'output/figures/', sep='')
+output <- 'C:/Users/Standard/Documents/Github/acglobal/output/figures/'
 
 setwd(stub)
 
@@ -192,9 +192,8 @@ g3_g <- ggplot(l3 %>% filter(country=="Global pool"))+
   xlab("Year")+
   ylab("Avg. per-capita AC-induced ely. cons. (kWh/hh/yr)")
 
-library(patchwork)
-
 (g1_g + g2_g + g1 + g2)  + plot_layout(guides = "collect")+ plot_annotation(tag_levels = "A") & theme_classic() & theme(legend.position = "bottom", legend.direction = "horizontal", axis.text.x = element_text(angle = 90))
 
-ggsave(paste0(stub, "6-Projections/results/graphs/pc_sensitivity_drivers_glomod.png"), scale=1.8, width = 6, height = 5)
+# Save
+ggsave(paste0(output, "FigureA4.png"), scale=1.8, width = 6, height = 5)
 
