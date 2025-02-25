@@ -26,7 +26,7 @@ house <- paste(stub,'data/household/', sep='')
 output <- paste(stub,'output/figures/', sep='')
 output <- 'C:/Users/Standard/Documents/Github/acglobal/output/figures/'
 interm <- "C:/Users/Standard/Documents/Github/acglobal/interm/"
-interm <- paste(stub,'6-Projections/results/graphs/', sep='')
+interm <- paste(stub,'6-Projections/interm/', sep='')
 
 
 # Load data

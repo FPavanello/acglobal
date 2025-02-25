@@ -132,7 +132,7 @@ g1_g <- ggplot(l1 %>% filter(country=="Global pool"))+
   xlab("Year")+
   ylab("AC penetration rate (%)")
 
-#ggsave("6-Projections/results/graphs/ac_penetration_sensitivity_drivers.png", scale=1)
+#ggsave("6-Projections/interm/ac_penetration_sensitivity_drivers.png", scale=1)
 
 #
 
