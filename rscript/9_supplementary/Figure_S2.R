@@ -1,43 +1,38 @@
 
+##########################################
+
+#               Figure S2
+
+##########################################
+
+rm(list=ls(all=TRUE)) # Removes all previously created variables
+gc()
+
 # Load packages
 library(data.table)
 library(plyr)
 library(dplyr)
 library(FSA)
-library(haven)
-library(readstata13)
 library(stringr)
 library(tidyverse)
-library(sandwich)
-library(lmtest)
-library(ResourceSelection)
-library(multiwayvcov)
-library(msm) # https://stats.oarc.ucla.edu/r/faq/how-can-i-estimate-the-standard-error-of-transformed-regression-parameters-in-r-using-the-delta-method/
-library(margins)
-library(texreg)
-library(xtable)
-library(stargazer)
-library(effects)
-library(survey)
+library(wbstats)
+library(ggrepel)
 #library(sjPlot)
 
 # Set users
-user <- 'fp'
-user <- 'gf'
+user <- 'user'
 
-if (user=='fp') {
-  stub <- 'G:/.shortcut-targets-by-id/1JhN0qxmpnYQDoWQdBhnYKzbRCVGH_WXE/'
+if (user=='user') {
+  stub <- "G:/.shortcut-targets-by-id/1JhN0qxmpnYQDoWQdBhnYKzbRCVGH_WXE/6-Projections/"
 }
 
-if (user=='gf') {
-  stub <- 'F:/.shortcut-targets-by-id/1JhN0qxmpnYQDoWQdBhnYKzbRCVGH_WXE/'
-}
+house <- paste(stub,'data/household/', sep='')
+proj <- paste(stub,'results/household_level/', sep='')
+output <- paste(stub,'output/figures/', sep='')
+output <- 'C:/Users/Standard/Documents/Github/acglobal/output/supplementary/'
 
-house <- paste(stub,'6-Projections/data/household/', sep='')
-output <- paste(stub,'6-Projections/results/regressions/', sep='')
 
-####
-
+# Load AC projections at 2020
 setwd("F:/.shortcut-targets-by-id/1JhN0qxmpnYQDoWQdBhnYKzbRCVGH_WXE/6-Projections/results/household_level")
 
 proj_f = list.files(pattern="national_ac_penetration.csv")
@@ -68,11 +63,7 @@ for (i in 1:length(proj_gm)){
 
 proj_gm <- bind_rows(proj_gm)
 
-
-###
-
-
-# Load global data
+# Load household data
 global <- readRDS(paste(house,'global.rds', sep=''))
 
 # Check
@@ -80,22 +71,18 @@ global <- global[complete.cases(global$ln_ely_q), ]
 global <- global[complete.cases(global$ac), ]
 global <- global[complete.cases(global$ln_total_exp_usd_2011), ]
 global <- global[complete.cases(global$mean_CDD_db), ]
-#global <- global[complete.cases(global$urban_sh), ]
 global <- global[complete.cases(global$ownership_d), ]
 global <- global[complete.cases(global$n_members), ]
 global <- global[complete.cases(global$age_head), ]
 global <- global[complete.cases(global$country), ]
 global <- global[complete.cases(global$weight), ]
 
-#
+# Obtain current statistics
 stat = global %>% group_by(country) %>%  dplyr::summarise(stat=weighted.mean(as.numeric(as.character(ac)), weight,  na.rm = T))
 
 stat$country_c <- c("ARG", "OECD_NONEU","BRA", "Africa",  "OECD_NONEU", "CHN", "OECD_EU", "OECD_EU", "Africa","IND", "IDN", "ITA", "OECD_NONEU", "Africa", "Africa", "MEX", "OECD_EU", "Africa", "Africa", "PAK", "OECD_EU", "OECD_EU", "OECD_EU", "Africa", "USA")
 
-# pop and wiehgting 
-
-library(wbstats)
-
+# pop and weighting 
 pop = wbstats::wb_data(indicator = "SP.POP.TOTL", mrv=1)
 
 stat$iso3c <- countrycode::countrycode(stat$country, 'country.name', 'iso3c')
@@ -114,9 +101,7 @@ bound <- group_by(bound, country_c) %>% dplyr::summarise(stat=mean(stat), value=
 
 bound$bias = round(bound$value - bound$stat, 3)
 
-library(ggrepel)
-
-
+# Figure S2
 g1 <- ggplot(bound)+
     geom_abline()+
     geom_point(aes(x=value*100, y=stat*100))+
@@ -126,4 +111,5 @@ g1 <- ggplot(bound)+
 
 g1
 
-ggsave("F:/.shortcut-targets-by-id/1JhN0qxmpnYQDoWQdBhnYKzbRCVGH_WXE/6-Projections/results/graphs/bias_figure.png", g1, scale=.75, height = 10, width = 10)
+# Save
+ggsave(paste(output, 'FigureS2.png', sep = ''), g1, scale=.75, height = 10, width = 10)
