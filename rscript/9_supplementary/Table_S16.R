@@ -34,9 +34,9 @@ if (user=='user') {
   stub <- 'G:/.shortcut-targets-by-id/1JhN0qxmpnYQDoWQdBhnYKzbRCVGH_WXE/6-Projections/'
 }
 
-house <- paste(stub,'data/household/', sep='')
-interm <- "C:/Users/Standard/Documents/Github/acglobal/interm/"
+house <- paste(stub,'6-Projections/repo/household/', sep='')
 output <- 'C:/Users/Standard/Documents/Github/acglobal/output/supplementary/'
+
 
 # Load global data
 global <- readRDS(paste(house,'global.rds', sep=''))
