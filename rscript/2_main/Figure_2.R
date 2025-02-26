@@ -45,8 +45,7 @@ if (user=='user') {
   stub <- "G:/.shortcut-targets-by-id/1JhN0qxmpnYQDoWQdBhnYKzbRCVGH_WXE/6-Projections/"
 }
 
-house <- paste(stub,'data/household/', sep='')
-output <- paste(stub,'output/figures/', sep='')
+house <- paste(stub,'6-Projections/repo/household/', sep='')
 output <- 'C:/Users/Standard/Documents/Github/acglobal/output/figures/'
 
 

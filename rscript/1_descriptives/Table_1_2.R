@@ -23,8 +23,7 @@ if (user=='user') {
 }
 
 # Set directory
-house <- paste(stub,'data/household/', sep='') 
-output <- paste(stub,'output/tables/', sep='') 
+house <- paste(stub,'6-Projections/repo/household/', sep='')
 output <- 'C:/Users/Standard/Documents/Github/acglobal/output/tables/'
 
 # Load
