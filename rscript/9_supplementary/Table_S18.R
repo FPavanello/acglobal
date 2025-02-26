@@ -34,10 +34,7 @@ if (user=='user') {
   stub <- "G:/.shortcut-targets-by-id/1JhN0qxmpnYQDoWQdBhnYKzbRCVGH_WXE/6-Projections/"
 }
 
-house <- paste(stub,'data/household/', sep='')
-interm <- paste(stub,'results/regressions/for_graphs/subsamples/', sep='')
-interm <- 'C:/Users/Standard/Documents/Github/acglobal/interm/'
-output <- paste(stub,'output/supplementary/', sep='')
+house <- paste(stub,'6-Projections/repo/household/', sep='')
 output <- 'C:/Users/Standard/Documents/Github/acglobal/output/supplementary/'
 
 
