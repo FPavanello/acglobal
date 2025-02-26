@@ -48,7 +48,7 @@ countryiso3 <- "BRA"
 
 # 1 import DMF environment with trained models and data
 
-load(paste0(stub, "results/regressions/for_projections/bra_dmcf.RData"))
+load(paste0(stub, "repo/interm/bra_dmcf.RData"))
 
 data_c <- HH_Brazil
 #rm(HH_Brazil)
@@ -784,7 +784,7 @@ for (year in seq(2020, 2050, 10)){
 #   geom_line(aes(x=year, y=value, colour=SSP, group=SSP))+
 #   scale_colour_npg()
 # 
-# ggsave(paste0(stub, "interm/plot_gdp_1_", countryiso3, ".png"), plot_gdp_1)
+# ggsave(paste0(stub, "repo/interm/plot_gdp_1_", countryiso3, ".png"), plot_gdp_1)
 # 
 # gdp_trend_regional <- gdp_trend %>% group_by(SSP, year, state) %>% dplyr::summarise(value=sum(value, na.rm=T))
 # 
@@ -792,7 +792,7 @@ for (year in seq(2020, 2050, 10)){
 #   geom_line(aes(x=year, y=value, colour=SSP, group=SSP))+
 #   facet_wrap(~ state, ncol=10)
 # 
-# ggsave(paste0(stub, "interm/plot_gdp_2_", countryiso3, ".png"), plot_gdp_2)
+# ggsave(paste0(stub, "repo/interm/plot_gdp_2_", countryiso3, ".png"), plot_gdp_2)
 # 
 # #
 # 
@@ -808,7 +808,7 @@ for (year in seq(2020, 2050, 10)){
 #   geom_line(aes(x=year, y=value, colour=SSP, group=SSP))+
 #   scale_colour_npg()
 # 
-# ggsave(paste0(stub, "interm/plot_pop_1_", countryiso3, ".png"), plot_pop_1)
+# ggsave(paste0(stub, "repo/interm/plot_pop_1_", countryiso3, ".png"), plot_pop_1)
 # 
 # pop_trend_regional <- pop_trend %>% group_by(SSP, year, state) %>% dplyr::summarise(value=sum(value, na.rm=T))
 # 
@@ -816,7 +816,7 @@ for (year in seq(2020, 2050, 10)){
 #   geom_line(aes(x=year, y=value, colour=SSP, group=SSP))+
 #   facet_wrap(~ state, ncol=10)
 # 
-# ggsave(paste0(stub, "interm/plot_pop_2_", countryiso3, ".png"), plot_pop_2)
+# ggsave(paste0(stub, "repo/interm/plot_pop_2_", countryiso3, ".png"), plot_pop_2)
 # 
 # #
 # gdp_capita_trend <-reshape2::melt(gdp_capita_trend, "state")
@@ -831,7 +831,7 @@ for (year in seq(2020, 2050, 10)){
 #   geom_line(aes(x=year, y=value, colour=SSP, group=SSP))+
 #   scale_colour_npg()
 # 
-# ggsave(paste0(stub, "interm/plot_gdp_capita_1_", countryiso3, ".png"), plot_gdp_capita_1)
+# ggsave(paste0(stub, "repo/interm/plot_gdp_capita_1_", countryiso3, ".png"), plot_gdp_capita_1)
 # 
 # 
 # gdp_capita_trend_regional <- gdp_capita_trend %>% group_by(SSP, year, state) %>% dplyr::summarise(value=mean(value, na.rm=T))
@@ -840,7 +840,7 @@ for (year in seq(2020, 2050, 10)){
 #   geom_line(aes(x=year, y=value, colour=SSP, group=SSP))+
 #   facet_wrap(~ state, ncol=10)
 # 
-# ggsave(paste0(stub, "interm/plot_gdp_capita_2_", countryiso3, ".png"), plot_gdp_capita_2)
+# ggsave(paste0(stub, "repo/interm/plot_gdp_capita_2_", countryiso3, ".png"), plot_gdp_capita_2)
 # 
 # #
 # 
@@ -856,7 +856,7 @@ for (year in seq(2020, 2050, 10)){
 #   geom_line(aes(x=year, y=value, colour=SSP, group=SSP))+
 #   scale_colour_npg()
 # 
-# ggsave(paste0(stub, "interm/plot_urb_1_", countryiso3, ".png"), plot_urb_1)
+# ggsave(paste0(stub, "repo/interm/plot_urb_1_", countryiso3, ".png"), plot_urb_1)
 # 
 # 
 # urb_trend_regional <- urb_trend %>% group_by(SSP, year, state) %>% dplyr::summarise(value=mean(value, na.rm=T))
@@ -865,7 +865,7 @@ for (year in seq(2020, 2050, 10)){
 #   geom_line(aes(x=year, y=value, colour=SSP, group=SSP))+
 #   facet_wrap(~ state, ncol=10)
 # 
-# ggsave(paste0(stub, "interm/plot_urb_2_", countryiso3, ".png"), plot_urb_2)
+# ggsave(paste0(stub, "repo/interm/plot_urb_2_", countryiso3, ".png"), plot_urb_2)
 # 
 # 
 # ##
@@ -879,7 +879,7 @@ for (year in seq(2020, 2050, 10)){
 #   geom_col(aes(x=year, y=value, fill=name))+
 #   scale_fill_npg()
 # 
-# ggsave(paste0(stub, "interm/housing_index_lab_improvement_s1_", countryiso3, ".png"), housing_index_lab_plot)
+# ggsave(paste0(stub, "repo/interm/housing_index_lab_improvement_s1_", countryiso3, ".png"), housing_index_lab_plot)
 # 
 # #
 # 
@@ -892,7 +892,7 @@ for (year in seq(2020, 2050, 10)){
 #   geom_col(aes(x=year, y=value, fill=name))+
 #   scale_fill_npg()
 # 
-# ggsave(paste0(stub, "interm/housing_index_lab_improvement_s2_", countryiso3, ".png"), housing_index_lab_plot)
+# ggsave(paste0(stub, "repo/interm/housing_index_lab_improvement_s2_", countryiso3, ".png"), housing_index_lab_plot)
 
 data_c_sp_export <- data_c_sp
 
@@ -901,7 +901,7 @@ data_c_sp_export$geometry.y <- NULL
 
 orig_data <- HH_Brazil[fixest::obs(reg_ac),]
 
-save(orig_data, data_c_sp_export, file = paste0(stub, "results/drivers_evolution/", countryiso3, ".Rdata"))
+save(orig_data, data_c_sp_export, file = paste0(stub, "repo/interm/drivers_evolution/", countryiso3, ".Rdata"))
 
 
 ## 3) Make projections based on trained models and extracted data ##
@@ -1032,7 +1032,7 @@ line_country_ac <- ggplot(national_summary_ac)+
   xlab("Year")+
   ylab("AC penetration rate (%)")
 
-ggsave(paste0(stub, "interm/line_country_ac_", countryiso3, ".png"), line_country_ac)
+ggsave(paste0(stub, "repo/interm/line_country_ac_", countryiso3, ".png"), line_country_ac)
 
 line_region_ac <- ggplot(regional_summary_ac)+
   geom_line(aes(x=year, y=value*100, colour=ssp, group=ssp))+
@@ -1042,7 +1042,7 @@ line_region_ac <- ggplot(regional_summary_ac)+
   ylab("AC penetration rate (%)")+
   theme(axis.text.x = element_text(angle = 90, vjust = 0.1, hjust=.1))
 
-ggsave(paste0(stub, "interm/line_region_ac_", countryiso3, ".png"), line_region_ac)
+ggsave(paste0(stub, "repo/interm/line_region_ac_", countryiso3, ".png"), line_region_ac)
 
 gadm_1 <- gadm_1 %>% dplyr::select(geometry, NAME_1)
 
@@ -1057,7 +1057,7 @@ map_ac <- ggplot(regional_summary_ac)+
         axis.text=element_blank(),
         axis.ticks=element_blank())
 
-ggsave(paste0(stub, "interm/map_ac_", countryiso3, ".png"), map_ac, scale=1.75)
+ggsave(paste0(stub, "repo/interm/map_ac_", countryiso3, ".png"), map_ac, scale=1.75)
 
 ####
 
@@ -1093,7 +1093,7 @@ hist_dec <- ggplot(metrics2_n)+
         axis.ticks.x=element_blank())+
   ylab("Relative importance")
 
-#ggsave(paste0(paste0(stub, "interm/historical_decomp.png")))
+#ggsave(paste0(paste0(stub, "repo/interm/historical_decomp.png")))
 
 #
 
@@ -1254,9 +1254,9 @@ decomposition_plot <- ggplot(all)+
         axis.text.x=element_blank(),
         axis.ticks.x=element_blank()) + guides(fill=guide_legend(ncol=1))
 
-ggsave(paste0(stub, "interm/", countryiso3, "_decompose_", ssp, ".png"), last_plot())
+ggsave(paste0(stub, "repo/interm/projections", countryiso3, "_decompose_", ssp, ".png"), last_plot())
 
-save(all, decomposition_plot, file=paste0(stub, "interm/", countryiso3, "_decompose_", ssp, ".Rdata"))
+save(all, decomposition_plot, file=paste0(stub, "repo/interm/projections", countryiso3, "_decompose_", ssp, ".Rdata"))
 
 }
 
@@ -1419,7 +1419,7 @@ line_country_ely_q <- ggplot(national_summary_cons)+
   ylab("Mean additional electricity consumption due to AC \n(kWh/hh/year)")+
   scale_colour_npg(name="Scenario")
 
-ggsave(paste0(stub, "interm/line_country_ely_q_", countryiso3, ".png"), line_country_ely_q)
+ggsave(paste0(stub, "repo/interm/line_country_ely_q_", countryiso3, ".png"), line_country_ely_q)
 
 #
 
@@ -1436,7 +1436,7 @@ ggsave(paste0(stub, "interm/line_country_ely_q_", countryiso3, ".png"), line_cou
 #   ylab("Average % electricity consumption due to AC")+
 #   scale_colour_npg()
 #
-# ggsave(paste0(stub, "interm/line_country_ely_q_share_", countryiso3, ".png"), line_country_ely_q_share, scale=1.5)
+# ggsave(paste0(stub, "repo/interm/line_country_ely_q_share_", countryiso3, ".png"), line_country_ely_q_share, scale=1.5)
 
 #
 
@@ -1474,7 +1474,7 @@ line_country_ely_q_total <- ggplot(national_summary_cons)+
   ylab("Total electricity consumption due to AC (TWh), \ninclusive of population growth")+
   scale_colour_npg(name="Scenario")
 
-ggsave(paste0(stub, "interm/line_country_ely_q_tot_", countryiso3, ".png"), line_country_ely_q_total)
+ggsave(paste0(stub, "repo/interm/line_country_ely_q_tot_", countryiso3, ".png"), line_country_ely_q_total)
 
 #
 
@@ -1494,21 +1494,21 @@ distr_country_ely_q <- ggplot(output_impact_ac2, aes(x = value, y=..density.., g
   scale_colour_npg(name="Year")+
   labs(caption = "Solid line: density curve; dashed line: median value")
 
-ggsave(paste0(stub, "interm/distr_country_ely_q_", countryiso3, ".png"), distr_country_ely_q)
+ggsave(paste0(stub, "repo/interm/distr_country_ely_q_", countryiso3, ".png"), distr_country_ely_q)
 
-save(output_impact_ac2, distr_country_ely_q, file=paste0(stub, "interm/", countryiso3, "_distribution.Rdata"))
+save(output_impact_ac2, distr_country_ely_q, file=paste0(stub, "repo/interm/projections", countryiso3, "_distribution.Rdata"))
 
 ###############
 # export projections data
 
-write.csv(national_summary_ac, paste0(stub, "interm/", countryiso3, "_national_ac_penetration_wsd.csv"))
-write.csv(national_summary_cons,  paste0(stub, "interm/", countryiso3, "_national_ac_consumption_wsd.csv"))
-write.csv(national_summary_total,  paste0(stub, "interm/", countryiso3, "_national_ac_consumption_total_wsd.csv"))
+write.csv(national_summary_ac, paste0(stub, "repo/interm/projections", countryiso3, "_national_ac_penetration_wsd.csv"))
+write.csv(national_summary_cons,  paste0(stub, "repo/interm/projections", countryiso3, "_national_ac_consumption_wsd.csv"))
+write.csv(national_summary_total,  paste0(stub, "repo/interm/projections", countryiso3, "_national_ac_consumption_total_wsd.csv"))
 
 regional_summary_ac$geometry<-NULL
-write.csv(as.data.frame(regional_summary_ac),  paste0(stub, "interm/", countryiso3, "_regional_ac_penetration_wsd.csv"))
-# write.csv(regional_summary_cons,  paste0(stub, "interm/", countryiso3, "_regional_consumption_wsd.csv"))
-# write.csv(regional_summary_total,  paste0(stub, "interm/", countryiso3, "_regional_consumption_total_wsd.csv"))
+write.csv(as.data.frame(regional_summary_ac),  paste0(stub, "repo/interm/projections", countryiso3, "_regional_ac_penetration_wsd.csv"))
+# write.csv(regional_summary_cons,  paste0(stub, "repo/interm/projections", countryiso3, "_regional_consumption_wsd.csv"))
+# write.csv(regional_summary_total,  paste0(stub, "repo/interm/projections", countryiso3, "_regional_consumption_total_wsd.csv"))
 
 ###
 
@@ -1542,4 +1542,4 @@ pop_long <- filter(pop_long, grepl("SSP2", name) | grepl("SSP5", name))
 # multiply by average consumption due to AC
 national_summary_cons_totelectr$value_tot <- pop_long$value * national_summary_cons_totelectr$value
 
-write.csv(national_summary_cons_totelectr,  paste0(stub, "interm/", countryiso3, "_national_ely_consumption_wsd.csv"))
+write.csv(national_summary_cons_totelectr,  paste0(stub, "repo/interm/projections", countryiso3, "_national_ely_consumption_wsd.csv"))

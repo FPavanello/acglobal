@@ -75,7 +75,7 @@ rdss_l <- bind_rows(rdss_l)
 
 ########
 
-load(paste0(stub, "results/regressions/for_projections/global_wgt_dmcf.Rdata"))
+load(paste0(stub, "repo/interm/global_wgt_dmcf.Rdata"))
 
 future_ac_adoption = read_rds(paste0(stub, "results/household_level/", "global_ac.Rds"))
 output_ac = read_rds(paste0(stub, "results/household_level/", "global_ely_tot.Rds"))
@@ -119,7 +119,7 @@ rdss_l = dplyr::select(rdss_l, country.x, starts_with("q_"), ely_p_usd_2011, sta
 
 pr1 = as.numeric(predict(reg_ely))
 
-load(paste0(stub, "results/regressions/for_projections/global_wgt_dmcf.RData"))
+load(paste0(stub, "repo/interm/global_wgt_dmcf.RData"))
 
 sec$ac[sec$ac == '1'] <- '0'
 sec$ac <- as.numeric(sec$ac)
@@ -273,7 +273,7 @@ rdss_l <- bind_rows(rdss_l)
 
 ########
 
-load(paste0(stub, "results/regressions/for_projections/global_wgt_dmcf.Rdata"))
+load(paste0(stub, "repo/interm/global_wgt_dmcf.Rdata"))
 
 future_ac_adoption = read_rds(paste0(stub, "results/household_level/", "global_ac.Rds"))
 output_ac = read_rds(paste0(stub, "results/household_level/", "global_ely_tot.Rds"))
@@ -316,13 +316,13 @@ rdss_l =  rdss_l %>% group_by(country.x) %>% dplyr::mutate(q_hist=ntile(exp(ln_t
 rdss_l = dplyr::select(rdss_l, country.x, starts_with("q_"), ely_p_usd_2011, starts_with("exp_cap"), starts_with("future_ac_adoption"),starts_with("output_ac"),starts_with("output_impact_ac"),starts_with("weight_"), hhid.x, total_exp_usd_2011)
 
 pr1 = as.numeric(predict(reg_ely))
-load(paste0(stub, "results/regressions/for_projections/global_wgt_dmcf.RData"))
+load(paste0(stub, "repo/interm/global_wgt_dmcf.RData"))
 
 sec$ac <- sec$ac[1]
 sec$ac <- as.numeric(sec$ac)
 pr2 = as.numeric(predict(reg_ely, newdata=sec))
 diff_exp = exp(pr1) - exp(pr2)
-load(paste0(stub, "results/regressions/for_projections/global_wgt_dmcf.RData"))
+load(paste0(stub, "repo/interm/global_wgt_dmcf.RData"))
 
 diff_exp = ifelse(diff_exp<=0 | sec$ac =="0" , NA, diff_exp)
 
@@ -472,7 +472,7 @@ rdss_l <- bind_rows(rdss_l)
 
 ########
 
-load(paste0(stub, "results/regressions/for_projections/global_wgt_dmcf.Rdata"))
+load(paste0(stub, "repo/interm/global_wgt_dmcf.Rdata"))
 
 future_ac_adoption = read_rds(paste0(stub, "results/household_level/", "global_ac.Rds"))
 output_ac = read_rds(paste0(stub, "results/household_level/", "global_ely_tot.Rds"))
@@ -515,13 +515,13 @@ rdss_l =  rdss_l %>% group_by(country.x) %>% dplyr::mutate(q_hist=ntile(exp(ln_t
 rdss_l = dplyr::select(rdss_l, country.x, starts_with("q_"), ely_p_usd_2011, starts_with("exp_cap"), starts_with("future_ac_adoption"),starts_with("output_ac"),starts_with("output_impact_ac"),starts_with("weight_"), hhid.x, total_exp_usd_2011)
 
 pr1 = as.numeric(predict(reg_ely))
-load(paste0(stub, "results/regressions/for_projections/global_wgt_dmcf.RData"))
+load(paste0(stub, "repo/interm/global_wgt_dmcf.RData"))
 
 sec$ac <- sec$ac[1]
 sec$ac <- as.numeric(sec$ac)
 pr2 = as.numeric(predict(reg_ely, newdata=sec))
 diff_exp = exp(pr1)
-load(paste0(stub, "results/regressions/for_projections/global_wgt_dmcf.RData"))
+load(paste0(stub, "repo/interm/global_wgt_dmcf.RData"))
 diff_exp = ifelse(diff_exp<=0 | sec$ac==0 , NA, diff_exp)
 
 diff_exp = data.frame(diff_exp=diff_exp, hhid=as.character(sec$hhid), country.x=sec$country)

@@ -98,7 +98,7 @@ if(CDD18==T){colnames(listone) = gsub("mean_CDD18_db", "mean_CDD18_db", colnames
 # filter some countries
 #listone = filter(listone, country!="Kenya")
 
-load(paste0(stub, "results/regressions/for_projections/global_wgt_dmcf.Rdata"))
+load(paste0(stub, "repo/interm/global_wgt_dmcf.Rdata"))
 
 ## 3) Make projections based on trained models and extracted data ##
 # 3.1) AC adoption projections
@@ -511,19 +511,19 @@ national_summary_total <- group_by(national_summary_total, ssp, year) %>% dplyr:
 
 weights = dplyr::select(data_c_sp, starts_with("weight_"))
 
-write_rds(orig_data, paste0(stub, "interm/", "data_global_ac.Rds"))
-write_rds(weights, paste0(stub, "interm/", "weights_global_ac.Rds"))
+write_rds(orig_data, paste0(stub, "repo/interm/", "data_global_ac.Rds"))
+write_rds(weights, paste0(stub, "repo/interm/", "weights_global_ac.Rds"))
 
-write_rds(future_ac_adoption,  paste0(stub, "interm/", "global_ac.Rds"))
-write_rds(output_ac,  paste0(stub, "interm/", "global_ely_tot.Rds"))
-write_rds(output_impact_ac,  paste0(stub, "interm/", "global_ely_due_to_ac.Rds"))
+write_rds(future_ac_adoption,  paste0(stub, "repo/interm/", "global_ac.Rds"))
+write_rds(output_ac,  paste0(stub, "repo/interm/", "global_ely_tot.Rds"))
+write_rds(output_impact_ac,  paste0(stub, "repo/interm/", "global_ely_due_to_ac.Rds"))
 
 ###############
 # export projections data
 
-write.csv(national_summary_ac, paste0(stub, "interm/", countryiso3, "_national_ac_penetration_wsd.csv"))
-write.csv(national_summary_cons,  paste0(stub, "interm/", countryiso3, "_national_ac_consumption_wsd.csv"))
-write.csv(national_summary_total,  paste0(stub, "interm/", countryiso3, "_national_ac_consumption_total_wsd.csv"))
+write.csv(national_summary_ac, paste0(stub, "repo/interm/projections", countryiso3, "_national_ac_penetration_wsd.csv"))
+write.csv(national_summary_cons,  paste0(stub, "repo/interm/projections", countryiso3, "_national_ac_consumption_wsd.csv"))
+write.csv(national_summary_total,  paste0(stub, "repo/interm/projections", countryiso3, "_national_ac_consumption_total_wsd.csv"))
 
 ###########
 
@@ -627,4 +627,4 @@ national_summary_total <- group_by(national_summary_total, ssp, year) %>% dplyr:
 
 national_summary_cons$value <- national_summary_total$value
 
-write.csv(national_summary_cons,  paste0(stub, "interm/", countryiso3, "_national_ely_consumption_wsd.csv"))
+write.csv(national_summary_cons,  paste0(stub, "repo/interm/projections", countryiso3, "_national_ely_consumption_wsd.csv"))
