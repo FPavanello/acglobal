@@ -59,7 +59,7 @@ data_c <- HH_Argentina
 # shapefile
 
 gadm <- read_sf(paste0(stub, "data/shapefiles/Argentina/gadm40_ARG_1.shp"))
-#gadm$state_district <- paste0(gadm$CVE_ENT, " - ", gadm$CVE_MUN)
+#gadm$adm1_district <- paste0(gadm$CVE_ENT, " - ", gadm$CVE_MUN)
 
 # assumed parameters
 
@@ -542,7 +542,7 @@ data_c <- bind_cols(data_c, housing_index_lab_s1_hhs, housing_index_lab_s2_hhs)
 library(fuzzyjoin); library(dplyr);data_c$NAME_1.y<-NULL;
 
 data_c_map <- data_c
-data_c_map$NAME_1 <- data_c$state
+data_c_map$NAME_1 <- data_c$adm1
 data_c_map <- data_c_map[!duplicated(data_c_map[ , c("NAME_1")]), ] 
 
 data_c_sp <- stringdist_join(data_c_map, gadm, 
@@ -557,11 +557,11 @@ data_c_sp <- stringdist_join(data_c_map, gadm,
 
 data_c_sp <- dplyr::select(data_c_sp, NAME_1.x, NAME_1.y, geometry)
 
-data_c_sp <- merge(data_c, data_c_sp, by.x="state", by.y="NAME_1.x")
+data_c_sp <- merge(data_c, data_c_sp, by.x="adm1", by.y="NAME_1.x")
 
-custom_shape$state <- gadm$NAME_1
+custom_shape$adm1 <- gadm$NAME_1
 
-data_c_sp <- merge(data_c_sp, custom_shape, by.x="NAME_1.y", by.y="state")
+data_c_sp <- merge(data_c_sp, custom_shape, by.x="NAME_1.y", by.y="adm1")
 
 #
 # Project future expenditure
@@ -704,20 +704,22 @@ hdd_585_cmip6 <-  readRDS(paste0(stub, "data/projections/climate/processed/", HD
 cmip6_merged <- Reduce(function(dtf1, dtf2) merge(dtf1, dtf2, by = c("country", "state"), all.x = TRUE),
                        list(cdd_hist_cmip6, cdd_245_cmip6, cdd_585_cmip6, hdd_hist_cmip6, hdd_245_cmip6, hdd_585_cmip6))
 
-data_c_map <- dplyr::select(data_c_map, state)
+colnames(cmip6_merged)[2] <- "adm1"
+
+data_c_map <- dplyr::select(data_c_map, adm1)
 
 cmip6_merged <- stringdist_join(cmip6_merged, data_c_map, 
-                             by = "state",
+                             by = "adm1",
                              mode = "left",
                              ignore_case = TRUE, 
                              method = "jw", 
                              max_dist = 99, 
                              distance_col = "dist") %>%
-  group_by(state.y) %>%
+  group_by(adm1.y) %>%
   slice_min(order_by = dist, n = 1)
 
 
-data_c_sp <- merge(data_c_sp, cmip6_merged, by.x="state", by.y="state.y")
+data_c_sp <- merge(data_c_sp, cmip6_merged, by.x="adm1", by.y="adm1.y")
 
 
 ####################
@@ -738,21 +740,8 @@ for (year in seq(2020, 2050, 10)){
       data_c_sp[,paste0("delta_", scen, "_", year)] <- (data_c_sp[,paste0("mean_CDD_", year, "_", scen)]) - data_c_sp$mean_CDD_modelens_median_sy
     }
     
-  }}
-
-for (year in seq(2020, 2050, 10)){
-  
-  for (scen in c("rcp45_ssp2", "rcp85_ssp5")){
-    
     data_c_sp[,paste0("mean_CDD_", year, "_", scen)] <- data_c_sp[,paste0("delta_", scen, "_", year)] + (data_c_sp$mean_CDD18_db * 100)
     
-    
-  }} 
-
-
-for (year in seq(2020, 2050, 10)){
-  
-  for (scen in c("rcp45_ssp2", "rcp85_ssp5")){
     #
     
     if (year <2050){
@@ -762,12 +751,6 @@ for (year in seq(2020, 2050, 10)){
     if (year == 2050){
       data_c_sp[,paste0("delta_", scen, "_", year)] <- (data_c_sp[,paste0("mean_HDD_", year, "_", scen)]) - data_c_sp$mean_HDD_modelens_median_sy
     }
-    
-  }}    
-
-for (year in seq(2020, 2050, 10)){
-  
-  for (scen in c("rcp45_ssp2", "rcp85_ssp5")){
     
     data_c_sp[,paste0("mean_HDD_", year, "_", scen)] <- data_c_sp[,paste0("delta_", scen, "_", year)] + (data_c_sp$mean_HDD18_db * 100)
     
@@ -792,17 +775,17 @@ for (year in seq(2020, 2050, 10)){
 # Plot future data#
 
 # custom_shape_plotting <- custom_shape
-# custom_shape_plotting$state <- gadm$CVE_ENT
+# custom_shape_plotting$adm1 <- gadm$CVE_ENT
 # 
-# gdp_trend <- dplyr::select(custom_shape_plotting, starts_with("sum.GDP_S"), state)
-# pop_trend <- dplyr::select(custom_shape_plotting, starts_with("sum.POP_"), state)
-# gdp_capita_trend <- dplyr::select(custom_shape_plotting, starts_with("sum.GDP_capita_S"), state)
-# gdp_capita_growth_trend <- dplyr::select(custom_shape_plotting, starts_with("sum.GDP_capita_yearly_avg_growth_S"), state)
-# urb_trend <- dplyr::select(custom_shape_plotting, starts_with("weighted_mean.URB_"), state)
+# gdp_trend <- dplyr::select(custom_shape_plotting, starts_with("sum.GDP_S"), adm1)
+# pop_trend <- dplyr::select(custom_shape_plotting, starts_with("sum.POP_"), adm1)
+# gdp_capita_trend <- dplyr::select(custom_shape_plotting, starts_with("sum.GDP_capita_S"), adm1)
+# gdp_capita_growth_trend <- dplyr::select(custom_shape_plotting, starts_with("sum.GDP_capita_yearly_avg_growth_S"), adm1)
+# urb_trend <- dplyr::select(custom_shape_plotting, starts_with("weighted_mean.URB_"), adm1)
 # 
 # #
 # 
-# gdp_trend <-reshape2::melt(gdp_trend, "state")
+# gdp_trend <-reshape2::melt(gdp_trend, "adm1")
 # gdp_trend$variable <- gsub("sum.GDP_", "", gdp_trend$variable)
 # gdp_trend$SSP <- substr(gdp_trend$variable , 1, 4)
 # gdp_trend$year <- substr(gdp_trend$variable , 6, 9)
@@ -816,17 +799,17 @@ for (year in seq(2020, 2050, 10)){
 # 
 # ggsave(paste0(stub, "repo/interm/plot_gdp_1_", countryiso3, ".png"), plot_gdp_1)
 # 
-# gdp_trend_regional <- gdp_trend %>% group_by(SSP, year, state) %>% dplyr::summarise(value=sum(value, na.rm=T))
+# gdp_trend_regional <- gdp_trend %>% group_by(SSP, year, adm1) %>% dplyr::summarise(value=sum(value, na.rm=T))
 # 
 # plot_gdp_2 <- ggplot(gdp_trend_regional)+
 #   geom_line(aes(x=year, y=value, colour=SSP, group=SSP))+
-#   facet_wrap(~ state, ncol=10)
+#   facet_wrap(~ adm1, ncol=10)
 # 
 # ggsave(paste0(stub, "repo/interm/plot_gdp_2_", countryiso3, ".png"), plot_gdp_2)
 # 
 # #
 # 
-# pop_trend <-reshape2::melt(pop_trend, "state")
+# pop_trend <-reshape2::melt(pop_trend, "adm1")
 # pop_trend$variable <- gsub("sum.POP_", "", pop_trend$variable)
 # pop_trend$SSP <- substr(pop_trend$variable , 1, 4)
 # pop_trend$year <- substr(pop_trend$variable , 6, 9)
@@ -840,16 +823,16 @@ for (year in seq(2020, 2050, 10)){
 # 
 # ggsave(paste0(stub, "repo/interm/plot_pop_1_", countryiso3, ".png"), plot_pop_1)
 # 
-# pop_trend_regional <- pop_trend %>% group_by(SSP, year, state) %>% dplyr::summarise(value=sum(value, na.rm=T))
+# pop_trend_regional <- pop_trend %>% group_by(SSP, year, adm1) %>% dplyr::summarise(value=sum(value, na.rm=T))
 # 
 # plot_pop_2 <- ggplot(pop_trend_regional)+
 #   geom_line(aes(x=year, y=value, colour=SSP, group=SSP))+
-#   facet_wrap(~ state, ncol=10)
+#   facet_wrap(~ adm1, ncol=10)
 # 
 # ggsave(paste0(stub, "repo/interm/plot_pop_2_", countryiso3, ".png"), plot_pop_2)
 # 
 # #
-# gdp_capita_trend <-reshape2::melt(gdp_capita_trend, "state")
+# gdp_capita_trend <-reshape2::melt(gdp_capita_trend, "adm1")
 # gdp_capita_trend$variable <- gsub("sum.GDP_capita_", "", gdp_capita_trend$variable)
 # gdp_capita_trend$SSP <- substr(gdp_capita_trend$variable , 1, 4)
 # gdp_capita_trend$year <- substr(gdp_capita_trend$variable , 6, 9)
@@ -864,17 +847,17 @@ for (year in seq(2020, 2050, 10)){
 # ggsave(paste0(stub, "repo/interm/plot_gdp_capita_1_", countryiso3, ".png"), plot_gdp_capita_1)
 # 
 # 
-# gdp_capita_trend_regional <- gdp_capita_trend %>% group_by(SSP, year, state) %>% dplyr::summarise(value=mean(value, na.rm=T))
+# gdp_capita_trend_regional <- gdp_capita_trend %>% group_by(SSP, year, adm1) %>% dplyr::summarise(value=mean(value, na.rm=T))
 # 
 # plot_gdp_capita_2 <- ggplot(gdp_capita_trend_regional)+
 #   geom_line(aes(x=year, y=value, colour=SSP, group=SSP))+
-#   facet_wrap(~ state, ncol=10)
+#   facet_wrap(~ adm1, ncol=10)
 # 
 # ggsave(paste0(stub, "repo/interm/plot_gdp_capita_2_", countryiso3, ".png"), plot_gdp_capita_2)
 # 
 # #
 # 
-# urb_trend <-reshape2::melt(urb_trend, "state")
+# urb_trend <-reshape2::melt(urb_trend, "adm1")
 # urb_trend$variable <- gsub("weighted_mean.URB_", "", urb_trend$variable)
 # urb_trend$SSP <- substr(urb_trend$variable , 1, 4)
 # urb_trend$year <- substr(urb_trend$variable , 6, 9)
@@ -889,11 +872,11 @@ for (year in seq(2020, 2050, 10)){
 # ggsave(paste0(stub, "repo/interm/plot_urb_1_", countryiso3, ".png"), plot_urb_1)
 # 
 # 
-# urb_trend_regional <- urb_trend %>% group_by(SSP, year, state) %>% dplyr::summarise(value=mean(value, na.rm=T))
+# urb_trend_regional <- urb_trend %>% group_by(SSP, year, adm1) %>% dplyr::summarise(value=mean(value, na.rm=T))
 # 
 # plot_urb_2 <- ggplot(urb_trend_regional)+
 #   geom_line(aes(x=year, y=value, colour=SSP, group=SSP))+
-#   facet_wrap(~ state, ncol=10)
+#   facet_wrap(~ adm1, ncol=10)
 # 
 # ggsave(paste0(stub, "repo/interm/plot_urb_2_", countryiso3, ".png"), plot_urb_2)
 # 
@@ -931,14 +914,16 @@ data_c_sp_export <- data_c_sp
 data_c_sp_export$geometry.x <- NULL
 data_c_sp_export$geometry.y <- NULL
 
-orig_data <- HH_Argentina[fixest::obs(reg_ac),]
+library(fixest)
+
+orig_data <- HH_Argentina[obs(reg_ac),]
 
 save(orig_data, data_c_sp_export, file = paste0(stub, "repo/interm/drivers_evolution/", countryiso3, ".Rdata"))
 
 ## 3) Make projections based on trained models and extracted data ##
 # 3.1) AC adoption projections
 
-orig_data <- HH_Argentina[fixest::obs(reg_ac),]
+orig_data <- HH_Argentina[obs(reg_ac),]
 orig_data$ac <- NULL
 
 orig_data_bk <- orig_data
@@ -956,7 +941,7 @@ for (ssp in c("SSP2", "SSP5")){
   
   rcp <- ifelse(ssp=="SSP2", "rcp45", "rcp85")
   
-  orig_data_bk <- HH_Argentina[fixest::obs(reg_ac),]
+  orig_data_bk <- HH_Argentina[obs(reg_ac),]
   
   output2 <- list()
   
@@ -991,11 +976,11 @@ for (ssp in c("SSP2", "SSP5")){
 	#orig_data$urban_sh = data_c_sp[,paste0("weighted_mean.URB_", ssp, "_", (year))]    
     #
     projected <- predict(reg_ac, orig_data, type="response")
-    #projected <- ifelse(as.numeric(projected)>0.5, 1, 0)
+    projected <- ifelse(as.numeric(projected)>0.5, 1, 0)
     
-    # if (year>2020){
-    #   projected <- ifelse(output2[[as.character(year-10)]]==1, 1, projected)
-    # }
+    if (year>2020){
+      projected <- ifelse(output2[[as.character(year-10)]]==1, 1, projected)
+    }
     
     
     output2[[as.character(year)]] <- projected
@@ -1049,13 +1034,13 @@ national_summary_ac <- future_ac_adoption %>%
   pivot_longer(cols = 1:8, names_to = c('ssp', 'year'), names_sep = ".") %>%
   mutate(ssp=rep(c("SSP245","SSP585"), each=4), year=rep(seq(2020, 2050, 10), 2))
 
-future_ac_adoption$state <- data_c_sp$state
+future_ac_adoption$adm1 <- data_c_sp$adm1
 
 regional_summary_ac <- future_ac_adoption %>%
-  group_by(state) %>%
+  group_by(adm1) %>%
   dplyr::summarise_all(mean, na.rm=T) %>%
   pivot_longer(cols = 2:9, names_to = c('ssp', 'year'), names_sep = ".") %>%
-  mutate(ssp=rep(rep(c("SSP245", "SSP585"), each=4), length(unique(data_c_sp$state))), year=rep(rep(seq(2020, 2050, 10), 2), length(unique(data_c_sp$state))))
+  mutate(ssp=rep(rep(c("SSP245", "SSP585"), each=4), length(unique(data_c_sp$adm1))), year=rep(rep(seq(2020, 2050, 10), 2), length(unique(data_c_sp$adm1))))
 
 # plot projections
 
@@ -1069,7 +1054,7 @@ ggsave(paste0(stub, "repo/interm/line_country_ac_", countryiso3, ".png"), line_c
 
 line_region_ac <- ggplot(regional_summary_ac)+
   geom_line(aes(x=year, y=value*100, colour=ssp, group=ssp))+
-  facet_wrap(vars(state))+
+  facet_wrap(vars(adm1))+
   scale_colour_npg(name="Scenario")+
   xlab("Year")+
   ylab("AC penetration rate (%)")+
@@ -1077,7 +1062,7 @@ line_region_ac <- ggplot(regional_summary_ac)+
 
 ggsave(paste0(stub, "repo/interm/line_region_ac_", countryiso3, ".png"), line_region_ac)
 
-regional_summary_ac <- merge(regional_summary_ac, gadm_1, by.x="state", by.y="NAME_1")
+regional_summary_ac <- merge(regional_summary_ac, gadm_1, by.x="adm1", by.y="NAME_1")
 regional_summary_ac <- st_as_sf(regional_summary_ac)
 
 map_ac <- ggplot(regional_summary_ac)+
@@ -1098,7 +1083,7 @@ ggsave(paste0(stub, "repo/interm/map_ac_", countryiso3, ".png"), map_ac, scale=1
 
 data_c_bk <- data_c
 
-ely_formula <- "ln_ely_q ~ ac + curr_CDD18_db + ln_total_exp_usd_2011 + curr_HDD18_db + urban_sh + n_members + sh_under16 + ownership_d + edu_head_2 + housing_index_lab + age_head + sex_head"
+ely_formula <- "ln_ely_q ~ ac + curr_CDD18_db + ln_total_exp_usd_2011 + curr_HDD18_db + urban_sh + n_members + ownership_d + edu_head_2 + housing_index_lab + age_head + sex_head"
 
 lm1 <- lm(ely_formula, data = data_c, na.action=na.omit)
 
@@ -1142,7 +1127,7 @@ baseline_hist <- as.numeric(predict(lm1, type="response"))
 
 orig_data <- orig_data_bk
 
-orig_data$ac = as.factor(ifelse(data_c_sp[,paste0(ssp, ".", (year))]>0.5, 1, 0))
+orig_data$ac = data_c_sp[,paste0(ssp, ".", (year))]
 
 orig_data$ln_total_exp_usd_2011 = data_c_sp[,paste0("exp_cap_usd_", ssp, "_", (year))]
 
@@ -1170,7 +1155,7 @@ total <- as.numeric(predict(lm1, orig_data, type="response"))
 
 orig_data <- orig_data_bk
 
-orig_data$ac = as.factor(ifelse(data_c_sp[,paste0(ssp, ".", (year))]>0.5, 1, 0))
+orig_data$ac = data_c_sp[,paste0(ssp, ".", (year))]
 
 decomp_ac <- as.numeric(predict(lm1, orig_data, type="response"))
 
@@ -1320,7 +1305,7 @@ for (ssp in c("SSP2", "SSP5")){
     
     print(year)
     
-    orig_data$ac = as.factor(0)
+    orig_data$ac = 0
     
     orig_data$ln_total_exp_usd_2011 = data_c_sp[,paste0("exp_cap_usd_", ssp, "_", (year))]
     
@@ -1382,7 +1367,7 @@ for (ssp in c("SSP2", "SSP5")){
     
     print(year)
     
-    orig_data$ac = as.factor(ifelse(data_c_sp[,paste0(ssp, ".", (year))]>0.5, 1, 0))
+    orig_data$ac = ifelse(data_c_sp[,paste0(ssp, ".", (year))]>0.5, 1, 0)
     
     orig_data$ln_total_exp_usd_2011 = data_c_sp[,paste0("exp_cap_usd_", ssp, "_", (year))]
     

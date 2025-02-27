@@ -62,12 +62,12 @@ data_c <- HH_Africa
 gadm_gh <- read_sf(paste0(stub, "data/shapefiles/Ghana/gadm40_GHA_1.shp"))
 gadm_ke <- read_sf(paste0(stub, "data/shapefiles/Kenya/gadm40_KEN_1.shp"))
 gadm_ng <- read_sf(paste0(stub, "data/shapefiles/Nigeria/gadm40_NGA_1.shp"))
-gadm_tz <- read_sf(paste0(stub, "data/shapefiles/Tanzania/gadm40_TZA_1.shp"))
+# gadm_tz <- read_sf(paste0(stub, "data/shapefiles/Tanzania/gadm40_TZA_1.shp"))
 gadm_mw <- read_sf(paste0(stub, "data/shapefiles/Malawi/gadm41_MWI_1.shp"))
 gadm_ni <- read_sf(paste0(stub, "data/shapefiles/Niger/gadm41_NER_1.shp"))
 gadm_bf <- read_sf(paste0(stub, "data/shapefiles/Burkina Faso/gadm41_BFA_1.shp"))
 
-gadm <- bind_rows(gadm_ke, gadm_ng, gadm_tz, gadm_gh, gadm_mw, gadm_ni, gadm_bf)
+gadm <- bind_rows(gadm_ke, gadm_ng, gadm_gh, gadm_mw, gadm_ni, gadm_bf)
 gadm$ID_0 <- ifelse(is.na(gadm$ID_0), "MWI", gadm$ID_0)
 
 # assumed parameters
@@ -145,7 +145,7 @@ urban_ssps_data <- stack(urban_ssps_data[[1]], urban_ssps_data[[2]], urban_ssps_
 # pop features (SSPS)
 pop_features <- read.csv("pop_features_ssps/SspDb_country_data_2013-06-12.csv")
 
-pop_features <- filter(pop_features, REGION %in% c("NGA", "TZA", "GHA", "MWI", "NER", "BFA", "KEN"))
+pop_features <- filter(pop_features, REGION %in% c("NGA", "GHA", "MWI", "NER", "BFA", "KEN"))
 
 pop_features$SCENARIO <- substr(pop_features$SCENARIO, 1, 4)
 
@@ -365,9 +365,9 @@ pop_features_edu_bk <-pop_features_edu
 
 out <- list()
 
-for (country in 1:7){
+for (country in 1:6){
   
-pop_features_edu <-   pop_features_edu_bk[grep(c("NGA", "TZA", "GHA", "MWI", "NER", "BFA", "KEN")[country], names(pop_features_edu_bk))]  
+pop_features_edu <-   pop_features_edu_bk[grep(c("BFA", "GHA", "KEN", "MWI", "NER", "NGA")[country], names(pop_features_edu_bk))]  
 
 for (scen in 1:5){
 
@@ -433,134 +433,131 @@ data_c <- bind_cols(data_c, pop_features_edu)
 ########################################
 
 # Housing index (shift)
-
 data_c_split <- split(data_c, data_c$country)
 
-for (country in 1:7){
-
+for (country in 1:6){
+  
   # Scenario 1: design it
   #
   housing_index_lab_s1 <- data.frame(year=seq(2010, 2050, by=10), housing_index_lab_1=NA , housing_index_lab_2=NA , housing_index_lab_3=NA)
-
-  housing_index_lab_s1[1,c(2:4)] <-  table(data_c_split[[country]]$housing_index) / sum(table(data_c_split[[country]]$housing_index))
-
-
+  
+  housing_index_lab_s1[1,c(2:4)] <-  table(data_c_split[[country]]$housing_index_lab) / sum(table(data_c_split[[country]]$housing_index_lab))
+  
+  
   for (i in 2:5){
     for (j in 3:4){
-
+      
       if(housing_index_lab_s1[i-1,j-1]<=rate_improvement_housing_1) {
         housing_index_lab_s1[i,j] <- housing_index_lab_s1[i-1,j]+housing_index_lab_s1[i-1,j-1]
         housing_index_lab_s1[i,j-1] <- 0
-
+        
       } else{
-
+        
         housing_index_lab_s1[i,j] <- housing_index_lab_s1[i-1,j] + rate_improvement_housing_1
         housing_index_lab_s1[i,j-1] <- housing_index_lab_s1[i-1,j-1] - rate_improvement_housing_1
         
       }
-
+      
     }}
-
+  
   # Scenario 2: design it
-
+  
   housing_index_lab_s2 <- data.frame(year=seq(2010, 2050, by=10), housing_index_lab_1=NA , housing_index_lab_2=NA , housing_index_lab_3=NA)
-
-  housing_index_lab_s2[1,c(2:4)] <-  table(data_c_split[[country]]$housing_index) / sum(table(data_c_split[[country]]$housing_index))
-
+  
+  housing_index_lab_s2[1,c(2:4)] <-  table(data_c_split[[country]]$housing_index_lab) / sum(table(data_c_split[[country]]$housing_index_lab))
+  
   for (i in 2:5){
     for (j in 3:4){
-
+      
       if(housing_index_lab_s2[i-1,j-1]<=rate_improvement_housing_2) {
         housing_index_lab_s2[i,j] <- housing_index_lab_s2[i-1,j]+housing_index_lab_s2[i-1,j-1]
         housing_index_lab_s2[i,j-1] <- 0
-
+        
       } else{
-
+        
         housing_index_lab_s2[i,j] <- housing_index_lab_s2[i-1,j] + rate_improvement_housing_1
         housing_index_lab_s2[i,j-1] <- housing_index_lab_s2[i-1,j-1] - rate_improvement_housing_1
         
       }
-
+      
     }}
-
+  
   # Scenario 1: apply it to households
-
-  housing_index_lab_s1_hhs <- data.frame(housing_index_lab_2010=as.numeric(as.character(data_c_split[[country]]$housing_index)))
+  
+  housing_index_lab_s1_hhs <- data.frame(housing_index_lab_2010=as.numeric(as.character(data_c_split[[country]]$housing_index_lab)))
   housing_index_lab_s1_hhs <- na.omit(housing_index_lab_s1_hhs)
-
+  
   housing_index_lab_s1_hhs$housing_index_lab_2020 <- NA
   housing_index_lab_s1_hhs$housing_index_lab_2030 <- NA
   housing_index_lab_s1_hhs$housing_index_lab_2040 <- NA
   housing_index_lab_s1_hhs$housing_index_lab_2050 <- NA
-
-
+  
+  
   for (year in seq(2020, 2050, 10)){
-
+    
     for (i in c(2:1)){
-
+      
       housing_index_lab_s1_hhs[,paste0("housing_index_lab_", year)] <- ifelse(housing_index_lab_s1_hhs[,paste0("housing_index_lab_", year-10)]==3, 3, housing_index_lab_s1_hhs[,paste0("housing_index_lab_", year)])
-
+      
       if(as.numeric(unlist(housing_index_lab_s1[paste0("housing_index_lab_", i)])[2]) == 0){
-
+        
         housing_index_lab_s1_hhs[,paste0("housing_index_lab_", year)][housing_index_lab_s1_hhs[,paste0("housing_index_lab_", year-10)] ==i] <- rep(i+1,sum(housing_index_lab_s1_hhs[,paste0("housing_index_lab_", year-10)]==i, na.rm=T))
-
+        
       } else{
-
+        
         housing_index_lab_s1_hhs[,paste0("housing_index_lab_", year)][housing_index_lab_s1_hhs[,paste0("housing_index_lab_", year-10)]==i] <- as.vector(sample(c(i, i+1), prob = c(housing_index_lab_s1[,paste0("housing_index_lab_", i)][housing_index_lab_s1$year==year], housing_index_lab_s1[,paste0("housing_index_lab_", i+1)][housing_index_lab_s1$year==year])/sum(c(housing_index_lab_s1[,paste0("housing_index_lab_", i)][housing_index_lab_s1$year==year], housing_index_lab_s1[,paste0("housing_index_lab_", i+1)][housing_index_lab_s1$year==year])), replace = T, size=sum(housing_index_lab_s1_hhs[,paste0("housing_index_lab_", year-10)]==i, na.rm=T)))
-
+        
       }}}
-
-
+  
+  
   # Scenario 2: apply it to households
-
-  housing_index_lab_s2_hhs <- data.frame(housing_index_lab_2010=as.numeric(as.character(data_c_split[[country]]$housing_index)))
+  
+  housing_index_lab_s2_hhs <- data.frame(housing_index_lab_2010=as.numeric(as.character(data_c_split[[country]]$housing_index_lab)))
   housing_index_lab_s2_hhs <- na.omit(housing_index_lab_s2_hhs)
-
+  
   housing_index_lab_s2_hhs$housing_index_lab_2020 <- NA
   housing_index_lab_s2_hhs$housing_index_lab_2030 <- NA
   housing_index_lab_s2_hhs$housing_index_lab_2040 <- NA
   housing_index_lab_s2_hhs$housing_index_lab_2050 <- NA
-
-
+  
+  
   for (year in seq(2020, 2050, 10)){
-
+    
     for (i in c(2:1)){
-
+      
       housing_index_lab_s2_hhs[,paste0("housing_index_lab_", year)] <- ifelse(housing_index_lab_s2_hhs[,paste0("housing_index_lab_", year-10)]==3, 3, housing_index_lab_s2_hhs[,paste0("housing_index_lab_", year)])
-
+      
       if(as.numeric(unlist(housing_index_lab_s2[paste0("housing_index_lab_", i)])[2]) == 0){
-
+        
         housing_index_lab_s2_hhs[,paste0("housing_index_lab_", year)][housing_index_lab_s2_hhs[,paste0("housing_index_lab_", year-10)] ==i] <- rep(i+1,sum(housing_index_lab_s2_hhs[,paste0("housing_index_lab_", year-10)]==i, na.rm=T))
-
+        
       } else{
-
+        
         housing_index_lab_s2_hhs[,paste0("housing_index_lab_", year)][housing_index_lab_s2_hhs[,paste0("housing_index_lab_", year-10)]==i] <- as.vector(sample(c(i, i+1), prob = c(housing_index_lab_s2[,paste0("housing_index_lab_", i)][housing_index_lab_s2$year==year], housing_index_lab_s2[,paste0("housing_index_lab_", i+1)][housing_index_lab_s2$year==year])/sum(c(housing_index_lab_s2[,paste0("housing_index_lab_", i)][housing_index_lab_s2$year==year], housing_index_lab_s2[,paste0("housing_index_lab_", i+1)][housing_index_lab_s2$year==year])), replace = T, size=sum(housing_index_lab_s2_hhs[,paste0("housing_index_lab_", year-10)]==i, na.rm=T)))
-
+        
       }}}
-
-
+  
+  
   # Scenarios: merge with data
-
+  
   housing_index_lab_s1_hhs$housing_index_lab_2010<-NULL
   colnames(housing_index_lab_s1_hhs) <- paste0(colnames(housing_index_lab_s1_hhs), "_s1")
-
+  
   housing_index_lab_s2_hhs$housing_index_lab_2010<-NULL
   colnames(housing_index_lab_s2_hhs) <- paste0(colnames(housing_index_lab_s2_hhs), "_s2")
-
+  
   data_c_split[[country]] <- bind_cols(data_c_split[[country]], housing_index_lab_s1_hhs, housing_index_lab_s2_hhs)
-
+  
 }
 
 data_c <- bind_rows(data_c_split)
 
-
 ###
 
 # Merge spatial projection data with household survey data
-
 library(fuzzyjoin); library(dplyr);data_c$NAME_1.y<-NULL;
 
-data_c$NAME_1 <- data_c$state
+data_c$NAME_1 <- data_c$adm1
 data_c_map <- data_c[!duplicated(data_c[ , c("country","NAME_1")]), ] 
 
 data_c_sp <- stringdist_join(data_c_map, gadm, 
@@ -575,14 +572,13 @@ data_c_sp <- stringdist_join(data_c_map, gadm,
 
 data_c_sp <- dplyr::select(data_c_sp, country, NAME_1.x, NAME_1.y, geometry)
 
-data_c_sp <- merge(data_c, data_c_sp, by.x=c("country", "state"), by.y=c("country", "NAME_1.x"))
+data_c_sp <- merge(data_c, data_c_sp, by.x=c("country", "adm1"), by.y=c("country", "NAME_1.x"))
 
 custom_shape$state <- gadm$NAME_1
 
 data_c_sp <- merge(data_c_sp, custom_shape, by.x="NAME_1.y", by.y="state")
 
-data_c_sp <- data_c_sp[!duplicated(data_c_sp[ , c("country.x","state", "hhid")]), ] 
-
+data_c_sp <- data_c_sp[!duplicated(data_c_sp[ , c("country.x","adm1", "hhid")]), ] 
 
 #
 # Project future expenditure
@@ -699,39 +695,36 @@ gc()
 
 cdd_hist_cmip6_1 <- readRDS(paste0(stub, "data/projections/climate/processed/", CDD_type, "/", "KEN", "_CDD_model_ensemble_median_hist.rds"))
 cdd_hist_cmip6_2 <- readRDS(paste0(stub, "data/projections/climate/processed/", CDD_type, "/", "NGA", "_CDD_model_ensemble_median_hist.rds"))
-cdd_hist_cmip6_3 <- readRDS(paste0(stub, "data/projections/climate/processed/", CDD_type, "/", "TZA", "_CDD_model_ensemble_median_hist.rds"))
 cdd_hist_cmip6_4 <- readRDS(paste0(stub, "data/projections/climate/processed/", CDD_type, "/", "GHA", "_CDD_model_ensemble_median_hist.rds"))
 cdd_hist_cmip6_5 <- readRDS(paste0(stub, "data/projections/climate/processed/", CDD_type, "/", "MWI", "_CDD_model_ensemble_median_hist.rds"))
 cdd_hist_cmip6_6 <- readRDS(paste0(stub, "data/projections/climate/processed/", CDD_type, "/", "NER", "_CDD_model_ensemble_median_hist.rds"))
 cdd_hist_cmip6_7 <- readRDS(paste0(stub, "data/projections/climate/processed/", CDD_type, "/", "BFA", "_CDD_model_ensemble_median_hist.rds"))
 
-cdd_hist_cmip6 <- bind_rows(cdd_hist_cmip6_1, cdd_hist_cmip6_2, cdd_hist_cmip6_3, cdd_hist_cmip6_4, cdd_hist_cmip6_5, cdd_hist_cmip6_6, cdd_hist_cmip6_7)
+cdd_hist_cmip6 <- bind_rows(cdd_hist_cmip6_1, cdd_hist_cmip6_2, cdd_hist_cmip6_4, cdd_hist_cmip6_5, cdd_hist_cmip6_6, cdd_hist_cmip6_7)
 cdd_hist_cmip6$state2 <- NULL
 cdd_hist_cmip6$district2 <- NULL
 cdd_hist_cmip6$state <- as.character(cdd_hist_cmip6$state)
 
 cdd_245_cmip6_1 <- readRDS(paste0(stub, "data/projections/climate/processed/", CDD_type, "/", "KEN", "_CDD_model_ensemble_median_rcp45_ssp2.rds"))
 cdd_245_cmip6_2 <- readRDS(paste0(stub, "data/projections/climate/processed/", CDD_type, "/", "NGA", "_CDD_model_ensemble_median_rcp45_ssp2.rds"))
-cdd_245_cmip6_3 <- readRDS(paste0(stub, "data/projections/climate/processed/", CDD_type, "/", "TZA", "_CDD_model_ensemble_median_rcp45_ssp2.rds"))
 cdd_245_cmip6_4 <- readRDS(paste0(stub, "data/projections/climate/processed/", CDD_type, "/", "GHA", "_CDD_model_ensemble_median_rcp45_ssp2.rds"))
 cdd_245_cmip6_5 <- readRDS(paste0(stub, "data/projections/climate/processed/", CDD_type, "/", "MWI", "_CDD_model_ensemble_median_rcp45_ssp2.rds"))
 cdd_245_cmip6_6 <- readRDS(paste0(stub, "data/projections/climate/processed/", CDD_type, "/", "NER", "_CDD_model_ensemble_median_rcp45_ssp2.rds"))
 cdd_245_cmip6_7 <- readRDS(paste0(stub, "data/projections/climate/processed/", CDD_type, "/", "BFA", "_CDD_model_ensemble_median_rcp45_ssp2.rds"))
 
-cdd_245_cmip6 <- bind_rows(cdd_245_cmip6_1, cdd_245_cmip6_2, cdd_245_cmip6_3, cdd_245_cmip6_4, cdd_245_cmip6_5, cdd_245_cmip6_6, cdd_245_cmip6_7)
+cdd_245_cmip6 <- bind_rows(cdd_245_cmip6_1, cdd_245_cmip6_2, cdd_245_cmip6_4, cdd_245_cmip6_5, cdd_245_cmip6_6, cdd_245_cmip6_7)
 cdd_245_cmip6$state2 <- NULL
 cdd_245_cmip6$district2 <- NULL
 cdd_245_cmip6$state <- as.character(cdd_245_cmip6$state)
 
 cdd_585_cmip6_1 <- readRDS(paste0(stub, "data/projections/climate/processed/", CDD_type, "/", "KEN", "_CDD_model_ensemble_median_rcp85_ssp5.rds"))
 cdd_585_cmip6_2 <- readRDS(paste0(stub, "data/projections/climate/processed/", CDD_type, "/", "NGA", "_CDD_model_ensemble_median_rcp85_ssp5.rds"))
-cdd_585_cmip6_3 <- readRDS(paste0(stub, "data/projections/climate/processed/", CDD_type, "/", "TZA", "_CDD_model_ensemble_median_rcp85_ssp5.rds"))
 cdd_585_cmip6_4 <- readRDS(paste0(stub, "data/projections/climate/processed/", CDD_type, "/", "GHA", "_CDD_model_ensemble_median_rcp85_ssp5.rds"))
 cdd_585_cmip6_5 <- readRDS(paste0(stub, "data/projections/climate/processed/", CDD_type, "/", "MWI", "_CDD_model_ensemble_median_rcp85_ssp5.rds"))
 cdd_585_cmip6_6 <- readRDS(paste0(stub, "data/projections/climate/processed/", CDD_type, "/", "NER", "_CDD_model_ensemble_median_rcp85_ssp5.rds"))
 cdd_585_cmip6_7 <- readRDS(paste0(stub, "data/projections/climate/processed/", CDD_type, "/", "BFA", "_CDD_model_ensemble_median_rcp85_ssp5.rds"))
 
-cdd_585_cmip6 <- bind_rows(cdd_585_cmip6_1, cdd_585_cmip6_2, cdd_585_cmip6_3, cdd_585_cmip6_4, cdd_585_cmip6_5, cdd_585_cmip6_6, cdd_585_cmip6_7)
+cdd_585_cmip6 <- bind_rows(cdd_585_cmip6_1, cdd_585_cmip6_2, cdd_585_cmip6_4, cdd_585_cmip6_5, cdd_585_cmip6_6, cdd_585_cmip6_7)
 cdd_585_cmip6$state2 <- NULL
 cdd_585_cmip6$district2 <- NULL
 cdd_585_cmip6$state <- as.character(cdd_585_cmip6$state)
@@ -740,39 +733,36 @@ cdd_585_cmip6$state <- as.character(cdd_585_cmip6$state)
 
 hdd_hist_cmip6_1 <- readRDS(paste0(stub, "data/projections/climate/processed/", HDD_type, "/", "KEN", "_hdd_model_ensemble_median_hist.rds"))
 hdd_hist_cmip6_2 <- readRDS(paste0(stub, "data/projections/climate/processed/", HDD_type, "/", "NGA", "_hdd_model_ensemble_median_hist.rds"))
-hdd_hist_cmip6_3 <- readRDS(paste0(stub, "data/projections/climate/processed/", HDD_type, "/", "TZA", "_hdd_model_ensemble_median_hist.rds"))
 hdd_hist_cmip6_4 <- readRDS(paste0(stub, "data/projections/climate/processed/", HDD_type, "/", "GHA", "_hdd_model_ensemble_median_hist.rds"))
 hdd_hist_cmip6_5 <- readRDS(paste0(stub, "data/projections/climate/processed/", HDD_type, "/", "MWI", "_hdd_model_ensemble_median_hist.rds"))
 hdd_hist_cmip6_6 <- readRDS(paste0(stub, "data/projections/climate/processed/", HDD_type, "/", "NER", "_hdd_model_ensemble_median_hist.rds"))
 hdd_hist_cmip6_7 <- readRDS(paste0(stub, "data/projections/climate/processed/", HDD_type, "/", "BFA", "_hdd_model_ensemble_median_hist.rds"))
 
-hdd_hist_cmip6 <- bind_rows(hdd_hist_cmip6_1, hdd_hist_cmip6_2, hdd_hist_cmip6_3, hdd_hist_cmip6_4, hdd_hist_cmip6_5, hdd_hist_cmip6_6, hdd_hist_cmip6_7)
+hdd_hist_cmip6 <- bind_rows(hdd_hist_cmip6_1, hdd_hist_cmip6_2, hdd_hist_cmip6_4, hdd_hist_cmip6_5, hdd_hist_cmip6_6, hdd_hist_cmip6_7)
 hdd_hist_cmip6$state2 <- NULL
 hdd_hist_cmip6$district2 <- NULL
 hdd_hist_cmip6$state <- as.character(hdd_hist_cmip6$state)
 
 hdd_245_cmip6_1 <- readRDS(paste0(stub, "data/projections/climate/processed/", HDD_type, "/", "KEN", "_hdd_model_ensemble_median_rcp45_ssp2.rds"))
 hdd_245_cmip6_2 <- readRDS(paste0(stub, "data/projections/climate/processed/", HDD_type, "/", "NGA", "_hdd_model_ensemble_median_rcp45_ssp2.rds"))
-hdd_245_cmip6_3 <- readRDS(paste0(stub, "data/projections/climate/processed/", HDD_type, "/", "TZA", "_hdd_model_ensemble_median_rcp45_ssp2.rds"))
 hdd_245_cmip6_4 <- readRDS(paste0(stub, "data/projections/climate/processed/", HDD_type, "/", "GHA", "_hdd_model_ensemble_median_rcp45_ssp2.rds"))
 hdd_245_cmip6_5 <- readRDS(paste0(stub, "data/projections/climate/processed/", HDD_type, "/", "MWI", "_hdd_model_ensemble_median_rcp45_ssp2.rds"))
 hdd_245_cmip6_6 <- readRDS(paste0(stub, "data/projections/climate/processed/", HDD_type, "/", "NER", "_hdd_model_ensemble_median_rcp45_ssp2.rds"))
 hdd_245_cmip6_7 <- readRDS(paste0(stub, "data/projections/climate/processed/", HDD_type, "/", "BFA", "_hdd_model_ensemble_median_rcp45_ssp2.rds"))
 
-hdd_245_cmip6 <- bind_rows(hdd_245_cmip6_1, hdd_245_cmip6_2, hdd_245_cmip6_3, hdd_245_cmip6_4, hdd_245_cmip6_5, hdd_245_cmip6_6, hdd_245_cmip6_7)
+hdd_245_cmip6 <- bind_rows(hdd_245_cmip6_1, hdd_245_cmip6_2, hdd_245_cmip6_4, hdd_245_cmip6_5, hdd_245_cmip6_6, hdd_245_cmip6_7)
 hdd_245_cmip6$state2 <- NULL
 hdd_245_cmip6$district2 <- NULL
 hdd_245_cmip6$state <- as.character(hdd_245_cmip6$state)
 
 hdd_585_cmip6_1 <- readRDS(paste0(stub, "data/projections/climate/processed/", HDD_type, "/", "KEN", "_hdd_model_ensemble_median_rcp85_ssp5.rds"))
 hdd_585_cmip6_2 <- readRDS(paste0(stub, "data/projections/climate/processed/", HDD_type, "/", "NGA", "_hdd_model_ensemble_median_rcp85_ssp5.rds"))
-hdd_585_cmip6_3 <- readRDS(paste0(stub, "data/projections/climate/processed/", HDD_type, "/", "TZA", "_hdd_model_ensemble_median_rcp85_ssp5.rds"))
 hdd_585_cmip6_4 <- readRDS(paste0(stub, "data/projections/climate/processed/", HDD_type, "/", "GHA", "_hdd_model_ensemble_median_rcp85_ssp5.rds"))
 hdd_585_cmip6_5 <- readRDS(paste0(stub, "data/projections/climate/processed/", HDD_type, "/", "MWI", "_hdd_model_ensemble_median_rcp85_ssp5.rds"))
 hdd_585_cmip6_6 <- readRDS(paste0(stub, "data/projections/climate/processed/", HDD_type, "/", "NER", "_hdd_model_ensemble_median_rcp85_ssp5.rds"))
 hdd_585_cmip6_7 <- readRDS(paste0(stub, "data/projections/climate/processed/", HDD_type, "/", "BFA", "_hdd_model_ensemble_median_rcp85_ssp5.rds"))
 
-hdd_585_cmip6 <- bind_rows(hdd_585_cmip6_1, hdd_585_cmip6_2, hdd_585_cmip6_3, hdd_585_cmip6_4, hdd_585_cmip6_5, hdd_585_cmip6_6, hdd_585_cmip6_7)
+hdd_585_cmip6 <- bind_rows(hdd_585_cmip6_1, hdd_585_cmip6_2, hdd_585_cmip6_4, hdd_585_cmip6_5, hdd_585_cmip6_6, hdd_585_cmip6_7)
 hdd_585_cmip6$state2 <- NULL
 hdd_585_cmip6$district2 <- NULL
 hdd_585_cmip6$state <- as.character(hdd_585_cmip6$state)
@@ -981,7 +971,9 @@ data_c_sp_export <- data_c_sp
 data_c_sp_export$geometry.x <- NULL
 data_c_sp_export$geometry.y <- NULL
 
-orig_data <- HH_Africa[fixest::obs(reg_ac),]
+library(fixest)
+
+orig_data <- HH_Africa[obs(reg_ac),]
 
 save(orig_data, data_c_sp_export, file = paste0(stub, "repo/interm/drivers_evolution/", countryiso3, ".Rdata"))
 
@@ -989,7 +981,7 @@ save(orig_data, data_c_sp_export, file = paste0(stub, "repo/interm/drivers_evolu
 ## 3) Make projections based on trained models and extracted data ##
 # 3.1) AC adoption projections
 
-orig_data <- HH_Africa[fixest::obs(reg_ac),]
+orig_data <- HH_Africa[obs(reg_ac),]
 orig_data$ac <- NULL
 
 orig_data_bk <- orig_data
@@ -1007,7 +999,7 @@ for (ssp in c("SSP2", "SSP5")){
   
   rcp <- ifelse(ssp=="SSP2", "rcp45", "rcp85")
   
-  orig_data_bk <- HH_Africa[fixest::obs(reg_ac),]
+  orig_data_bk <- HH_Africa[obs(reg_ac),]
   
   output2 <- list()
   
@@ -1103,13 +1095,13 @@ national_summary_ac <- future_ac_adoption %>%
 
 ###
 
-future_ac_adoption$state <- data_c_sp$state
+future_ac_adoption$state <- data_c_sp$adm1
 
 regional_summary_ac <- future_ac_adoption %>%
   group_by(state) %>%
   dplyr::summarise_all(mean, na.rm=T) %>%
   pivot_longer(cols = 2:9, names_to = c('ssp', 'year'), names_sep = ".") %>%
-  dplyr::mutate(ssp=rep(rep(c("SSP245", "SSP585"), each=4), length(unique(data_c_sp$state))), year=rep(rep(seq(2020, 2050, 10), 2), length(unique(data_c_sp$state))))
+  dplyr::mutate(ssp=rep(rep(c("SSP245", "SSP585"), each=4), length(unique(data_c_sp$adm1))), year=rep(rep(seq(2020, 2050, 10), 2), length(unique(data_c_sp$adm1))))
 
 # plot projections
 
@@ -1209,7 +1201,7 @@ baseline_hist <- as.numeric(predict(lm1, type="response"))
 
 orig_data <- orig_data_bk
 
-orig_data$ac = as.factor(data_c_sp[,paste0(ssp, ".", (year))])
+orig_data$ac = (data_c_sp[,paste0(ssp, ".", (year))])
 
 orig_data$ln_total_exp_usd_2011 = data_c_sp[,paste0("exp_cap_usd_", ssp, "_", (year))]
 
@@ -1237,7 +1229,7 @@ total <- as.numeric(predict(lm1, orig_data, type="response"))
 
 orig_data <- orig_data_bk
 
-orig_data$ac = as.factor(data_c_sp[,paste0(ssp, ".", (year))])
+orig_data$ac = (data_c_sp[,paste0(ssp, ".", (year))])
 
 decomp_ac <- as.numeric(predict(lm1, orig_data, type="response"))
 
@@ -1363,7 +1355,7 @@ save(all, decomposition_plot, file=paste0(stub, "repo/interm/projections", count
 # 3.2) Electricity consumption projections
 # 3.2.1) Predict consumption without AC
 
-orig_data <- model3$model
+orig_data <- HH_Africa[fixest::obs(reg_ac),]
 orig_data$ely_q <- NULL
 
 orig_data_bk <- orig_data
@@ -1386,7 +1378,7 @@ for (ssp in c("SSP2", "SSP5")){
     
     print(year)
     
-    orig_data$ac = as.factor(0)
+    orig_data$ac = 0
     
     orig_data$ln_total_exp_usd_2011 = data_c_sp[,paste0("exp_cap_usd_", ssp, "_", (year))]
     
@@ -1424,7 +1416,7 @@ output_noac <- as.data.frame(do.call("cbind", output))
 
 # 3.2.2) Predict consumption with AC
 
-orig_data <- model3$model
+orig_data <- HH_Africa[fixest::obs(reg_ac),]
 orig_data$ely_q <- NULL
 
 orig_data_bk <- orig_data
@@ -1447,7 +1439,7 @@ for (ssp in c("SSP2", "SSP5")){
     
     print(year)
     
-    orig_data$ac = as.factor(data_c_sp[,paste0(ssp, ".", (year))])
+    orig_data$ac = ifelse(data_c_sp[,paste0(ssp, ".", (year))]>0.5, 1, 0)
     
     orig_data$ln_total_exp_usd_2011 = data_c_sp[,paste0("exp_cap_usd_", ssp, "_", (year))]
     

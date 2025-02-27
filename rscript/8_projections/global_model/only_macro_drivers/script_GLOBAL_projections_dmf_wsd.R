@@ -2,7 +2,6 @@ rm(list=ls(all=TRUE)) # Removes all previously created variables
 gc()                  # frees up memory resources
 
 ## 1) Load libraries and data ##
-library(fixest)
 library(sandwich)
 library(lmtest)
 library(foreign)
@@ -52,17 +51,21 @@ countryiso3 <- "GLOBAL"
 
 # 1 import DMF environment with trained models and data
 
-ll <- list.files(paste0(stub, "results/drivers_evolution"), pattern = "Rdata", full.names = T)[!grepl("2", list.files(paste0(stub, "results/drivers_evolution"), pattern = "Rdata"))]
+ll <- list.files(paste0(stub, "repo/interm/drivers_evolution"), pattern = "Rdata", full.names = T)[!grepl("2", list.files(paste0(stub, "repo/interm/drivers_evolution"), pattern = "Rdata"))]
 
 listone <- list()
 
 for (i in 1:length(ll)){
+  print(i)
   load(ll[i])
   data_c_sp_export$ac <- as.factor(as.character(data_c_sp_export$ac))
   data_c_sp_export$hhid <- as.character(data_c_sp_export$hhid)
   data_c_sp_export$ownership_d <- as.factor(as.character(data_c_sp_export$ownership_d))
   data_c_sp_export$sex_head <- as.numeric(as.character(data_c_sp_export$sex_head))
   data_c_sp_export$sex_head <- as.factor(as.character(ifelse(data_c_sp_export$sex_head==2, 1, data_c_sp_export$sex_head)))
+  data_c_sp_export$macroarea <- as.character(data_c_sp_export$macroarea)
+  data_c_sp_export$housing_index <- as.numeric(as.character(data_c_sp_export$housing_index))
+  data_c_sp_export$housing_index_lab <- as.numeric(as.character(data_c_sp_export$housing_index_lab))
   listone[[i]] <- data_c_sp_export
   rm(data_c_sp_export)
   rm(orig_data)
@@ -80,7 +83,6 @@ listone[[10]]$country <- listone[[10]]$country.x
 listone[[11]]$country <- listone[[11]]$country.x
 listone[[12]]$country <- listone[[12]]$country.x
 listone[[13]]$country <- listone[[13]]$country.x
-
 
 ll_cols <- Reduce(intersect, lapply(listone, colnames))
 
@@ -170,6 +172,12 @@ for (ssp in c("SSP2", "SSP5")){
     orig_data$ln_ely_p_own = orig_data$ln_ely_p * as.numeric(as.character(orig_data$n_members))
   
     orig_data$mean_HDD18_db  = data_c_sp[,paste0("mean_HDD_", year, "_", rcp, "_", tolower(ssp))] / 100  # 10-year average bins
+    
+    orig_data$curr_HDD18_db = orig_data$mean_HDD18_db 
+    
+    orig_data$curr_HDD18_db2  <- orig_data$curr_HDD18_db^2
+    
+    orig_data$mean_HDD18_db2  <- orig_data$mean_HDD18_db^2
     
     #orig_data$edu_head_2 <- as.factor(data_c_sp[,paste0("edu_", year, "_", ssp)])
     
@@ -299,7 +307,7 @@ for (ssp in c("SSP2", "SSP5")){
     
     orig_data$country <- as.factor(data_c_sp$country)
     
-    orig_data$ac = as.factor(0)
+    orig_data$ac = 0
     
     orig_data$ln_ely_p <- log(data_c_sp$ely_p_usd_2011)
     
@@ -309,7 +317,13 @@ for (ssp in c("SSP2", "SSP5")){
     
     orig_data$curr_HDD18_db  = data_c_sp[,paste0("mean_HDD_", year, "_", rcp, "_", tolower(ssp))] / 100  # 10-year average bins
     
-	#orig_data$edu_head_2 <- as.factor(data_c_sp[,paste0("edu_", year, "_", ssp)])
+    orig_data$curr_HDD18_db -> orig_data$mean_HDD18_db 
+    
+    orig_data$curr_HDD18_db2  <- orig_data$curr_HDD18_db^2
+    
+    orig_data$mean_HDD18_db2  <- orig_data$mean_HDD18_db^2
+    
+  #orig_data$edu_head_2 <- as.factor(data_c_sp[,paste0("edu_", year, "_", ssp)])
     
     #orig_data$age_head <- round(orig_data$age_head * (1 + data_c_sp[,paste0("age_", ssp, "_", year)]), 0)
     
@@ -321,7 +335,7 @@ for (ssp in c("SSP2", "SSP5")){
     
     #orig_data$urban_sh = data_c_sp[,paste0("weighted_mean.URB_", ssp, "_", (year))]    
     #
-    projected <- as.numeric(predict(model3, orig_data))
+    projected <- as.numeric(predict(reg_ely, orig_data))
     
     output2[[as.character(year)]] <- projected
     
@@ -365,7 +379,7 @@ for (ssp in c("SSP2", "SSP5")){
     
     orig_data$country <- as.factor(data_c_sp$country)
     
-    orig_data$ac = as.factor(ifelse(data_c_sp[,paste0(ssp, ".", (year))]>0.5, 1, 0))
+    orig_data$ac = ifelse(data_c_sp[,paste0(ssp, ".", (year))]>0.5, 1, 0)
     
     orig_data$ln_ely_p <- log(data_c_sp$ely_p_usd_2011)
     
@@ -374,6 +388,12 @@ for (ssp in c("SSP2", "SSP5")){
     orig_data$curr_CDD18_db  = data_c_sp[,paste0("mean_CDD_", year, "_", rcp, "_", tolower(ssp))] / 100 # 10-year average bins
     
     orig_data$curr_HDD18_db  = data_c_sp[,paste0("mean_HDD_", year, "_", rcp, "_", tolower(ssp))] / 100  # 10-year average bins
+    
+    orig_data$curr_HDD18_db -> orig_data$mean_HDD18_db 
+    
+    orig_data$curr_HDD18_db2  <- orig_data$curr_HDD18_db^2
+    
+    orig_data$mean_HDD18_db2  = orig_data$mean_HDD18_db^2
     
     #orig_data$edu_head_2 <- as.factor(data_c_sp[,paste0("edu_", year, "_", ssp)])
     
@@ -387,7 +407,7 @@ for (ssp in c("SSP2", "SSP5")){
     
     #orig_data$urban_sh = data_c_sp[,paste0("weighted_mean.URB_", ssp, "_", (year))]    
     #
-    projected <- as.numeric(predict(model3, orig_data))
+    projected <- as.numeric(predict(reg_ely, orig_data))
     
     output2[[as.character(year)]] <- projected
     
@@ -410,7 +430,7 @@ output_ac <- as.data.frame(do.call("cbind", output))
 #### weighted statistics!!!
 
 output_impact_ac <- exp(output_ac) - exp(output_noac)
-output_impact_ac[output_impact_ac<0] <- NA
+output_impact_ac[output_impact_ac<=0] <- NA
 
 output_impact_ac_g <- split(output_impact_ac, data_c_sp$country)
 
@@ -474,12 +494,16 @@ pop_long$value[pop_long$country==country] <- pop_long$value[pop_long$country==co
 
 pop_long <- filter(pop_long, grepl("SSP2", name) | grepl("SSP5", name))
 
+names(national_summary_ac_g) <-  unique(custom_shape$country)
+
 national_summary_ac <- bind_rows(national_summary_ac_g, .id = "country")
 
 pop_long$value_orig <- pop_long$value
 
 # multiply by AC ownership
 pop_long$value =  pop_long$value * national_summary_ac$value
+
+names(national_summary_ac_g) <-  unique(custom_shape$country)
 
 national_summary_cons <- bind_rows(national_summary_cons_g, .id = "country")
 
@@ -597,7 +621,7 @@ national_summary_ac <- bind_rows(national_summary_ac_g, .id = "country")
 pop_long$value_orig <- pop_long$value
 
 # multiply by AC ownership
-pop_long$value =  pop_long$value * 1
+pop_long$value =  pop_long$value * national_summary_ac$value
 
 national_summary_cons <- bind_rows(national_summary_cons_g, .id = "country")
 

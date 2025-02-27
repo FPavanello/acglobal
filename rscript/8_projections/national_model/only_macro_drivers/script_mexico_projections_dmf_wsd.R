@@ -545,7 +545,7 @@ data_c <- bind_cols(data_c, housing_index_lab_s1_hhs, housing_index_lab_s2_hhs)
 
 # Merge spatial projection data with household survey data
 custom_shape$state_district <- gadm$state_district
-data_c_sp <- merge(data_c, custom_shape, by.x="state_district", by.y="state_district")
+data_c_sp <- merge(data_c, custom_shape, by.x="adm1_adm2", by.y="state_district")
 
 # Project future expenditure
 
@@ -688,7 +688,7 @@ cmip6_merged$state_district <- paste0(cmip6_merged$state2, " - ", cmip6_merged$d
 cmip6_merged$state2 <- NULL
 cmip6_merged$district2 <- NULL 
 
-data_c_sp <- merge(data_c_sp, cmip6_merged, by="state_district")
+data_c_sp <- merge(data_c_sp, cmip6_merged, by.x="adm1_adm2", by.y="state_district")
 
 ####################
 # calibrate CDDs to historical / survey year CDDs to ensure consistency (for 2nd stage prediction only)
@@ -883,7 +883,9 @@ data_c_sp_export <- data_c_sp
 data_c_sp_export$geometry.x <- NULL
 data_c_sp_export$geometry.y <- NULL
 
-orig_data <- HH_Mexico[fixest::obs(reg_ac),]
+library(fixest)
+
+orig_data <- HH_Mexico[obs(reg_ac),]
 
 save(orig_data, data_c_sp_export, file = paste0(stub, "repo/interm/drivers_evolution/", countryiso3, ".Rdata"))
 
@@ -892,7 +894,7 @@ save(orig_data, data_c_sp_export, file = paste0(stub, "repo/interm/drivers_evolu
 ## 3) Make projections based on trained models and extracted data ##
 # 3.1) AC adoption projections
 
-orig_data <- HH_Mexico[fixest::obs(reg_ac),]
+orig_data <- HH_Mexico[obs(reg_ac),]
 orig_data$ac <- NULL
 
 orig_data_bk <- orig_data
@@ -910,7 +912,7 @@ for (ssp in c("SSP2", "SSP5")){
   
   rcp <- ifelse(ssp=="SSP2", "rcp45", "rcp85")
   
-  orig_data_bk <- HH_Mexico[fixest::obs(reg_ac),]
+  orig_data_bk <- HH_Mexico[obs(reg_ac),]
   
   output2 <- list()
   
@@ -1006,13 +1008,13 @@ national_summary_ac <- future_ac_adoption %>%
   mutate(ssp=rep(c("SSP245","SSP585"), each=4), year=rep(seq(2020, 2050, 10), 2))
 
 
-future_ac_adoption$state3 <- data_c_sp$state3
+future_ac_adoption$state3 <- data_c_sp$adm1
 
 regional_summary_ac <- future_ac_adoption %>%
   group_by(state3) %>%
   dplyr::summarise_all(mean, na.rm=T) %>%
   pivot_longer(cols = 2:9, names_to = c('ssp', 'year'), names_sep = ".") %>%
-  mutate(ssp=rep(rep(c("SSP245", "SSP585"), each=4), length(unique(data_c_sp$state3))), year=rep(rep(seq(2020, 2050, 10), 2), length(unique(data_c_sp$state3))))
+  mutate(ssp=rep(rep(c("SSP245", "SSP585"), each=4), length(unique(data_c_sp$adm1))), year=rep(rep(seq(2020, 2050, 10), 2), length(unique(data_c_sp$adm1))))
 
 # plot projections
 
@@ -1065,7 +1067,7 @@ ggsave(paste0(stub, "repo/interm/map_ac_", countryiso3, ".png"), map_ac, scale=1
 data_c_bk <- data_c
 
 ely_formula <- ln_ely_q ~ ac + curr_CDD18_db + curr_HDD18_db + ln_total_exp_usd_2011 + n_members + 
-  sh_under16 + ownership_d + edu_head_2 + 
+  ownership_d + edu_head_2 + 
   housing_index_lab + age_head + sex_head  + urban_sh
 
 lm1 <- lm(ely_formula, data = data_c, na.action=na.omit)
@@ -1110,7 +1112,7 @@ baseline_hist <- as.numeric(predict(lm1, type="response"))
 
 orig_data <- orig_data_bk
 
-orig_data$ac = as.factor(data_c_sp[,paste0(ssp, ".", (year))])
+orig_data$ac = (data_c_sp[,paste0(ssp, ".", (year))])
 
 orig_data$ln_total_exp_usd_2011 = data_c_sp[,paste0("exp_cap_usd_", ssp, "_", (year))]
 
@@ -1138,7 +1140,7 @@ total <- as.numeric(predict(lm1, orig_data, type="response"))
 
 orig_data <- orig_data_bk
 
-orig_data$ac = as.factor(data_c_sp[,paste0(ssp, ".", (year))])
+orig_data$ac = (data_c_sp[,paste0(ssp, ".", (year))])
 
 decomp_ac <- as.numeric(predict(lm1, orig_data, type="response"))
 
@@ -1287,7 +1289,7 @@ for (ssp in c("SSP2", "SSP5")){
     
     print(year)
 
-    orig_data$ac = as.factor(0)
+    orig_data$ac = (0)
     
     orig_data$ln_total_exp_usd_2011 = data_c_sp[,paste0("exp_cap_usd_", ssp, "_", (year))]
     
@@ -1308,7 +1310,7 @@ for (ssp in c("SSP2", "SSP5")){
 	#orig_data$urban_sh = data_c_sp[,paste0("weighted_mean.URB_", ssp, "_", (year))]
     
     #
-    projected <- predict(model3, newdata=orig_data)
+    projected <- predict(model3, orig_data)
 
     output2[[as.character(year)]] <- projected
     
@@ -1349,7 +1351,7 @@ for (ssp in c("SSP2", "SSP5")){
     
     print(year)
     
-    orig_data$ac = as.factor(data_c_sp[,paste0(ssp, ".", (year))])
+    orig_data$ac = ifelse(data_c_sp[,paste0(ssp, ".", (year))]>0.5, 1, 0)
     
     orig_data$ln_total_exp_usd_2011 = data_c_sp[,paste0("exp_cap_usd_", ssp, "_", (year))]
     
@@ -1370,7 +1372,7 @@ for (ssp in c("SSP2", "SSP5")){
     #orig_data$urban_sh = data_c_sp[,paste0("weighted_mean.URB_", ssp, "_", (year))]
     
     #
-    projected <- predict(model3, newdata=orig_data)
+    projected <- predict(model3, orig_data)
 
     output2[[as.character(year)]] <- projected
     

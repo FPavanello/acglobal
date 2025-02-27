@@ -699,7 +699,9 @@ hdd_585_cmip6 <-  readRDS(paste0(stub, "data/projections/climate/processed/", HD
 cmip6_merged <- Reduce(function(dtf1, dtf2) merge(dtf1, dtf2, by = c("country", "district2", "state2"), all.x = TRUE),
                        list(cdd_hist_cmip6, cdd_245_cmip6, cdd_585_cmip6, hdd_hist_cmip6, hdd_245_cmip6, hdd_585_cmip6))
 
-data_c_sp<- merge(data_c_sp, cmip6_merged, by.x=c("ST_NM", "DISTRICT.y"), by.y=c("state2", "district2"))
+data_c_sp <- merge(data_c_sp, cmip6_merged, by.x=c("adm2"), by.y=c("district2"), all.x=T)
+
+data_c_sp <- distinct(data_c_sp , hhid, .keep_all = T)
 
 ####################
 # calibrate CDDs to historical / survey year CDDs to ensure consistency (for 2nd stage prediction only)
@@ -890,17 +892,19 @@ for (year in seq(2020, 2050, 10)){
 
 data_c_sp_export <- data_c_sp
 
+library(fixest)
+
 data_c_sp_export$geometry.x <- NULL
 data_c_sp_export$geometry.y <- NULL
 
-orig_data <- HH_India[fixest::obs(reg_ac),]
+orig_data <- HH_India[obs(reg_ac),]
 
 save(orig_data, data_c_sp_export, file = paste0(stub, "repo/interm/drivers_evolution/", countryiso3, ".Rdata"))
 
 ## 3) Make projections based on trained models and extracted data ##
 # 3.1) AC adoption projections
 
-orig_data <- HH_India[fixest::obs(reg_ac),]
+orig_data <- HH_India[obs(reg_ac),]
 orig_data$ac <- NULL
 
 orig_data_bk <- orig_data
@@ -918,7 +922,7 @@ for (ssp in c("SSP2", "SSP5")){
   
   rcp <- ifelse(ssp=="SSP2", "rcp45", "rcp85")
   
-  orig_data_bk <- HH_India[fixest::obs(reg_ac),]
+  orig_data_bk <- HH_India[obs(reg_ac),]
   
   output2 <- list()
   
@@ -940,8 +944,6 @@ for (ssp in c("SSP2", "SSP5")){
 	
     orig_data$mean_HDD18_db  = data_c_sp[,paste0("mean_HDD_", year, "_", rcp, "_", tolower(ssp))] / 100  # 10-year average bins
     
-    orig_data$sex_head <- as.factor(orig_data$sex_head)
-    
     #orig_data$edu_head_2 <- as.factor(data_c_sp[,paste0("edu_", year, "_", ssp)])
     
     #orig_data$age_head <- round(orig_data$age_head * (1 + data_c_sp[,paste0("age_", ssp, "_", year)]), 0)
@@ -953,7 +955,9 @@ for (ssp in c("SSP2", "SSP5")){
     #orig_data$housing_index_lab = as.factor(data_c_sp[,paste0("housing_index_lab_", year, "_s1")])
     
 	#orig_data$urban_sh = data_c_sp[,paste0("weighted_mean.URB_", ssp, "_", (year))]
-    
+	
+	#orig_data$sex_head <- as.factor(orig_data$sex_head)
+	
     #
     projected <- predict(reg_ac, orig_data, type="response")
     projected <- ifelse(as.numeric(projected)>0.5, 1, 0)
@@ -1282,7 +1286,7 @@ save(all, decomposition_plot, file=paste0(stub, "repo/interm/projections", count
 # 3.2) Electricity consumption projections
 # 3.2.1) Predict consumption without AC
 
-orig_data <- HH_India[fixest::obs(model3),]
+orig_data <- HH_India[obs(model3),]
 orig_data$ely_q <- NULL
 
 orig_data_bk <- orig_data
@@ -1313,8 +1317,6 @@ for (ssp in c("SSP2", "SSP5")){
     
     orig_data$curr_HDD18_db  = data_c_sp[,paste0("mean_HDD_", year, "_", rcp, "_", tolower(ssp))] / 100  # 10-year average bins
     
-    orig_data$sex_head <- as.factor(orig_data$sex_head)
-    
     #orig_data$edu_head_2 <- as.factor(data_c_sp[,paste0("edu_", year, "_", ssp)])
     
     #orig_data$age_head <- round(orig_data$age_head * (1 + data_c_sp[,paste0("age_", ssp, "_", year)]), 0)
@@ -1325,8 +1327,8 @@ for (ssp in c("SSP2", "SSP5")){
     
     #orig_data$housing_index_lab = as.factor(data_c_sp[,paste0("housing_index_lab_", year, "_s1")])
     
-	#orig_data$urban_sh = data_c_sp[,paste0("weighted_mean.URB_", ssp, "_", (year))]
-    
+  	#orig_data$urban_sh = data_c_sp[,paste0("weighted_mean.URB_", ssp, "_", (year))]
+	
     #
     projected <- predict(model3, orig_data)
     
@@ -1346,7 +1348,7 @@ output_noac <- as.data.frame(do.call("cbind", output))
 
 # 3.2.2) Predict consumption with AC
 
-orig_data <- HH_India[fixest::obs(model3),]
+orig_data <- HH_India[obs(model3),]
 orig_data$ely_q <- NULL
 
 orig_data_bk <- orig_data
@@ -1369,7 +1371,7 @@ for (ssp in c("SSP2", "SSP5")){
     
     print(year)
     
-    orig_data$ac = data_c_sp[,paste0(ssp, ".", (year))]
+    orig_data$ac = ifelse(data_c_sp[,paste0(ssp, ".", (year))]>0.5, 1, 0)
     
     orig_data$ln_total_exp_usd_2011 = data_c_sp[,paste0("exp_cap_usd_", ssp, "_", (year))]
     
@@ -1377,11 +1379,11 @@ for (ssp in c("SSP2", "SSP5")){
     
     orig_data$curr_HDD18_db  = data_c_sp[,paste0("mean_HDD_", year, "_", rcp, "_", tolower(ssp))] / 100  # 10-year average bins
     
-    orig_data$sex_head <- as.factor(orig_data$sex_head)
-    
     #orig_data$edu_head_2 <- as.factor(data_c_sp[,paste0("edu_", year, "_", ssp)])
     
     #orig_data$age_head <- round(orig_data$age_head * (1 + data_c_sp[,paste0("age_", ssp, "_", year)]), 0)
+    
+    #orig_data$sex_head <- as.factor(orig_data$sex_head)
     
     #orig_data$ownership_d = as.factor(data_c_sp[,paste0("ownership_d_", ssp, "_", (year))])
     

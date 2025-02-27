@@ -544,8 +544,8 @@ data_c <- bind_cols(data_c, pop_features_edu)
 
 library(fuzzyjoin); library(dplyr);data_c$NAME_1.y<-NULL;
 
-data_c_map <- data_c
-data_c_map$NAME_1 <- data_c$state
+data_c_map <- data_c %>% dplyr::select(adm1)
+data_c_map$NAME_1 <- data_c$adm1
 data_c_map <- data_c_map[!duplicated(data_c_map[ , c("NAME_1")]), ] 
 
 data_c_sp <- stringdist_join(data_c_map, gadm, 
@@ -558,9 +558,7 @@ data_c_sp <- stringdist_join(data_c_map, gadm,
   group_by(NAME_1.x) %>%
   slice_min(order_by = dist, n = 1)
 
-data_c_sp <- dplyr::select(data_c_sp, NAME_1.x, NAME_1.y, geometry)
-
-data_c_sp <- merge(data_c, data_c_sp, by.x="state", by.y="NAME_1.x")
+data_c_sp <- merge(data_c, data_c_sp, by.x="adm1", by.y="NAME_1.x")
 
 custom_shape$NAME_1 <- gadm$NAME_1
 
@@ -704,7 +702,8 @@ hdd_585_cmip6 <-  readRDS(paste0(stub, "data/projections/climate/processed/", HD
 cmip6_merged <- Reduce(function(dtf1, dtf2) merge(dtf1, dtf2, by = c("state", "country"), all.x = TRUE),
                        list(cdd_hist_cmip6, cdd_245_cmip6, cdd_585_cmip6, hdd_hist_cmip6, hdd_245_cmip6, hdd_585_cmip6))
 
-data_c_map <- dplyr::select(data_c_map, state)
+data_c_map <- dplyr::select(data_c_map, adm1)
+data_c_map$state <- data_c_map$adm1
 
 cmip6_merged <- stringdist_join(cmip6_merged, data_c_map, 
                              by = "state",
@@ -716,7 +715,7 @@ cmip6_merged <- stringdist_join(cmip6_merged, data_c_map,
   group_by(state.x) %>%
   slice_min(order_by = dist, n = 1)
 
-data_c_sp <- merge(data_c_sp, cmip6_merged, by.x="state", by.y="state.y")
+data_c_sp <- merge(data_c_sp, cmip6_merged, by.x="adm1", by.y="state.y")
 data_c_sp = data_c_sp[!duplicated(data_c_sp$hhid),]
 
 ####################
@@ -730,43 +729,25 @@ for (year in seq(2020, 2050, 10)){
   for (scen in c("rcp45_ssp2", "rcp85_ssp5")){
     
     if (year <2050){
-      data_c_sp[,paste0("delta_", scen, "_", year)] <- (data_c_sp[,paste0("mean_CDD_", year-5, "_", scen)] + data_c_sp[,paste0("mean_CDD_", year+5, "_", scen)])/2 - data_c_sp$mean_CDD_modelens_median_sy
+      data_c_sp[,paste0("delta_", scen, "_", year)] <- (data_c_sp[,paste0("mean_CDD_", year-5, "_", scen)] + data_c_sp[,paste0("mean_CDD_", year+5, "_", scen)])/2 - data_c_sp$mean_CDD_modelens_median_hist
+      
     }
     
     if (year == 2050){
-      data_c_sp[,paste0("delta_", scen, "_", year)] <- (data_c_sp[,paste0("mean_CDD_", year, "_", scen)]) - data_c_sp$mean_CDD_modelens_median_sy
+      data_c_sp[,paste0("delta_", scen, "_", year)] <- (data_c_sp[,paste0("mean_CDD_", year, "_", scen)]) - data_c_sp$mean_CDD_modelens_median_hist
     }
-    
-  }}
-
-for (year in seq(2020, 2050, 10)){
-  
-  for (scen in c("rcp45_ssp2", "rcp85_ssp5")){
     
     data_c_sp[,paste0("mean_CDD_", year, "_", scen)] <- data_c_sp[,paste0("delta_", scen, "_", year)] + (data_c_sp$mean_CDD18_db * 100)
     
-    
-  }} 
-
-
-for (year in seq(2020, 2050, 10)){
-  
-  for (scen in c("rcp45_ssp2", "rcp85_ssp5")){
     #
     
     if (year <2050){
-      data_c_sp[,paste0("delta_", scen, "_", year)] <- (data_c_sp[,paste0("mean_HDD_", year-5, "_", scen)] + data_c_sp[,paste0("mean_HDD_", year+5, "_", scen)])/2 - data_c_sp$mean_HDD_modelens_median_sy
+      data_c_sp[,paste0("delta_", scen, "_", year)] <- (data_c_sp[,paste0("mean_HDD_", year-5, "_", scen)] + data_c_sp[,paste0("mean_HDD_", year+5, "_", scen)])/2 - data_c_sp$mean_HDD_modelens_median_hist
     }
     
     if (year == 2050){
-      data_c_sp[,paste0("delta_", scen, "_", year)] <- (data_c_sp[,paste0("mean_HDD_", year, "_", scen)]) - data_c_sp$mean_HDD_modelens_median_sy
+      data_c_sp[,paste0("delta_", scen, "_", year)] <- (data_c_sp[,paste0("mean_HDD_", year, "_", scen)]) - data_c_sp$mean_HDD_modelens_median_hist
     }
-    
-  }}    
-
-for (year in seq(2020, 2050, 10)){
-  
-  for (scen in c("rcp45_ssp2", "rcp85_ssp5")){
     
     data_c_sp[,paste0("mean_HDD_", year, "_", scen)] <- data_c_sp[,paste0("delta_", scen, "_", year)] + (data_c_sp$mean_HDD18_db * 100)
     
@@ -930,14 +911,16 @@ data_c_sp_export <- data_c_sp
 data_c_sp_export$geometry.x <- NULL
 data_c_sp_export$geometry.y <- NULL
 
-orig_data <- HH_Italy[fixest::obs(reg_ac),]
+library(fixest)
+
+orig_data <- HH_Italy[obs(reg_ac),]
 
 save(orig_data, data_c_sp_export, file = paste0(stub, "repo/interm/drivers_evolution/", countryiso3, ".Rdata"))
 
 ## 3) Make projections based on trained models and extracted data ##
 # 3.1) AC adoption projections
 
-orig_data <- HH_Italy[fixest::obs(reg_ac),]
+orig_data <- HH_Italy[obs(reg_ac),]
 orig_data$ac <- NULL
 
 orig_data_bk <- orig_data
@@ -952,7 +935,7 @@ for (ssp in c("SSP2", "SSP5")){
   
   rcp <- ifelse(ssp=="SSP2", "rcp45", "rcp85")
   
-  orig_data_bk <- HH_Italy[fixest::obs(reg_ac),]
+  orig_data_bk <- HH_Italy[obs(reg_ac),]
   
   output2 <- list()
   
@@ -988,11 +971,11 @@ for (ssp in c("SSP2", "SSP5")){
     
     #
     projected <- predict(reg_ac, orig_data, type="response")
-    #projected <- ifelse(as.numeric(projected)>0.5, 1, 0)
+    projected <- ifelse(as.numeric(projected)>0.5, 1, 0)
     
-    # if (year>2020){
-    #   projected <- ifelse(output2[[as.character(year-10)]]==1, 1, projected)
-    # }
+    if (year>2020){
+      projected <- ifelse(output2[[as.character(year-10)]]==1, 1, projected)
+    }
     
     
     output2[[as.character(year)]] <- projected
@@ -1147,7 +1130,7 @@ baseline_hist <- as.numeric(predict(lm1, type="response"))
 
 orig_data <- orig_data_bk
 
-orig_data$ac = as.factor(ifelse(data_c_sp[,paste0(ssp, ".", (year))]>0.5, 1, 0))
+orig_data$ac = (data_c_sp[,paste0(ssp, ".", (year))])
 
 orig_data$ln_total_exp_usd_2011 = data_c_sp[,paste0("exp_cap_usd_", ssp, "_", (year))]
 
@@ -1175,7 +1158,7 @@ total <- as.numeric(predict(lm1, orig_data, type="response"))
 
 orig_data <- orig_data_bk
 
-orig_data$ac = as.factor(ifelse(data_c_sp[,paste0(ssp, ".", (year))]>0.5, 1, 0))
+orig_data$ac = (data_c_sp[,paste0(ssp, ".", (year))])
 
 decomp_ac <- as.numeric(predict(lm1, orig_data, type="response"))
 
@@ -1212,6 +1195,9 @@ orig_data <- orig_data_bk
 orig_data$urban_sh = data_c_sp[,paste0("weighted_mean.URB_", ssp, "_", (year))]
 
 decomp_urb <- as.numeric(predict(lm1, orig_data, type="response"))
+
+
+
 
 baseline_hist <- weighted.mean(exp(baseline_hist), data_c$weight, na.rm=T)
 decomp_ac <- weighted.mean(exp(decomp_ac), data_c_sp[,paste0("weight_", year, "_", rcp, "_", tolower(ssp))], na.rm=T)
@@ -1301,7 +1287,7 @@ save(all, decomposition_plot, file=paste0(stub, "repo/interm/projections", count
 # 3.2) Electricity consumption projections
 # 3.2.1) Predict consumption without AC
 
-orig_data <- HH_Italy[fixest::obs(model3),]
+orig_data <- HH_Italy[obs(model3),]
 orig_data$ely_q <- NULL
 
 orig_data_bk <- orig_data
@@ -1324,7 +1310,7 @@ for (ssp in c("SSP2", "SSP5")){
     
     print(year)
 
-    orig_data$ac = as.factor(0)
+    orig_data$ac = (0)
     
     orig_data$ln_total_exp_usd_2011 = data_c_sp[,paste0("exp_cap_usd_", ssp, "_", (year))]
     
@@ -1363,7 +1349,7 @@ output_noac <- as.data.frame(do.call("cbind", output))
 
 # 3.2.2) Predict consumption with AC
 
-orig_data <- HH_Italy[fixest::obs(model3),]
+orig_data <- HH_Italy[obs(model3),]
 orig_data$ely_q <- NULL
 
 orig_data_bk <- orig_data
@@ -1386,7 +1372,7 @@ for (ssp in c("SSP2", "SSP5")){
     
     print(year)
     
-    orig_data$ac = as.factor(ifelse(data_c_sp[,paste0(ssp, ".", (year))]>0.5, 1, 0))
+    orig_data$ac = ifelse(data_c_sp[,paste0(ssp, ".", (year))]>0.5, 1, 0)
     
     orig_data$ln_total_exp_usd_2011 = data_c_sp[,paste0("exp_cap_usd_", ssp, "_", (year))]
     

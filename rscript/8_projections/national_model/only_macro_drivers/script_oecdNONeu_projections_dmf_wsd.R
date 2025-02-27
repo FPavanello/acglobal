@@ -568,7 +568,7 @@ data_c <- bind_cols(data_c, pop_features_edu)
 
 library(fuzzyjoin); library(dplyr);data_c$NAME_1.y<-NULL;
 
-data_c$NAME_1 <- data_c$region
+data_c$NAME_1 <- data_c$adm1
 
 data_c$id <- 1:nrow(data_c)
 
@@ -738,7 +738,7 @@ hdd_585_cmip6 <- dplyr::group_by(hdd_585_cmip6, region) %>%  dplyr::select(conta
 cmip6_merged <- Reduce(function(dtf1, dtf2) merge(dtf1, dtf2, by = c("region"), all.x = TRUE),
                        list(cdd_hist_cmip6, cdd_245_cmip6, cdd_585_cmip6, hdd_hist_cmip6, hdd_245_cmip6, hdd_585_cmip6))
 
-data_c_sp <- merge(data_c_sp, cmip6_merged, by.x="region", by.y="region")
+data_c_sp <- merge(data_c_sp, cmip6_merged, by.x="adm1", by.y="region")
 
 ####################
 # calibrate CDDs to historical / survey year CDDs to ensure consistency (for 2nd stage prediction only)
@@ -757,22 +757,9 @@ for (year in seq(2020, 2050, 10)){
     if (year == 2050){
       data_c_sp[,paste0("delta_", scen, "_", year)] <- (data_c_sp[,paste0("mean_CDD_", year, "_", scen)]) - data_c_sp$mean_CDD_modelens_median_sy
     }
-
-  }}
-  
-for (year in seq(2020, 2050, 10)){
-  
-  for (scen in c("rcp45_ssp2", "rcp85_ssp5")){
     
-    data_c_sp[,paste0("mean_CDD_", year, "_", scen)] <- data_c_sp[,paste0("delta_", scen, "_", year)] + (data_c_sp$curr_CDD18_db * 100)
-
+    data_c_sp[,paste0("mean_CDD_", year, "_", scen)] <- data_c_sp[,paste0("delta_", scen, "_", year)] + (data_c_sp$mean_CDD18_db * 100)
     
-  }} 
-  
-
-for (year in seq(2020, 2050, 10)){
-  
-  for (scen in c("rcp45_ssp2", "rcp85_ssp5")){
     #
     
     if (year <2050){
@@ -783,13 +770,7 @@ for (year in seq(2020, 2050, 10)){
       data_c_sp[,paste0("delta_", scen, "_", year)] <- (data_c_sp[,paste0("mean_HDD_", year, "_", scen)]) - data_c_sp$mean_HDD_modelens_median_sy
     }
     
-  }}    
-
-for (year in seq(2020, 2050, 10)){
-  
-  for (scen in c("rcp45_ssp2", "rcp85_ssp5")){
-    
-    data_c_sp[,paste0("mean_HDD_", year, "_", scen)] <- data_c_sp[,paste0("delta_", scen, "_", year)] + (data_c_sp$curr_HDD18_db * 100)
+    data_c_sp[,paste0("mean_HDD_", year, "_", scen)] <- data_c_sp[,paste0("delta_", scen, "_", year)] + (data_c_sp$mean_HDD18_db * 100)
     
   }}
 
@@ -951,14 +932,14 @@ data_c_sp_export <- data_c_sp
 data_c_sp_export$geometry.x <- NULL
 data_c_sp_export$geometry.y <- NULL
 
-orig_data <- HH_NonEurope[fixest::obs(reg_ac),]
+orig_data <- HH_NonEurope[obs(reg_ac),]
 
 save(orig_data, data_c_sp_export, file = paste0(stub, "repo/interm/drivers_evolution/", countryiso3, ".Rdata"))
 
 ## 3) Make projections based on trained models and extracted data ##
 # 3.1) AC adoption projections
 
-orig_data <- HH_NonEurope[fixest::obs(reg_ac),]
+orig_data <- HH_NonEurope[obs(reg_ac),]
 orig_data$ac <- NULL
 
 orig_data_bk <- orig_data
@@ -976,7 +957,7 @@ for (ssp in c("SSP2", "SSP5")){
   
   rcp <- ifelse(ssp=="SSP2", "rcp45", "rcp85")
   
-  orig_data_bk <- HH_NonEurope[fixest::obs(reg_ac),]
+  orig_data_bk <- HH_NonEurope[obs(reg_ac),]
   
   output2 <- list()
   
@@ -1012,11 +993,11 @@ for (ssp in c("SSP2", "SSP5")){
     
     #
     projected <- predict(reg_ac, orig_data, type="response")
-    #projected <- ifelse(as.numeric(projected)>0.5, 1, 0)
+    projected <- ifelse(as.numeric(projected)>0.5, 1, 0)
     
-    # if (year>2020){
-    #   projected <- ifelse(output2[[as.character(year-10)]]==1, 1, projected)
-    # }
+    if (year>2020){
+      projected <- ifelse(output2[[as.character(year-10)]]==1, 1, projected)
+    }
     
     
     output2[[as.character(year)]] <- projected
@@ -1076,13 +1057,13 @@ national_summary_ac <- future_ac_adoption %>%
 
 
 
-future_ac_adoption$state <- data_c_sp$region
+future_ac_adoption$state <- data_c_sp$adm1
 
 regional_summary_ac <- future_ac_adoption %>%
   group_by(state) %>%
   dplyr::summarise_all(mean, na.rm=T) %>%
   pivot_longer(cols = 2:9, names_to = c('ssp', 'year'), names_sep = ".") %>%
-  mutate(ssp=rep(rep(c("SSP245", "SSP585"), each=4), length(unique(data_c_sp$region))), year=rep(rep(seq(2020, 2050, 10), 2), length(unique(data_c_sp$region))))
+  mutate(ssp=rep(rep(c("SSP245", "SSP585"), each=4), length(unique(data_c_sp$adm1))), year=rep(rep(seq(2020, 2050, 10), 2), length(unique(data_c_sp$adm1))))
 
 # plot projections
 
@@ -1184,7 +1165,7 @@ baseline_hist <- as.numeric(predict(lm1, type="response"))
 
 orig_data <- orig_data_bk
 
-orig_data$ac = as.factor(ifelse(data_c_sp[,paste0(ssp, ".", (year))]>0.5, 1, 0))
+orig_data$ac = (data_c_sp[,paste0(ssp, ".", (year))])
 
 orig_data$ln_total_exp_usd_2011 = data_c_sp[,paste0("exp_cap_usd_", ssp, "_", (year))]
 
@@ -1212,7 +1193,7 @@ total <- as.numeric(predict(lm1, orig_data, type="response"))
 
 orig_data <- orig_data_bk
 
-orig_data$ac = as.factor(ifelse(data_c_sp[,paste0(ssp, ".", (year))]>0.5, 1, 0))
+orig_data$ac = (data_c_sp[,paste0(ssp, ".", (year))])
 
 decomp_ac <- as.numeric(predict(lm1, orig_data, type="response"))
 
@@ -1250,6 +1231,8 @@ orig_data$urban_sh = data_c_sp[,paste0("weighted_mean.URB_", ssp, "_", (year))]
 
 decomp_urb <- as.numeric(predict(lm1, orig_data, type="response"))
 
+#
+
 weighted_mean_na <- function(x, w, ..., na.rm = FALSE){
   
   if(na.rm){
@@ -1262,6 +1245,8 @@ weighted_mean_na <- function(x, w, ..., na.rm = FALSE){
   
   weighted.mean(x, w, ...)
 }
+
+#
 
 baseline_hist <- weighted_mean_na(exp(baseline_hist), data_c$weight, na.rm=T)
 decomp_ac <- weighted_mean_na(exp(decomp_ac), data_c_sp[,paste0("weight_", year, "_", rcp, "_", tolower(ssp))], na.rm=T)
@@ -1374,7 +1359,7 @@ for (ssp in c("SSP2", "SSP5")){
     
     print(year)
     
-    orig_data$ac = as.factor(0)
+    orig_data$ac = (0)
     
     orig_data$ln_total_exp_usd_2011 = data_c_sp[,paste0("exp_cap_usd_", ssp, "_", (year))]
     
@@ -1436,7 +1421,7 @@ for (ssp in c("SSP2", "SSP5")){
     
     print(year)
     
-    orig_data$ac = as.factor(ifelse(data_c_sp[,paste0(ssp, ".", (year))]>0.5, 1, 0))
+    orig_data$ac = ifelse(data_c_sp[,paste0(ssp, ".", (year))]>0.5, 1, 0)
     
     orig_data$ln_total_exp_usd_2011 = data_c_sp[,paste0("exp_cap_usd_", ssp, "_", (year))]
     
@@ -1481,7 +1466,7 @@ output_impact_ac <- exp(output_ac) - exp(output_noac)
 
 data_c_sp_export <- filter(data_c_sp_export, hhid %in% data_c_sp$hhid)
 
-save(orig_data, data_c_sp_export, file = paste0(stub, "repo/interm/drivers_evolution/", countryiso3, "2", ".Rdata"))
+save(orig_data, data_c_sp_export, file = paste0(stub, "repo/interm/drivers_evolution/", countryiso3, "2.Rdata"))
 
 
 #
