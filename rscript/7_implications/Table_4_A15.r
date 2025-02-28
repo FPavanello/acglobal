@@ -33,10 +33,13 @@ library(margins)
 user <- 'gf'
 
 if (user=='gf') {
-  stub <- "F:/.shortcut-targets-by-id/1JhN0qxmpnYQDoWQdBhnYKzbRCVGH_WXE/6-Projections/"
+  stub <- "G:/.shortcut-targets-by-id/1JhN0qxmpnYQDoWQdBhnYKzbRCVGH_WXE/6-Projections/"
 }
 
-ll_list <- list.files(path=paste0(stub, "results/household_level/"), pattern="national_ac_penetration_glomod.csv", full.names = T)
+output <- 'C:/Users/Standard/Documents/Github/acglobal/output/tables/'
+
+
+ll_list <- list.files(path=paste0(stub, "repo/interm/projections/"), pattern="national_ac_penetration_glomod.csv", full.names = T)
 
 ll_list <- ll_list[!grepl("DEU", ll_list)]
 
@@ -52,7 +55,7 @@ ll$stat <- "AC penetration rate"
 
 #
 
-ll2_list <- list.files(path=paste0(stub, "results/household_level/"), pattern="_national_ac_consumption_glomod.csv", full.names = T)
+ll2_list <- list.files(path=paste0(stub, "repo/interm/projections/"), pattern="_national_ac_consumption_glomod.csv", full.names = T)
 
 ll2_list <- ll2_list[!grepl("DEU", ll2_list)]
 
@@ -70,7 +73,7 @@ ll2$stat <- "Total AC-induced consumption"
 
 #
 
-ll3_list <- list.files(path=paste0(stub, "results/household_level/"), pattern="_national_ac_consumption_total_glomod.csv", full.names = T)
+ll3_list <- list.files(path=paste0(stub, "repo/interm/projections/"), pattern="_national_ac_consumption_total_glomod.csv", full.names = T)
 
 ll3_list <- ll3_list[!grepl("DEU", ll3_list)]
 
@@ -94,6 +97,8 @@ ll$ssp <- ifelse(ll$ssp=="SSP245", "SSP245 (2050)", ll$ssp)
 ll$ssp <- ifelse(ll$ssp=="SSP585", "SSP585 (2050)", ll$ssp)
 
 ll <- group_by(ll, ssp, year, country, stat) %>% dplyr::summarise(value=median(value, na.rm=T))
+
+ll$country <- stringr::str_remove(ll$country, "projections")
 
 ll$country <- ifelse(ll$country=="GLOBAL", " GLOBAL pool", ll$country)
 
@@ -181,7 +186,7 @@ library(modelsummary)
 emptycol <- function(x) " "
 
 datasummary(value * country ~ stat * ssp * (Mean),
-            data = ll2, output = paste0(stub, "results/graphs/emis_table.tex"))
+            data = ll2, output = paste0(output, "TableA15.tex"))
 #############
 
 ll$year <- NULL 
@@ -199,4 +204,4 @@ ll2 <- ll %>%
 emptycol <- function(x) " "
 
 datasummary(value * country ~ stat * ssp * (Mean),
-            data = ll2, output = paste0(stub, "results/graphs/big_res_table_new.tex"))
+            data = ll2, output = paste0(output, "Table4.tex"))

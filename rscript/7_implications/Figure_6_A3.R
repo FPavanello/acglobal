@@ -31,12 +31,14 @@ library(margins)
 user <- 'gf'
 
 if (user=='gf') {
-  stub <- "F:/.shortcut-targets-by-id/1JhN0qxmpnYQDoWQdBhnYKzbRCVGH_WXE/6-Projections/"
+  stub <- "G:/.shortcut-targets-by-id/1JhN0qxmpnYQDoWQdBhnYKzbRCVGH_WXE/6-Projections/"
 }
+
+output <- 'C:/Users/Standard/Documents/Github/acglobal/output/figures/'
 
 #######################
 
-rdss = list.files(path=paste0(stub, "data/household"), recursive = T, full.names = T, pattern = "rds", ignore.case = T)
+rdss = list.files(path=paste0(stub, "repo/household"), recursive = T, full.names = T, pattern = "rds", ignore.case = T)
 
 rdss = rdss[!grepl("global", rdss)]
 rdss = rdss[!grepl("CDD", rdss)]
@@ -77,9 +79,9 @@ rdss_l <- bind_rows(rdss_l)
 
 load(paste0(stub, "repo/interm/global_wgt_dmcf.Rdata"))
 
-future_ac_adoption = read_rds(paste0(stub, "results/household_level/", "global_ac.Rds"))
-output_ac = read_rds(paste0(stub, "results/household_level/", "global_ely_tot.Rds"))
-output_impact_ac = read_rds(paste0(stub, "results/household_level/", "global_ely_due_to_ac.Rds"))
+future_ac_adoption = read_rds(paste0(stub, "repo/interm/", "global_ac.Rds"))
+output_ac = read_rds(paste0(stub, "repo/interm/", "global_ely_tot.Rds"))
+output_impact_ac = read_rds(paste0(stub, "repo/interm/", "global_ely_due_to_ac.Rds"))
 
 colnames(future_ac_adoption) = paste0("future_ac_adoption_", colnames(future_ac_adoption))
 colnames(output_ac) = paste0("output_ac_", colnames(output_ac))
@@ -87,9 +89,9 @@ colnames(output_impact_ac) = paste0("output_impact_ac_", colnames(output_impact_
 
 ###
 
-weights = read_rds(paste0(stub, "results/household_level/", "weights_global_ac.Rds"))
+weights = read_rds(paste0(stub, "repo/interm/", "weights_global_ac.Rds"))
 
-data_orig = read_rds(paste0(stub, "results/household_level/", "data_global_ac.Rds"))
+data_orig = read_rds(paste0(stub, "repo/interm/", "data_global_ac.Rds"))
 
 data_orig = bind_cols(data_orig, future_ac_adoption, output_ac, output_impact_ac, weights)
 

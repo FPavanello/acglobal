@@ -33,7 +33,7 @@ library(margins)
 user <- 'gf'
 
 if (user=='gf') {
-  stub <- "F:/.shortcut-targets-by-id/1JhN0qxmpnYQDoWQdBhnYKzbRCVGH_WXE/6-Projections/"
+  stub <- "G:/.shortcut-targets-by-id/1JhN0qxmpnYQDoWQdBhnYKzbRCVGH_WXE/6-Projections/"
 }
 
 
@@ -50,7 +50,7 @@ countryiso3 <- "IDN"
 
 # 1 import DMF environment with trained models and data
 
-load(paste0(stub, "repo/interm/idn_dmcf.RData"))
+load(paste0(stub, "results/regressions/for_projections/idn_dmcf.RData"))
 
 data_c <- HH_Indonesia
 #rm(HHIndonesia)
@@ -936,7 +936,7 @@ data_c_sp_export$geometry.y <- NULL
 
 orig_data <- data_c_sp
 
-load(paste0(stub, "repo/interm/global_wgt_dmcf.Rdata")); data_c_sp$country = data_c_sp$country.x
+load(paste0(stub, "results/regressions/for_projections/global_wgt_dmcf.Rdata")); data_c_sp$country = data_c_sp$country.x
 
 ## 3) Make projections based on trained models and extracted data ##
 # 3.1) AC adoption projections
@@ -1306,9 +1306,9 @@ decomposition_plot <- ggplot(all)+
         axis.text.x=element_blank(),
         axis.ticks.x=element_blank()) + guides(fill=guide_legend(ncol=1))
 
-ggsave(paste0(stub, "repo/interm/projections", countryiso3, "_decompose_", ssp, ".png"), last_plot())
+ggsave(paste0(stub, "repo/interm/projections/", countryiso3, "_decompose_", ssp, ".png"), last_plot())
 
-save(all, decomposition_plot, file=paste0(stub, "repo/interm/projections", countryiso3, "_decompose_", ssp, ".Rdata"))
+save(all, decomposition_plot, file=paste0(stub, "repo/interm/projections/", countryiso3, "_decompose_", ssp, ".Rdata"))
 
 }
 
@@ -1553,19 +1553,19 @@ distr_country_ely_q <- ggplot(output_impact_ac2, aes(x = value, y=..density.., g
 
 ggsave(paste0(stub, "repo/interm/distr_country_ely_q_", countryiso3, ".png"), distr_country_ely_q)
 
-save(output_impact_ac2, distr_country_ely_q, file=paste0(stub, "repo/interm/projections", countryiso3, "_distribution.Rdata"))
+save(output_impact_ac2, distr_country_ely_q, file=paste0(stub, "repo/interm/projections/", countryiso3, "_distribution.Rdata"))
 
 ###############
 # export projections data
 
-write.csv(national_summary_ac, paste0(stub, "repo/interm/projections", countryiso3, "_national_ac_penetration_glomod.csv"))
-write.csv(national_summary_cons,  paste0(stub, "repo/interm/projections", countryiso3, "_national_ac_consumption_glomod.csv"))
-write.csv(national_summary_total,  paste0(stub, "repo/interm/projections", countryiso3, "_national_ac_consumption_total_glomod.csv"))
+write.csv(national_summary_ac, paste0(stub, "repo/interm/projections/", countryiso3, "_national_ac_penetration_glomod.csv"))
+write.csv(national_summary_cons,  paste0(stub, "repo/interm/projections/", countryiso3, "_national_ac_consumption_glomod.csv"))
+write.csv(national_summary_total,  paste0(stub, "repo/interm/projections/", countryiso3, "_national_ac_consumption_total_glomod.csv"))
 
 regional_summary_ac$geometry<-NULL
-write.csv(as.data.frame(regional_summary_ac),  paste0(stub, "repo/interm/projections", countryiso3, "_regional_ac_penetration_glomod.csv"))
-# write.csv(regional_summary_cons,  paste0(stub, "repo/interm/projections", countryiso3, "_regional_consumption_glomod.csv"))
-# write.csv(regional_summary_total,  paste0(stub, "repo/interm/projections", countryiso3, "_regional_consumption_total_glomod.csv"))
+write.csv(as.data.frame(regional_summary_ac),  paste0(stub, "repo/interm/projections/", countryiso3, "_regional_ac_penetration_glomod.csv"))
+# write.csv(regional_summary_cons,  paste0(stub, "repo/interm/projections/", countryiso3, "_regional_consumption_glomod.csv"))
+# write.csv(regional_summary_total,  paste0(stub, "repo/interm/projections/", countryiso3, "_regional_consumption_total_glomod.csv"))
 
 ###
 
@@ -1599,4 +1599,4 @@ pop_long <- filter(pop_long, grepl("SSP2", name) | grepl("SSP5", name))
 # multiply by average consumption due to AC
 national_summary_cons_totelectr$value_tot <- pop_long$value * national_summary_cons_totelectr$value
 
-write.csv(national_summary_cons_totelectr,  paste0(stub, "repo/interm/projections", countryiso3, "_national_ely_consumption_glomod.csv"))
+write.csv(national_summary_cons_totelectr,  paste0(stub, "repo/interm/projections/", countryiso3, "_national_ely_consumption_glomod.csv"))
