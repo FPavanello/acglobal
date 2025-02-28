@@ -53,10 +53,8 @@ countryiso3 <- "IND"
 
 load(paste0(stub, "repo/interm/ind_dmcf.RData"))
 
-data_c <- HH_India
-#rm(HH_India)
-
-
+data_c <- HH_India 
+#rm(HHIndia)
 
 # shapefile
 
@@ -563,6 +561,7 @@ custom_shape$NAME_1 <- gadm$NAME_1
 
 data_c_sp <- merge(data_c_sp, custom_shape, by.x="NAME_1.y", by.y="NAME_1")
 
+
 #
 # Project future expenditure
 
@@ -699,7 +698,7 @@ hdd_585_cmip6 <-  readRDS(paste0(stub, "data/projections/climate/processed/", HD
 cmip6_merged <- Reduce(function(dtf1, dtf2) merge(dtf1, dtf2, by = c("country", "district2", "state2"), all.x = TRUE),
                        list(cdd_hist_cmip6, cdd_245_cmip6, cdd_585_cmip6, hdd_hist_cmip6, hdd_245_cmip6, hdd_585_cmip6))
 
-data_c_sp<- merge(data_c_sp, cmip6_merged, by.x=c("ST_NM", "DISTRICT.y"), by.y=c("state2", "district2"))
+data_c_sp<- merge(data_c_sp, cmip6_merged, by.x=c("adm2"), by.y=c("district2"))
 
 ####################
 # calibrate CDDs to historical / survey year CDDs to ensure consistency (for 2nd stage prediction only)
@@ -959,15 +958,24 @@ for (ssp in c("SSP2", "SSP5")){
 	
 	orig_data$curr_CDD18_db = orig_data$mean_CDD18_db 
     
-    orig_data$curr_CDD18_db2 = orig_data$curr_CDD18_db^2; orig_data$country = as.factor(data_c$country)
+    orig_data$curr_CDD18_db2 = orig_data$curr_CDD18_db^2
 	
     orig_data$mean_HDD18_db  = data_c_sp[,paste0("mean_HDD_", year, "_", rcp, "_", tolower(ssp))] / 100  # 10-year average bins
+    
+    
+    orig_data$curr_HDD18_db = orig_data$mean_HDD18_db 
+    
+    orig_data$mean_HDD18_db2 = orig_data$mean_HDD18_db^2
+    
+    orig_data$curr_HDD18_db2 = orig_data$curr_HDD18_db^2
     
     #orig_data$edu_head_2 <- as.factor(data_c_sp[,paste0("edu_", year, "_", ssp)])
     
     #orig_data$age_head <- round(orig_data$age_head * (1 + data_c_sp[,paste0("age_", ssp, "_", year)]), 0)
     
-    orig_data$ownership_d = as.factor(orig_data$ownership_d)
+    #orig_data$sex_head <- as.factor(orig_data$sex_head)
+    
+    orig_data$country = data_c_sp$country; orig_data$ownership_d = as.factor(orig_data$ownership_d)
     
     #orig_data$fan = as.factor(data_c_sp[,paste0("fan_", ssp, "_", (year))])
     
@@ -976,8 +984,6 @@ for (ssp in c("SSP2", "SSP5")){
 	#orig_data$urban_sh = data_c_sp[,paste0("weighted_mean.URB_", ssp, "_", (year))]
     
     #
-    orig_data$sex_head = as.factor(orig_data$sex_head)
-    
     projected <- predict(reg_ac, orig_data, type="response")
     # projected <- ifelse(as.numeric(projected)>0.5, 1, 0)
     
@@ -1162,7 +1168,7 @@ orig_data$edu_head_2 <- as.factor(data_c_sp[,paste0("edu_", year, "_", ssp)])
 
 orig_data$age_head <- round(orig_data$age_head * (1 + data_c_sp[,paste0("age_", ssp, "_", year)]), 0)
 
-orig_data$ownership_d = as.factor(orig_data$ownership_d)
+orig_data$country = data_c_sp$country; orig_data$ownership_d = as.factor(orig_data$ownership_d)
 
 #orig_data$fan = as.factor(data_c_sp[,paste0("fan_", ssp, "_", (year))])
 
@@ -1328,7 +1334,7 @@ for (ssp in c("SSP2", "SSP5")){
     
     print(year)
     
-    orig_data$ac = as.factor(as.character(0))
+    orig_data$ac = 0
     
     orig_data$ln_total_exp_usd_2011 = data_c_sp[,paste0("exp_cap_usd_", ssp, "_", (year))]
     
@@ -1340,7 +1346,9 @@ for (ssp in c("SSP2", "SSP5")){
     
     #orig_data$age_head <- round(orig_data$age_head * (1 + data_c_sp[,paste0("age_", ssp, "_", year)]), 0)
     
-    orig_data$ownership_d = as.factor(orig_data$ownership_d)
+    orig_data$country = data_c_sp$country; orig_data$ownership_d = as.factor(orig_data$ownership_d)
+    
+    #orig_data$sex_head <- as.factor(orig_data$sex_head)
     
     #orig_data$fan = as.factor(data_c_sp[,paste0("fan_", ssp, "_", (year))])
     
@@ -1349,9 +1357,7 @@ for (ssp in c("SSP2", "SSP5")){
 	#orig_data$urban_sh = data_c_sp[,paste0("weighted_mean.URB_", ssp, "_", (year))]
     
     #
-    orig_data$sex_head = as.factor(orig_data$sex_head)
-    
-    orig_data$country = as.factor(data_c$country); projected <- predict(reg_ely, orig_data)
+    projected <- predict(reg_ely, orig_data)
     
     output2[[as.character(year)]] <- projected
     
@@ -1392,7 +1398,7 @@ for (ssp in c("SSP2", "SSP5")){
     
     print(year)
     
-    orig_data$ac = as.factor(as.character(ifelse(data_c_sp[,paste0(ssp, ".", (year))]>0.5, 1, 0)))
+    orig_data$ac = ifelse(data_c_sp[,paste0(ssp, ".", (year))]>0.5, 1, 0)
     
     orig_data$ln_total_exp_usd_2011 = data_c_sp[,paste0("exp_cap_usd_", ssp, "_", (year))]
     
@@ -1403,8 +1409,10 @@ for (ssp in c("SSP2", "SSP5")){
     #orig_data$edu_head_2 <- as.factor(data_c_sp[,paste0("edu_", year, "_", ssp)])
     
     #orig_data$age_head <- round(orig_data$age_head * (1 + data_c_sp[,paste0("age_", ssp, "_", year)]), 0)
-    
-    orig_data$ownership_d = as.factor(orig_data$ownership_d)
+
+    #orig_data$sex_head <- as.factor(orig_data$sex_head)
+
+    orig_data$country = data_c_sp$country; orig_data$ownership_d = as.factor(orig_data$ownership_d)
     
     #orig_data$fan = as.factor(data_c_sp[,paste0("fan_", ssp, "_", (year))])
     
@@ -1413,10 +1421,7 @@ for (ssp in c("SSP2", "SSP5")){
 	#orig_data$urban_sh = data_c_sp[,paste0("weighted_mean.URB_", ssp, "_", (year))]
     
     #
-    
-    orig_data$sex_head = as.factor(orig_data$sex_head)
-    
-    orig_data$country = as.factor(data_c$country); projected <- predict(reg_ely, orig_data)
+    projected <- predict(reg_ely, orig_data)
     
     output2[[as.character(year)]] <- projected
     
@@ -1440,7 +1445,7 @@ output_impact_ac <- exp(output_ac) - exp(output_noac)
 
 output_impact_ac[output_impact_ac<=0] <- NA
 
-save(output_ac, output_impact_ac, file = paste0(stub, "results/energy_poverty/", countryiso3, ".Rdata"))
+save(data_c_sp, output_ac, output_impact_ac, file = paste0(stub, "results/energy_poverty/", countryiso3, ".Rdata"))
 
 
 ##
@@ -1525,7 +1530,7 @@ ggsave(paste0(stub, "repo/interm/line_country_ely_q_tot_", countryiso3, ".png"),
 
 #
 
-output_impact_ac$ely_p = data_c$ely_p_usd_2011
+output_impact_ac$ely_p = data_c_sp$ely_p_usd_2011
 
 output_impact_ac2 <- output_impact_ac %>%
   pivot_longer(cols = 1:8, names_to = c('ssp', 'year'), names_sep = ".") %>%

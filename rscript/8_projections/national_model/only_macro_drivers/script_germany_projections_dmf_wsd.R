@@ -538,7 +538,7 @@ data_c <- bind_cols(data_c, pop_features_edu)
 library(fuzzyjoin); library(dplyr);data_c$NAME_1.y<-NULL;
 
 data_c_map <- data_c
-data_c_map$NAME_1 <- data_c$state
+data_c_map$NAME_1 <- data_c$adm1
 data_c_map <- data_c_map[!duplicated(data_c_map[ , c("NAME_1")]), ] 
 
 data_c_sp <- stringdist_join(data_c_map, gadm, 
@@ -553,7 +553,7 @@ data_c_sp <- stringdist_join(data_c_map, gadm,
 
 data_c_sp <- dplyr::select(data_c_sp, NAME_1.x, NAME_1.y, geometry)
 
-data_c_sp <- merge(data_c, data_c_sp, by.x="state", by.y="NAME_1.x")
+data_c_sp <- merge(data_c, data_c_sp, by.x="adm1", by.y="NAME_1.x")
 
 custom_shape$NAME_1 <- gadm$NAME_1
 
@@ -701,7 +701,8 @@ cmip6_merged <- Reduce(function(dtf1, dtf2) merge(dtf1, dtf2, by = c("country", 
                        list(cdd_hist_cmip6, cdd_245_cmip6, cdd_585_cmip6, hdd_hist_cmip6, hdd_245_cmip6, hdd_585_cmip6))
 
 
-data_c_map <- dplyr::select(data_c_map, state)
+data_c_map <- dplyr::select(data_c_map, adm1)
+data_c_map$state <- data_c_map$adm1
 
 cmip6_merged <- stringdist_join(cmip6_merged, data_c_map, 
                              by = "state",
@@ -714,7 +715,7 @@ cmip6_merged <- stringdist_join(cmip6_merged, data_c_map,
   slice_min(order_by = dist, n = 1)
 
 
-data_c_sp <- merge(data_c_sp, cmip6_merged, by.x="state", by.y="state.y")
+data_c_sp <- merge(data_c_sp, cmip6_merged, by.x="adm1", by.y="state.y")
 data_c_sp = data_c_sp[!duplicated(data_c_sp$hhid),]
 
 ####################
@@ -911,25 +912,14 @@ data_c_sp_export <- data_c_sp
 data_c_sp_export$geometry.x <- NULL
 data_c_sp_export$geometry.y <- NULL
 
-orig_data <- HH_Germany[fixest::obs(reg_ac),]
-
-save(orig_data, data_c_sp_export, file = paste0(stub, "repo/interm/drivers_evolution/", countryiso3, ".Rdata"))
-
-#
-
-data_c_sp_export <- data_c_sp
-
-data_c_sp_export$geometry.x <- NULL
-data_c_sp_export$geometry.y <- NULL
-
-orig_data <- HH_Germany[fixest::obs(reg_ac),]
+orig_data <- HH_Germany[obs(reg_ac),]
 
 save(orig_data, data_c_sp_export, file = paste0(stub, "repo/interm/drivers_evolution/", countryiso3, ".Rdata"))
 
 ## 3) Make projections based on trained models and extracted data ##
 # 3.1) AC adoption projections
 
-orig_data <- HH_Germany[fixest::obs(reg_ac),]
+orig_data <- HH_Germany[obs(reg_ac),]
 orig_data$ac <- NULL
 
 orig_data_bk <- orig_data
@@ -947,7 +937,7 @@ for (ssp in c("SSP2", "SSP5")){
   
   rcp <- ifelse(ssp=="SSP2", "rcp45", "rcp85")
   
-  orig_data_bk <- HH_Germany[fixest::obs(reg_ac),]
+  orig_data_bk <- HH_Germany[obs(reg_ac),]
   
   output2 <- list()
   
@@ -1099,7 +1089,7 @@ ggsave(paste0(stub, "repo/interm/map_ac_", countryiso3, ".png"), map_ac, scale=1
 data_c_bk <- data_c
 
 ely_formula <- ln_ely_q ~ ac + curr_CDD18_db + curr_HDD18_db + ln_total_exp_usd_2011 + n_members + 
-  sh_under16 + edu_head_2 + 
+  edu_head_2 + 
   age_head + sex_head + urban_sh
 
 lm1 <- lm(ely_formula, data = data_c, na.action=na.omit)
@@ -1144,7 +1134,7 @@ baseline_hist <- as.numeric(predict(lm1, type="response"))
 
 orig_data <- orig_data_bk
 
-orig_data$ac = as.factor(data_c_sp[,paste0(ssp, ".", (year))])
+orig_data$ac = (data_c_sp[,paste0(ssp, ".", (year))])
 
 orig_data$ln_total_exp_usd_2011 = data_c_sp[,paste0("exp_cap_usd_", ssp, "_", (year))]
 
@@ -1172,7 +1162,7 @@ total <- as.numeric(predict(lm1, orig_data, type="response"))
 
 orig_data <- orig_data_bk
 
-orig_data$ac = as.factor(data_c_sp[,paste0(ssp, ".", (year))])
+orig_data$ac = (data_c_sp[,paste0(ssp, ".", (year))])
 
 decomp_ac <- as.numeric(predict(lm1, orig_data, type="response"))
 
@@ -1300,7 +1290,7 @@ save(all, decomposition_plot, file=paste0(stub, "repo/interm/projections/", coun
 # 3.2) Electricity consumption projections
 # 3.2.1) Predict consumption without AC
 
-orig_data <- model3$model
+orig_data <- HH_Germany[obs(model3),]
 orig_data$ely_q <- NULL
 
 orig_data_bk <- orig_data
@@ -1323,7 +1313,7 @@ for (ssp in c("SSP2", "SSP5")){
     
     print(year)
     
-    orig_data$ac = as.factor(0)
+    orig_data$ac = (0)
     
     orig_data$ln_total_exp_usd_2011 = data_c_sp[,paste0("exp_cap_usd_", ssp, "_", (year))]
     
@@ -1362,7 +1352,7 @@ output_noac <- as.data.frame(do.call("cbind", output))
 
 # 3.2.2) Predict consumption with AC
 
-orig_data <- model3$model
+orig_data <- HH_Germany[obs(model3),]
 orig_data$ely_q <- NULL
 
 orig_data_bk <- orig_data
@@ -1385,7 +1375,7 @@ for (ssp in c("SSP2", "SSP5")){
     
     print(year)
     
-    orig_data$ac = as.factor(data_c_sp[,paste0(ssp, ".", (year))])
+    orig_data$ac = ifelse(data_c_sp[,paste0(ssp, ".", (year))]>0.5, 1, 0)
     
     orig_data$ln_total_exp_usd_2011 = data_c_sp[,paste0("exp_cap_usd_", ssp, "_", (year))]
     
@@ -1393,9 +1383,9 @@ for (ssp in c("SSP2", "SSP5")){
     
     orig_data$curr_HDD18_db  = data_c_sp[,paste0("mean_HDD_", year, "_", rcp, "_", tolower(ssp))] / 100  # 10-year average bins
     
-    #orig_data$edu_head_2 <- as.factor(data_c_sp[,paste0("edu_", year, "_", ssp)])
+    orig_data$edu_head_2 <- as.factor(data_c_sp[,paste0("edu_", year, "_", ssp)])
     
-    #orig_data$age_head <- round(orig_data$age_head * (1 + data_c_sp[,paste0("age_", ssp, "_", year)]), 0)
+    orig_data$age_head <- round(orig_data$age_head * (1 + data_c_sp[,paste0("age_", ssp, "_", year)]), 0)
     
     #orig_data$ownership_d = as.factor(data_c_sp[,paste0("ownership_d_", ssp, "_", (year))])
     
@@ -1403,7 +1393,7 @@ for (ssp in c("SSP2", "SSP5")){
     
     #orig_data$housing_index_lab = as.factor(data_c_sp[,paste0("housing_index_lab_", year, "_s1")])
     
-	#orig_data$urban_sh = data_c_sp[,paste0("weighted_mean.URB_", ssp, "_", (year))]
+	orig_data$urban_sh = data_c_sp[,paste0("weighted_mean.URB_", ssp, "_", (year))]
     
     #
     projected <- predict(model3, orig_data)

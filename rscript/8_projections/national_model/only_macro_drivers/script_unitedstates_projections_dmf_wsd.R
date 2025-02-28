@@ -545,7 +545,7 @@ data_c <- bind_cols(data_c, pop_features_edu)
 library(fuzzyjoin); library(dplyr);data_c$NAME_1.y<-NULL;
 
 data_c_map <- data_c
-data_c_map$NAME_1 <- data_c$state
+data_c_map$NAME_1 <- data_c$adm1
 data_c_map <- data_c_map[!duplicated(data_c_map[ , c("NAME_1")]), ] 
 
 data_c_sp <- stringdist_join(data_c_map, gadm, 
@@ -560,7 +560,7 @@ data_c_sp <- stringdist_join(data_c_map, gadm,
 
 data_c_sp <- dplyr::select(data_c_sp, NAME_1.x, NAME_1.y, geometry)
 
-data_c_sp <- merge(data_c, data_c_sp, by.x="state", by.y="NAME_1.x")
+data_c_sp <- merge(data_c, data_c_sp, by.x="adm1", by.y="NAME_1.x")
 
 custom_shape$NAME_1 <- gadm$NAME_1
 
@@ -705,7 +705,7 @@ hdd_585_cmip6 <-  readRDS(paste0(stub, "data/projections/climate/processed/", HD
 cmip6_merged <- Reduce(function(dtf1, dtf2) merge(dtf1, dtf2, by = c("country", "state"), all.x = TRUE),
                        list(cdd_hist_cmip6, cdd_245_cmip6, cdd_585_cmip6, hdd_hist_cmip6, hdd_245_cmip6, hdd_585_cmip6))
 
-data_c_sp <- merge(data_c_sp, cmip6_merged, by.x="CBSA", by.y="state")
+data_c_sp <- merge(data_c_sp, cmip6_merged, by.x="adm2", by.y="state")
 
 ####################
 # calibrate CDDs to historical / survey year CDDs to ensure consistency (for 2nd stage prediction only)
@@ -899,14 +899,16 @@ data_c_sp_export <- data_c_sp
 data_c_sp_export$geometry.x <- NULL
 data_c_sp_export$geometry.y <- NULL
 
-orig_data <- HH_USA[fixest::obs(reg_ac),]
+library(fixest)
+
+orig_data <- HH_USA[obs(reg_ac),]
 
 save(orig_data, data_c_sp_export, file = paste0(stub, "repo/interm/drivers_evolution/", countryiso3, ".Rdata"))
 
 ## 3) Make projections based on trained models and extracted data ##
 # 3.1) AC adoption projections
 
-orig_data <- HH_USA[fixest::obs(reg_ac),]
+orig_data <- HH_USA[obs(reg_ac),]
 orig_data$ac <- NULL
 
 orig_data_bk <- orig_data
@@ -924,7 +926,7 @@ for (ssp in c("SSP2", "SSP5")){
   
   rcp <- ifelse(ssp=="SSP2", "rcp45", "rcp85")
   
-  orig_data_bk <- HH_USA[fixest::obs(reg_ac),]
+  orig_data_bk <- HH_USA[obs(reg_ac),]
   
   output2 <- list()
   
@@ -1019,19 +1021,28 @@ national_summary_ac <- future_ac_adoption %>%
   pivot_longer(cols = 1:8, names_to = c('ssp', 'year'), names_sep = ".") %>%
   mutate(ssp=rep(c("SSP245","SSP585"), each=4), year=rep(seq(2020, 2050, 10), 2))
 
+###
 
+bb <- bind_cols(data_c, future_ac_adoption, data_c_sp %>% dplyr::select(starts_with("weight_")))
+
+bb <- bb %>% mutate(tercile=ntile(total_exp_usd_2011, 3))
+
+dplyr::summarise(bb, ac=weighted.mean(as.numeric(as.character(SSP2.2050)), weight_2050_rcp45_ssp2, na.rm=T))
+
+bb %>% dplyr::summarise(ac=weighted.mean(as.numeric(as.character(ac)), weight, na.rm=T))
+
+bb %>% group_by(tercile) %>% dplyr::summarise(ac=weighted.mean(as.numeric(as.character(ac)), weight, na.rm=T))
+
+bb %>% group_by(tercile) %>% dplyr::summarise(ac=weighted.mean(as.numeric(as.character(SSP2.2050)), weight_2050_rcp45_ssp2, na.rm=T))
 
 #### add bias correction?
-
-
-
-future_ac_adoption$state <- data_c_sp$state
+future_ac_adoption$state <- data_c_sp$adm1
 
 regional_summary_ac <- future_ac_adoption %>%
   group_by(state) %>%
   dplyr::summarise_all(mean, na.rm=T) %>%
   pivot_longer(cols = 2:9, names_to = c('ssp', 'year'), names_sep = ".") %>%
-  mutate(ssp=rep(rep(c("SSP245", "SSP585"), each=4), length(unique(data_c_sp$state))), year=rep(rep(seq(2020, 2050, 10), 2), length(unique(data_c_sp$state))))
+  mutate(ssp=rep(rep(c("SSP245", "SSP585"), each=4), length(unique(data_c_sp$adm1))), year=rep(rep(seq(2020, 2050, 10), 2), length(unique(data_c_sp$adm1))))
 
 # plot projections
 
@@ -1077,7 +1088,7 @@ ggsave(paste0(stub, "repo/interm/map_ac_", countryiso3, ".png"), map_ac, scale=1
 data_c_bk <- data_c
 
 ely_formula <- ln_ely_q ~ ac + curr_CDD18_db + curr_HDD18_db + ln_total_exp_usd_2011 + n_members + 
-  sh_under16 + ownership_d + edu_head_2 + 
+  ownership_d + edu_head_2 + 
   age_head + sex_head + 
   urban_sh
 
@@ -1123,7 +1134,7 @@ baseline_hist <- as.numeric(predict(lm1, type="response"))
 
 orig_data <- orig_data_bk
 
-orig_data$ac = as.factor(data_c_sp[,paste0(ssp, ".", (year))])
+orig_data$ac = (data_c_sp[,paste0(ssp, ".", (year))])
 
 orig_data$ln_total_exp_usd_2011 = data_c_sp[,paste0("exp_cap_usd_", ssp, "_", (year))]
 
@@ -1151,7 +1162,7 @@ total <- as.numeric(predict(lm1, orig_data, type="response"))
 
 orig_data <- orig_data_bk
 
-orig_data$ac = as.factor(data_c_sp[,paste0(ssp, ".", (year))])
+orig_data$ac = (data_c_sp[,paste0(ssp, ".", (year))])
 
 decomp_ac <- as.numeric(predict(lm1, orig_data, type="response"))
 
@@ -1277,6 +1288,8 @@ save(all, decomposition_plot, file=paste0(stub, "repo/interm/projections", count
 # 3.2) Electricity consumption projections
 # 3.2.1) Predict consumption without AC
 
+library(fixest)
+
 orig_data <- HH_USA[obs(model3),]
 orig_data$ely_q <- NULL
 
@@ -1300,7 +1313,7 @@ for (ssp in c("SSP2", "SSP5")){
     
     print(year)
     
-    orig_data$ac = as.factor(0)
+    orig_data$ac = 0
     
     orig_data$ln_total_exp_usd_2011 = data_c_sp[,paste0("exp_cap_usd_", ssp, "_", (year))]
     
@@ -1362,7 +1375,7 @@ for (ssp in c("SSP2", "SSP5")){
     
     print(year)
     
-    orig_data$ac = as.factor(data_c_sp[,paste0(ssp, ".", (year))])
+    orig_data$ac = ifelse(data_c_sp[,paste0(ssp, ".", (year))]>0.5, 1, 0)
     
     orig_data$ln_total_exp_usd_2011 = data_c_sp[,paste0("exp_cap_usd_", ssp, "_", (year))]
     

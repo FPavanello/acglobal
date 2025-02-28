@@ -59,7 +59,7 @@ data_c <- HH_Europe
 #rm(HH_Europe)
 
 reg_ac <- reg_ac_eu
-#rm(reg_ac_eu)
+rm(reg_ac_eu)
 
 
 
@@ -572,7 +572,7 @@ data_c <- bind_cols(data_c, pop_features_edu)
 
 library(fuzzyjoin); library(dplyr);data_c$NAME_1.y<-NULL;
 
-data_c$NAME_1 <- data_c$region
+data_c$NAME_1 <- data_c$adm1
 
 data_c_sp <- stringdist_join(data_c, gadm, 
                              by = "NAME_1",
@@ -737,7 +737,7 @@ cmip6_merged <- Reduce(function(dtf1, dtf2) merge(dtf1, dtf2, by = c("region"), 
                        list(cdd_hist_cmip6, cdd_245_cmip6, cdd_585_cmip6, hdd_hist_cmip6, hdd_245_cmip6, hdd_585_cmip6))
 
 
-data_c_sp <- merge(data_c_sp, cmip6_merged, by.x="region", by.y="region")
+data_c_sp <- merge(data_c_sp, cmip6_merged, by.x="adm1", by.y="region")
 
 ####################
 # calibrate CDDs to historical / survey year CDDs to ensure consistency (for 2nd stage prediction only)
@@ -931,7 +931,7 @@ data_c_sp_export <- data_c_sp
 data_c_sp_export$geometry.x <- NULL
 data_c_sp_export$geometry.y <- NULL
 
-orig_data <- HH_Europe[fixest::obs(reg_ac),]
+orig_data <- HH_Europe[obs(reg_ac),]
 
 data_c_sp_export <- filter(data_c_sp_export, hhid %in% data_c_sp$hhid)
 
@@ -941,7 +941,7 @@ save(orig_data, data_c_sp_export, file = paste0(stub, "repo/interm/drivers_evolu
 ## 3) Make projections based on trained models and extracted data ##
 # 3.1) AC adoption projections
 
-orig_data <- HH_Europe[fixest::obs(reg_ac),]
+orig_data <- HH_Europe[obs(reg_ac),]
 orig_data$ac <- NULL
 
 orig_data_bk <- orig_data
@@ -959,7 +959,7 @@ for (ssp in c("SSP2", "SSP5")){
   
   rcp <- ifelse(ssp=="SSP2", "rcp45", "rcp85")
   
-  orig_data_bk <- HH_Europe[fixest::obs(reg_ac),]
+  orig_data_bk <- HH_Europe[obs(reg_ac),]
   
   output2 <- list()
   
@@ -1060,13 +1060,13 @@ national_summary_ac <- future_ac_adoption %>%
 
 
 
-future_ac_adoption$state <- data_c_sp$region
+future_ac_adoption$state <- data_c_sp$adm1
 
 regional_summary_ac <- future_ac_adoption %>%
   group_by(state) %>%
   dplyr::summarise_all(mean, na.rm=T) %>%
   pivot_longer(cols = 2:9, names_to = c('ssp', 'year'), names_sep = ".") %>%
-  mutate(ssp=rep(rep(c("SSP245", "SSP585"), each=4), length(unique(data_c_sp$region))), year=rep(rep(seq(2020, 2050, 10), 2), length(unique(data_c_sp$region))))
+  mutate(ssp=rep(rep(c("SSP245", "SSP585"), each=4), length(unique(data_c_sp$adm1))), year=rep(rep(seq(2020, 2050, 10), 2), length(unique(data_c_sp$adm1))))
 
 # plot projections
 
@@ -1169,7 +1169,7 @@ baseline_hist <- as.numeric(predict(lm1, type="response"))
 
 orig_data <- orig_data_bk
 
-orig_data$ac = as.factor(data_c_sp[,paste0(ssp, ".", (year))])
+orig_data$ac = (data_c_sp[,paste0(ssp, ".", (year))])
 
 orig_data$ln_total_exp_usd_2011 = data_c_sp[,paste0("exp_cap_usd_", ssp, "_", (year))]
 
@@ -1197,7 +1197,7 @@ total <- as.numeric(predict(lm1, orig_data, type="response"))
 
 orig_data <- orig_data_bk
 
-orig_data$ac = as.factor(data_c_sp[,paste0(ssp, ".", (year))])
+orig_data$ac = (data_c_sp[,paste0(ssp, ".", (year))])
 
 decomp_ac <- as.numeric(predict(lm1, orig_data, type="response"))
 
@@ -1348,7 +1348,7 @@ for (ssp in c("SSP2", "SSP5")){
     
     print(year)
     
-    orig_data$ac = as.factor(0)
+    orig_data$ac = (0)
     
     orig_data$ln_total_exp_usd_2011 = data_c_sp[,paste0("exp_cap_usd_", ssp, "_", (year))]
     
@@ -1410,7 +1410,7 @@ for (ssp in c("SSP2", "SSP5")){
     
     print(year)
     
-    orig_data$ac = as.factor(data_c_sp[,paste0(ssp, ".", (year))])
+    orig_data$ac = ifelse(data_c_sp[,paste0(ssp, ".", (year))]>0.5, 1, 0)
     
     orig_data$ln_total_exp_usd_2011 = data_c_sp[,paste0("exp_cap_usd_", ssp, "_", (year))]
     
@@ -1457,7 +1457,7 @@ output_impact_ac <- exp(output_ac) - exp(output_noac)
 
 data_c_sp_export <- filter(data_c_sp_export, hhid %in% data_c_sp$hhid)
 
-save(orig_data, data_c_sp_export, file = paste0(stub, "repo/interm/drivers_evolution/", countryiso3, "2", ".Rdata"))
+save(orig_data, data_c_sp_export, file = paste0(stub, "repo/interm/drivers_evolution/", countryiso3, "2.Rdata"))
 
 #
 
