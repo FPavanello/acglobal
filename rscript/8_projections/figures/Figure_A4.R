@@ -18,7 +18,7 @@ library(ggsci)
 user <- 'user'
 
 if (user=='user') {
-  stub <- "G:/.shortcut-targets-by-id/1JhN0qxmpnYQDoWQdBhnYKzbRCVGH_WXE/"
+  stub <- "F:/.shortcut-targets-by-id/1JhN0qxmpnYQDoWQdBhnYKzbRCVGH_WXE/"
 }
 
 output <- paste(stub,'output/figures/', sep='')

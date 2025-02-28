@@ -545,9 +545,9 @@ write_rds(output_impact_ac,  paste0(stub, "repo/interm/", "global_ely_due_to_ac.
 ###############
 # export projections data
 
-write.csv(national_summary_ac, paste0(stub, "repo/interm/projections", countryiso3, "_national_ac_penetration_wsd.csv"))
-write.csv(national_summary_cons,  paste0(stub, "repo/interm/projections", countryiso3, "_national_ac_consumption_wsd.csv"))
-write.csv(national_summary_total,  paste0(stub, "repo/interm/projections", countryiso3, "_national_ac_consumption_total_wsd.csv"))
+write.csv(national_summary_ac, paste0(stub, "repo/interm/projections/", countryiso3, "_national_ac_penetration_wsd.csv"))
+write.csv(national_summary_cons,  paste0(stub, "repo/interm/projections/", countryiso3, "_national_ac_consumption_wsd.csv"))
+write.csv(national_summary_total,  paste0(stub, "repo/interm/projections/", countryiso3, "_national_ac_consumption_total_wsd.csv"))
 
 ###########
 
@@ -651,4 +651,4 @@ national_summary_total <- group_by(national_summary_total, ssp, year) %>% dplyr:
 
 national_summary_cons$value <- national_summary_total$value
 
-write.csv(national_summary_cons,  paste0(stub, "repo/interm/projections", countryiso3, "_national_ely_consumption_wsd.csv"))
+write.csv(national_summary_cons,  paste0(stub, "repo/interm/projections/", countryiso3, "_national_ely_consumption_wsd.csv"))

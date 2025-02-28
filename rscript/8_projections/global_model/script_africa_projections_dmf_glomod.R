@@ -33,7 +33,7 @@ library(margins)
 user <- 'gf'
 
 if (user=='gf') {
-  stub <- "G:/.shortcut-targets-by-id/1JhN0qxmpnYQDoWQdBhnYKzbRCVGH_WXE/6-Projections/"
+  stub <- "F:/.shortcut-targets-by-id/1JhN0qxmpnYQDoWQdBhnYKzbRCVGH_WXE/6-Projections/"
 }
 
 
@@ -1393,7 +1393,7 @@ decomposition_plot <- ggplot(all)+
         axis.text.x=element_blank(),
         axis.ticks.x=element_blank()) + guides(fill=guide_legend(ncol=1))
 
-ggsave(paste0(stub, "repo/interm/projections", countryiso3, "_decompose_", ssp, ".png"), last_plot())
+ggsave(paste0(stub, "repo/interm/projections/", countryiso3, "_decompose_", ssp, ".png"), last_plot())
 
 save(all, decomposition_plot, file=paste0(stub, "repo/interm/projections/", countryiso3, "_decompose_", ssp, ".Rdata"))
 
@@ -1685,8 +1685,8 @@ write.csv(national_summary_total,  paste0(stub, "repo/interm/projections/", coun
 
 regional_summary_ac$geometry<-NULL
 write.csv(as.data.frame(regional_summary_ac),  paste0(stub, "repo/interm/projections/", countryiso3, "_regional_ac_penetration_glomod.csv"))
-# write.csv(regional_summary_cons,  paste0(stub, "repo/interm/projections", countryiso3, "_regional_consumption_glomod.csv"))
-# write.csv(regional_summary_total,  paste0(stub, "repo/interm/projections", countryiso3, "_regional_consumption_total_glomod.csv"))
+# write.csv(regional_summary_cons,  paste0(stub, "repo/interm/projections/", countryiso3, "_regional_consumption_glomod.csv"))
+# write.csv(regional_summary_total,  paste0(stub, "repo/interm/projections/", countryiso3, "_regional_consumption_total_glomod.csv"))
 
 write.csv(national_summary_ac_bycountry, paste0(stub, "repo/interm/projections/", countryiso3, "_national_ac_penetration_bycountry_glomod.csv"))
 write.csv(national_summary_cons_bycountry,  paste0(stub, "repo/interm/projections/", countryiso3, "_national_ac_consumption_bycountry_glomod.csv"))
