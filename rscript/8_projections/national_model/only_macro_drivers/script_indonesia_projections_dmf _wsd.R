@@ -33,7 +33,7 @@ library(margins)
 user <- 'gf'
 
 if (user=='gf') {
-  stub <- "F:/.shortcut-targets-by-id/1JhN0qxmpnYQDoWQdBhnYKzbRCVGH_WXE/6-Projections/"
+  stub <- "G:/.shortcut-targets-by-id/1JhN0qxmpnYQDoWQdBhnYKzbRCVGH_WXE/6-Projections/"
 }
 
 
@@ -50,7 +50,7 @@ countryiso3 <- "IDN"
 
 # 1 import DMF environment with trained models and data
 
-load(paste0(stub, "repo/interm/idn_dmcf.RData"))
+load(paste0(stub, "results/regressions/for_projections/idn_dmcf.RData"))
 
 data_c <- HH_Indonesia
 #rm(HH_Indonesia)

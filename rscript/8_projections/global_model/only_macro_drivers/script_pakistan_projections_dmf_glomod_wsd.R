@@ -30,7 +30,6 @@ library(pscl)
 library(margins)
 
 # Set users
-user <- 'fp'
 user <- 'gf'
 
 if (user=='fp') {
@@ -38,7 +37,7 @@ if (user=='fp') {
 }
 
 if (user=='gf') {
-  stub <- "F:/.shortcut-targets-by-id/1JhN0qxmpnYQDoWQdBhnYKzbRCVGH_WXE/6-Projections/"
+  stub <- "G:/.shortcut-targets-by-id/1JhN0qxmpnYQDoWQdBhnYKzbRCVGH_WXE/6-Projections/"
 }
 
 
