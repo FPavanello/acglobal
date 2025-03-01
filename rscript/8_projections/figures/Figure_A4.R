@@ -18,17 +18,17 @@ library(ggsci)
 user <- 'user'
 
 if (user=='user') {
-  stub <- "F:/.shortcut-targets-by-id/1JhN0qxmpnYQDoWQdBhnYKzbRCVGH_WXE/"
+  stub <- "F:/.shortcut-targets-by-id/1JhN0qxmpnYQDoWQdBhnYKzbRCVGH_WXE/6-Projections/"
 }
 
-output <- paste(stub,'output/figures/', sep='')
-output <- 'C:/Users/Standard/Documents/Github/acglobal/output/figures/'
+output <- 'C:/Users/Utente/Downloads/acglobal/output/figures/'
+house <- paste0(stub, "repo/household/")
 
 setwd(stub)
 
 # infer observed value from data
 
-global <- readRDS(paste(stub,'6-Projections/data/household/global.rds', sep=''))
+global <- readRDS(paste(house, 'global.rds', sep=''))
 
 global_sum_stat <- global
 
@@ -46,7 +46,7 @@ global_sum_stat_gp$country_macro <- "Global pool"
 global_sum_stat <- bind_rows(global_sum_stat, global_sum_stat_gp)
 rm(global_sum_stat_gp)
 
-setwd(paste0(stub, "6-Projections/results/household_level"))
+setwd(paste0(stub, "repo/interm/projections"))
 
 #########
 
@@ -131,8 +131,6 @@ g1_g <- ggplot(l1 %>% filter(country=="Global pool"))+
   facet_wrap(vars(country), scales = "free_y")+
   xlab("Year")+
   ylab("AC penetration rate (%)")
-
-#ggsave("6-Projections/interm/ac_penetration_sensitivity_drivers.png", scale=1)
 
 #
 

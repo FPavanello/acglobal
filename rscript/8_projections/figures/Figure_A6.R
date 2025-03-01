@@ -14,6 +14,7 @@ library(patchwork)
 library(ggsci)
 library(pbapply)
 library(stringr)
+library(pbapply)
 
 # Set users
 user <- 'user'
@@ -23,7 +24,7 @@ if (user=='user') {
 }
 
 output <- paste(stub,'output/figures/', sep='')
-output <- 'C:/Users/Standard/Documents/Github/acglobal/output/figures/'
+output <- 'C:/Users/Utente/Downloads/acglobal/output/figures/'
 
 setwd(stub)
 

@@ -31,22 +31,16 @@ library(margins)
 user <- 'gf'
 
 if (user=='gf') {
-  stub <- "G:/.shortcut-targets-by-id/1JhN0qxmpnYQDoWQdBhnYKzbRCVGH_WXE/6-Projections/"
+  stub <- "F:/.shortcut-targets-by-id/1JhN0qxmpnYQDoWQdBhnYKzbRCVGH_WXE/6-Projections/"
 }
 
-output <- 'C:/Users/Standard/Documents/Github/acglobal/output/figures/'
+output <- 'C:/Users/Utente/Downloads/acglobal/output/figures/'
 
 #######################
 
 rdss = list.files(path=paste0(stub, "repo/household"), recursive = T, full.names = T, pattern = "rds", ignore.case = T)
 
 rdss = rdss[!grepl("global", rdss)]
-rdss = rdss[!grepl("CDD", rdss)]
-rdss = rdss[!grepl("us.Rds", rdss)]
-rdss = rdss[!grepl("nss", rdss)]
-rdss = rdss[!grepl("nss", rdss)]
-rdss = rdss[!grepl("submission", rdss)]
-rdss <- rdss[c(1,2,3,4,5,6,7,8,10,11,12,13,15,16,18,19,20, 21)]
 
 rdss_l = lapply(rdss, read_rds)
 
@@ -230,21 +224,15 @@ ggplot(data=boundone_m, aes(x=as.factor(wq), y=value))+
   scale_fill_npg(name="")+
   theme(legend.position = "bottom", legend.direction = "horizontal", strip.background = element_blank())
 
-ggsave(paste0(stub, "results/energy_poverty/ely_hist_share.png"), width = 6, height = 6, scale=1.2)
+# ggsave(paste0(stub, "results/energy_poverty/ely_hist_share.png"), width = 6, height = 6, scale=1.2)
 
 boundone_m_bk2 = boundone_m
 
 #######################
 
-rdss = list.files(path=paste0(stub, "data/household"), recursive = T, full.names = T, pattern = "rds", ignore.case = T)
+rdss = list.files(path=paste0(stub, "repo/household"), recursive = T, full.names = T, pattern = "rds", ignore.case = T)
 
 rdss = rdss[!grepl("global", rdss)]
-rdss = rdss[!grepl("CDD", rdss)]
-rdss = rdss[!grepl("us.Rds", rdss)]
-rdss = rdss[!grepl("nss", rdss)]
-rdss = rdss[!grepl("nss", rdss)]
-rdss = rdss[!grepl("submission", rdss)]
-rdss <- rdss[c(1,2,3,4,5,6,7,8,10,11,12,13,15,16,18,19,20, 21)]
 
 rdss_l = lapply(rdss, read_rds)
 
@@ -277,9 +265,9 @@ rdss_l <- bind_rows(rdss_l)
 
 load(paste0(stub, "repo/interm/global_wgt_dmcf.Rdata"))
 
-future_ac_adoption = read_rds(paste0(stub, "results/household_level/", "global_ac.Rds"))
-output_ac = read_rds(paste0(stub, "results/household_level/", "global_ely_tot.Rds"))
-output_impact_ac = read_rds(paste0(stub, "results/household_level/", "global_ely_due_to_ac.Rds"))
+future_ac_adoption = read_rds(paste0(stub, "repo/interm/", "global_ac.Rds"))
+output_ac = read_rds(paste0(stub, "repo/interm/", "global_ely_tot.Rds"))
+output_impact_ac = read_rds(paste0(stub, "repo/interm/", "global_ely_due_to_ac.Rds"))
 
 colnames(future_ac_adoption) = paste0("future_ac_adoption_", colnames(future_ac_adoption))
 colnames(output_ac) = paste0("output_ac_", colnames(output_ac))
@@ -287,9 +275,10 @@ colnames(output_impact_ac) = paste0("output_impact_ac_", colnames(output_impact_
 
 ###
 
-weights = read_rds(paste0(stub, "results/household_level/", "weights_global_ac.Rds"))
+weights = read_rds(paste0(stub, "repo/interm/", "weights_global_ac.Rds"))
 
-data_orig = read_rds(paste0(stub, "results/household_level/", "data_global_ac.Rds"))
+data_orig = read_rds(paste0(stub, "repo/interm/", "data_global_ac.Rds"))
+
 
 data_orig = bind_cols(data_orig, future_ac_adoption, output_ac, output_impact_ac, weights)
 
@@ -429,21 +418,15 @@ ggplot(data=boundone_m, aes(x=as.factor(wq), y=value))+
   scale_fill_npg(name="")+
   theme(legend.position = "bottom", legend.direction = "horizontal", strip.background = element_blank())
 
-ggsave(paste0(stub, "results/energy_poverty/ely_hist_share_wac_ACZOOM.png"), width = 6, height = 6, scale=1.2)
+ggsave(paste0(output, "Figure6.png"), width = 6, height = 6, scale=1.2)
 
 boundone_m_bk = boundone_m
 
 ####
 
-rdss = list.files(path=paste0(stub, "data/household"), recursive = T, full.names = T, pattern = "rds", ignore.case = T)
+rdss = list.files(path=paste0(stub, "repo/household"), recursive = T, full.names = T, pattern = "rds", ignore.case = T)
 
 rdss = rdss[!grepl("global", rdss)]
-rdss = rdss[!grepl("CDD", rdss)]
-rdss = rdss[!grepl("us.Rds", rdss)]
-rdss = rdss[!grepl("nss", rdss)]
-rdss = rdss[!grepl("nss", rdss)]
-rdss = rdss[!grepl("submission", rdss)]
-rdss <- rdss[c(1,2,3,4,5,6,7,8,10,11,12,13,15,16,18,19,20, 21)]
 
 rdss_l = lapply(rdss, read_rds)
 
@@ -476,9 +459,9 @@ rdss_l <- bind_rows(rdss_l)
 
 load(paste0(stub, "repo/interm/global_wgt_dmcf.Rdata"))
 
-future_ac_adoption = read_rds(paste0(stub, "results/household_level/", "global_ac.Rds"))
-output_ac = read_rds(paste0(stub, "results/household_level/", "global_ely_tot.Rds"))
-output_impact_ac = read_rds(paste0(stub, "results/household_level/", "global_ely_due_to_ac.Rds"))
+future_ac_adoption = read_rds(paste0(stub, "repo/interm/", "global_ac.Rds"))
+output_ac = read_rds(paste0(stub, "repo/interm/", "global_ely_tot.Rds"))
+output_impact_ac = read_rds(paste0(stub, "repo/interm/", "global_ely_due_to_ac.Rds"))
 
 colnames(future_ac_adoption) = paste0("future_ac_adoption_", colnames(future_ac_adoption))
 colnames(output_ac) = paste0("output_ac_", colnames(output_ac))
@@ -486,9 +469,9 @@ colnames(output_impact_ac) = paste0("output_impact_ac_", colnames(output_impact_
 
 ###
 
-weights = read_rds(paste0(stub, "results/household_level/", "weights_global_ac.Rds"))
+weights = read_rds(paste0(stub, "repo/interm/", "weights_global_ac.Rds"))
 
-data_orig = read_rds(paste0(stub, "results/household_level/", "data_global_ac.Rds"))
+data_orig = read_rds(paste0(stub, "repo/interm/", "data_global_ac.Rds"))
 
 data_orig = bind_cols(data_orig, future_ac_adoption, output_ac, output_impact_ac, weights)
 
@@ -635,4 +618,4 @@ ggplot(data=boundone_m_b, aes(x=as.factor(wq), y=value, fill=type))+
   scale_fill_npg(name="")+
   theme(legend.position = "bottom", legend.direction = "horizontal", strip.background = element_blank())
 
-ggsave(paste0(stub, "results/energy_poverty/ely_hist_share_wac.png"), width = 6, height = 6, scale=1.2)
+ggsave(paste0(output, "FigureA3.png"), width = 6, height = 6, scale=1.2)

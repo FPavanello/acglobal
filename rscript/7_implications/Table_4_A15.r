@@ -33,10 +33,10 @@ library(margins)
 user <- 'gf'
 
 if (user=='gf') {
-  stub <- "G:/.shortcut-targets-by-id/1JhN0qxmpnYQDoWQdBhnYKzbRCVGH_WXE/6-Projections/"
+  stub <- "F:/.shortcut-targets-by-id/1JhN0qxmpnYQDoWQdBhnYKzbRCVGH_WXE/6-Projections/"
 }
 
-output <- 'C:/Users/Standard/Documents/Github/acglobal/output/tables/'
+output <- 'C:/Users/Utente/Downloads/acglobal/output/tables/'
 
 
 ll_list <- list.files(path=paste0(stub, "repo/interm/projections/"), pattern="national_ac_penetration_glomod.csv", full.names = T)

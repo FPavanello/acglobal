@@ -25,16 +25,14 @@ library(patchwork)
 user <- 'user'
 
 if (user=='user') {
-  stub <- "G:/.shortcut-targets-by-id/1JhN0qxmpnYQDoWQdBhnYKzbRCVGH_WXE/6-Projections/"
+  stub <- "F:/.shortcut-targets-by-id/1JhN0qxmpnYQDoWQdBhnYKzbRCVGH_WXE/6-Projections/"
 }
 
-house <- paste(stub,'6-Projections/repo/household/', sep='')
-output <- 'C:/Users/Standard/Documents/Github/acglobal/output/supplementary/'
-proj <- paste(stub,'results/household_level/', sep='')
-
+house <- paste0(stub, "repo/household/")
+output <- 'C:/Users/Utente/Downloads/acglobal/output/supplementary/'
 
 # Load ely projections at 2020
-setwd("F:/.shortcut-targets-by-id/1JhN0qxmpnYQDoWQdBhnYKzbRCVGH_WXE/6-Projections/results/household_level")
+setwd(paste0(stub, "repo/interm/projections"))
 
 proj_f = list.files(pattern="_national_ely_consumption.csv")
 proj = lapply(proj_f, read.csv)

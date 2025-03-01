@@ -19,25 +19,24 @@ library(ggsci)
 user <- 'user'
 
 if (user=='user') {
-  stub <- "G:/.shortcut-targets-by-id/1JhN0qxmpnYQDoWQdBhnYKzbRCVGH_WXE/6-Projections/"
+  stub <- "F:/.shortcut-targets-by-id/1JhN0qxmpnYQDoWQdBhnYKzbRCVGH_WXE/6-Projections/"
 }
 
 house <- paste(stub,'data/household/', sep='')
 output <- paste(stub,'output/figures/', sep='')
-output <- 'C:/Users/Standard/Documents/Github/acglobal/output/figures/'
-interm <- "C:/Users/Standard/Documents/Github/acglobal/interm/"
-interm <- paste(stub,'6-Projections/interm/', sep='')
+output <- 'C:/Users/Utente/Downloads/acglobal/output/figures/'
+interm <- paste(stub,'repo/interm/', sep='')
 
 
 # Load data
-list_p <- list.files(path=output, full.names = T, pattern = "distribution")
+list_p <- list.files(path=paste0(interm, "projections"), full.names = T, pattern = "distribution")
 list_p <- list_p[grepl("Rdata", list_p)][]
 
 merger <- function(X){
   
   load(list_p[[X]])
   
-  output_impact_ac2$country <- gsub("_distribution.Rdata", "", gsub(output, "", list_p[X]))
+  output_impact_ac2$country <- gsub("_distribution.Rdata", "", basename(list_p[X]))
   
   return(output_impact_ac2)
   

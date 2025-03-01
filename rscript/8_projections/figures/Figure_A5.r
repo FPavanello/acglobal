@@ -25,10 +25,10 @@ if (user=='gf') {
   stub <- 'F:/.shortcut-targets-by-id/1JhN0qxmpnYQDoWQdBhnYKzbRCVGH_WXE/'
 }
 
-data <- paste(stub,'6-Projections/results/regressions/for_graphs/standardised', sep='')
-output <- paste(stub,'6-Projections/results/graphs/', sep='')
+data <- paste(stub,'6-Projections/repo/interm/projections/', sep='')
+output <- "C:/Users/Utente/Downloads/acglobal/output/figures/"
 
-list_p <- list.files(path=output, full.names = T, pattern = "decompose")
+list_p <- list.files(path=data, full.names = T, pattern = "decompose")
 list_p <- list_p[grepl("Rdata", list_p)]
 list_p <- list_p[grepl("SSP", list_p)]
 list_p = list_p[!grepl("DEU", list_p)]
@@ -37,8 +37,8 @@ merger <- function(X){
   
   load(list_p[[X]])
   
-  all$country <- sub("\\_decompose.*", "", gsub(output, "", list_p[X])) 
-  all$ssp <- gsub(".Rdata", "", sub(".*\\_decompose_", "", gsub(output, "", list_p[X])))
+  all$country <- sub("\\_decompose.*", "", basename(list_p[X])) 
+  all$ssp <- gsub(".Rdata", "", sub(".*\\_decompose_", "", basename(list_p[X])))
   
   return(all)
   
@@ -92,4 +92,4 @@ decomposition_plots <- ggplot(pp)+
   
 decomposition_plots
 
-ggsave(paste0(output, "fig2.png"), last_plot(), scale=2.1, width = 4.5, height = 4)
+ggsave(paste0(output, "FigureA5.png"), last_plot(), scale=2.1, width = 4.5, height = 4)
