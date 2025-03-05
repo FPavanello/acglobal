@@ -16,4 +16,4 @@ Projection results as presented in the paper were obtained in January 2025 using
  - R version 4.3.1 (2023-06-16 ucrt) -- "Beagle Scouts"
  - fixest_0.11.1
 
-Due to recent software and library updates, we noticed that the results of the replication procedure for the projection part of this work might diverge very sligthly from the results presented in the paper. Such discrepancies are however of a magnitude that does not affect the aspect of the figures, the implications of the findings, or the messages provided in the paper. 
+Due to recent software and library updates, we noticed that the results of the replication procedure for the projection part of this work might diverge very sligthly from the results presented in the paper when using more updated versions of the packages or of R. Such discrepancies are however of a magnitude that does not affect the aspect of the figures, the implications of the findings, or the messages provided in the paper. 
