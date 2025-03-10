@@ -15,7 +15,7 @@ This repository provides the codes required to reproduce the tables, figures, an
  - `output/` - where all results are stored
 
 ## Data for replications
-The data for India and Indonesia cannot be shared due to limited rights of sharing the data (contact us if there is a reasonable request). The public data set used in the paper are available for download in the following repository: [Link](https://doi.org/10.5281/zenodo.14990955).
+The data for India and Indonesia cannot be shared due to limited rights of sharing the data (contact us if there is a reasonable request). The public data sets used in the paper are available for download in the following repository: [Link](https://doi.org/10.5281/zenodo.14990955).
 
 ## Steps
 
