@@ -15,7 +15,7 @@ This repository provides the codes required to reproduce the tables, figures, an
  - `output/` - where all results are stored
 
 ## Data for replications
-The data used in the paper are available for download in the following repository: [Link]()
+The data used in the paper are available for download in the following repository: [Link](https://doi.org/10.5281/zenodo.14990955)
 
 ## Steps
 
