@@ -1,24 +1,33 @@
-\begin{table}
-\centering
-\begin{tabular}[t]{llrrr}
+\begin{table}[H]
+\centering\renewcommand*{\arraystretch}{1.1}
+\caption{CO$_2$ emissions from air-conditioning electricity use}
+\label{tab:emissions}
+\begin{threeparttable}
+\begin{tabular}[H]{llccc}
 \toprule
-\multicolumn{2}{c}{ } & \multicolumn{1}{c}{2020} & \multicolumn{1}{c}{SSP245 (2050)} & \multicolumn{1}{c}{SSP585 (2050)} \\
+\multicolumn{2}{c}{ } & \multicolumn{1}{c}{2020} & \multicolumn{1}{c}{SSP2-4.5 (2050)} & \multicolumn{1}{c}{SSP5-8.5 (2050)} \\
 \cmidrule(l{3pt}r{3pt}){3-3} \cmidrule(l{3pt}r{3pt}){4-4} \cmidrule(l{3pt}r{3pt}){5-5}
-  & country & Mean & Mean & Mean\\
-\midrule
-value & GLOBAL pool & \num{339.40} & \num{669.70} & \num{955.80}\\
+  & Country & Mean & Mean & Mean\\
+\midrule\addlinespace
+ & \textbf{Pooled} & \num{339.40} & \num{669.70} & \num{955.80}\\ \midrule \addlinespace
  & Africa & \num{1.30} & \num{2.40} & \num{2.60}\\
- & ARG & \num{1.90} & \num{4.60} & \num{5.20}\\
- & BRA & \num{9.30} & \num{23.90} & \num{35.90}\\
- & CHN & \num{138.30} & \num{255.40} & \num{290.30}\\
- & IDN & \num{4.90} & \num{13.60} & \num{26.40}\\
- & IND & \num{32.40} & \num{137.40} & \num{207.50}\\
- & ITA & \num{3.40} & \num{7.30} & \num{10.80}\\
- & MEX & \num{3.20} & \num{6.00} & \num{6.80}\\
- & OECD\_EU & \num{7.50} & \num{18.00} & \num{25.40}\\
- & OECD\_NONEU & \num{20.20} & \num{34.20} & \num{56.40}\\
- & PAK & \num{6.50} & \num{13.70} & \num{15.40}\\
- & USA & \num{178.80} & \num{234.00} & \num{310.70}\\
+ & Argentina & \num{1.90} & \num{4.50} & \num{5.20}\\
+ & Brazil & \num{9.10} & \num{23.40} & \num{35.60}\\
+ & China & \num{136.60} & \num{252.80} & \num{289.20}\\
+ & Indonesia & \num{4.80} & \num{13.30} & \num{26.20}\\
+ & India & \num{31.80} & \num{133.30} & \num{205.40}\\
+ & Italy & \num{3.30} & \num{7.30} & \num{10.70}\\
+ & Mexico & \num{3.10} & \num{5.90} & \num{6.70}\\
+ & OECD-EU & \num{7.40} & \num{18.10} & \num{25.40}\\
+ & OECD-NonEU & \num{17.90} & \num{32.80} & \num{55.10}\\
+ & Pakistan & \num{6.50} & \num{13.70} & \num{15.40}\\
+ & United States & \num{178.70} & \num{234.00} & \num{310.70}\\\addlinespace
 \bottomrule
 \end{tabular}
+\begin{tablenotes}
+    \item \footnotesize \textbf{Notes:} Values are in MtCO$_2$
+\end{tablenotes}
+\end{threeparttable}
 \end{table}
+
+%Mt of CO$_2$
